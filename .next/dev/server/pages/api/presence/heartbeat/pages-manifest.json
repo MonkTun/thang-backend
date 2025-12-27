@@ -1,0 +1,3 @@
+{
+  "/api/presence/heartbeat": "pages/api/presence/heartbeat.js"
+}

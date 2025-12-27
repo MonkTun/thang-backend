@@ -54,6 +54,19 @@
       "static/chunks/Documents_GitHub_ThangBackend_pages_learnmore_2da965e7._.js",
       "static/chunks/turbopack-Documents_GitHub_ThangBackend_pages_learnmore_e6d3a9f4._.js"
     ],
+    "/login": [
+      "static/chunks/9aa57_next_dist_compiled_10eab9ad._.js",
+      "static/chunks/9aa57_next_dist_shared_lib_efb40050._.js",
+      "static/chunks/9aa57_next_dist_client_a2998708._.js",
+      "static/chunks/9aa57_next_dist_0463af6f._.js",
+      "static/chunks/9aa57_next_router_ba6ccc9f.js",
+      "static/chunks/9aa57_react-dom_648b36dc._.js",
+      "static/chunks/9aa57_@firebase_auth_dist_esm_de050d2a._.js",
+      "static/chunks/9aa57_78bafb54._.js",
+      "static/chunks/[root-of-the-server]__ff3dabff._.js",
+      "static/chunks/Documents_GitHub_ThangBackend_pages_login_2da965e7._.js",
+      "static/chunks/turbopack-Documents_GitHub_ThangBackend_pages_login_44e86f15._.js"
+    ],
     "/profile": [
       "static/chunks/9aa57_next_dist_compiled_10eab9ad._.js",
       "static/chunks/9aa57_next_dist_shared_lib_efb40050._.js",
@@ -66,6 +79,18 @@
       "static/chunks/[root-of-the-server]__514291ae._.js",
       "static/chunks/Documents_GitHub_ThangBackend_pages_profile_2da965e7._.js",
       "static/chunks/turbopack-Documents_GitHub_ThangBackend_pages_profile_e6f71e75._.js"
+    ],
+    "/social": [
+      "static/chunks/9aa57_next_dist_compiled_10eab9ad._.js",
+      "static/chunks/9aa57_next_dist_shared_lib_efb40050._.js",
+      "static/chunks/9aa57_next_dist_client_a2998708._.js",
+      "static/chunks/9aa57_next_dist_0463af6f._.js",
+      "static/chunks/9aa57_next_router_ba6ccc9f.js",
+      "static/chunks/9aa57_react-dom_648b36dc._.js",
+      "static/chunks/9aa57_1cc528e0._.js",
+      "static/chunks/[root-of-the-server]__805410a4._.js",
+      "static/chunks/Documents_GitHub_ThangBackend_pages_social_2da965e7._.js",
+      "static/chunks/turbopack-Documents_GitHub_ThangBackend_pages_social_c317d490._.js"
     ]
   },
   "devFiles": [],

@@ -10,15 +10,7 @@ import { auth } from "@/lib/firebase";
  * - Display the logged-in user's profile data
  * - Fetch user data from MongoDB via /api/auth/bootstrap
  * - Allow user to log out
- * - Prove that MongoDB persistence works
- *
- * WHAT HAPPENS:
- * 1. Page loads
- * 2. Retrieve idToken and uid from localStorage
- * 3. Call /api/auth/bootstrap to get user data from MongoDB
- * 4. Display user info (uid, email, rank, coins)
- * 5. User can refresh page and data persists (from MongoDB)
- * 6. User can log out
+ * - Link to Social Hub
  */
 
 interface UserData {
@@ -37,10 +29,13 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  // Username State
   const [username, setUsername] = useState("");
   const [usernameSaving, setUsernameSaving] = useState(false);
   const [usernameError, setUsernameError] = useState<string | null>(null);
 
+  // 1. Initial Data Fetch
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -86,9 +81,62 @@ export default function ProfilePage() {
     fetchUserData();
   }, [router]);
 
+  // 2. Heartbeat Loop (Every 30s)
+  useEffect(() => {
+    if (!user) return;
+    const idToken = localStorage.getItem("idToken");
+    if (!idToken) return;
+
+    const sendHeartbeat = async () => {
+      try {
+        await fetch("/api/presence/heartbeat", {
+          method: "POST",
+          headers: { Authorization: `Bearer ${idToken}` },
+        });
+      } catch (e) {
+        console.error("Heartbeat failed", e);
+      }
+    };
+
+    // Send immediately, then interval
+    sendHeartbeat();
+    const interval = setInterval(sendHeartbeat, 30000);
+    return () => clearInterval(interval);
+  }, [user]);
+
+  // 3. Handle Tab Close / Navigation (Instant Offline)
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      const idToken = localStorage.getItem("idToken");
+      if (idToken) {
+        // Use keepalive to ensure request completes after tab close
+        fetch("/api/presence/leave", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+            "Content-Type": "application/json",
+          },
+          keepalive: true,
+        }).catch((err) => console.error("Leave beacon failed", err));
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, []);
+
   const handleLogout = async () => {
     setIsLoggingOut(true);
     try {
+      // Notify server we are leaving
+      const idToken = localStorage.getItem("idToken");
+      if (idToken) {
+        await fetch("/api/presence/leave", {
+          method: "POST",
+          headers: { Authorization: `Bearer ${idToken}` },
+        });
+      }
+
       console.log("Signing out...");
       await signOut(auth);
       localStorage.removeItem("idToken");
@@ -295,6 +343,15 @@ export default function ProfilePage() {
           </div>
         </div>
 
+        <div style={styles.sectionDivider} />
+        
+        <button 
+          onClick={() => router.push("/social")} 
+          style={{...styles.button, background: "#2563eb", borderColor: "#1d4ed8"}}
+        >
+          Go to Social Hub (Friends & Party)
+        </button>
+
         <button
           onClick={handleLogout}
           disabled={isLoggingOut}
@@ -402,10 +459,8 @@ const styles = {
   inputLabel: {
     display: "block",
     marginBottom: "6px",
-    fontSize: "12px",
-    letterSpacing: "0.02em",
-    color: "#9aa3b5",
-    textTransform: "uppercase" as const,
+    fontSize: "14px",
+    color: "#e7e9ed",
   } as React.CSSProperties,
 
   input: {
@@ -475,5 +530,11 @@ const styles = {
     margin: "0 0 0 20px",
     fontSize: "13px",
     color: "#c8cbd2",
+  } as React.CSSProperties,
+
+  sectionDivider: {
+    height: "1px",
+    background: "#1e232d",
+    margin: "24px 0",
   } as React.CSSProperties,
 };

@@ -523,9 +523,11 @@ function ProfilePage() {
     const [loading, setLoading] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(true);
     const [error, setError] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(null);
     const [isLoggingOut, setIsLoggingOut] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
+    // Username State
     const [username, setUsername] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])("");
     const [usernameSaving, setUsernameSaving] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
     const [usernameError, setUsernameError] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(null);
+    // 1. Initial Data Fetch
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "ProfilePage.useEffect": ()=>{
             const fetchUserData = {
@@ -567,9 +569,76 @@ function ProfilePage() {
     }["ProfilePage.useEffect"], [
         router
     ]);
+    // 2. Heartbeat Loop (Every 30s)
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
+        "ProfilePage.useEffect": ()=>{
+            if (!user) return;
+            const idToken = localStorage.getItem("idToken");
+            if (!idToken) return;
+            const sendHeartbeat = {
+                "ProfilePage.useEffect.sendHeartbeat": async ()=>{
+                    try {
+                        await fetch("/api/presence/heartbeat", {
+                            method: "POST",
+                            headers: {
+                                Authorization: `Bearer ${idToken}`
+                            }
+                        });
+                    } catch (e) {
+                        console.error("Heartbeat failed", e);
+                    }
+                }
+            }["ProfilePage.useEffect.sendHeartbeat"];
+            // Send immediately, then interval
+            sendHeartbeat();
+            const interval = setInterval(sendHeartbeat, 30000);
+            return ({
+                "ProfilePage.useEffect": ()=>clearInterval(interval)
+            })["ProfilePage.useEffect"];
+        }
+    }["ProfilePage.useEffect"], [
+        user
+    ]);
+    // 3. Handle Tab Close / Navigation (Instant Offline)
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
+        "ProfilePage.useEffect": ()=>{
+            const handleBeforeUnload = {
+                "ProfilePage.useEffect.handleBeforeUnload": ()=>{
+                    const idToken = localStorage.getItem("idToken");
+                    if (idToken) {
+                        // Use keepalive to ensure request completes after tab close
+                        fetch("/api/presence/leave", {
+                            method: "POST",
+                            headers: {
+                                Authorization: `Bearer ${idToken}`,
+                                "Content-Type": "application/json"
+                            },
+                            keepalive: true
+                        }).catch({
+                            "ProfilePage.useEffect.handleBeforeUnload": (err)=>console.error("Leave beacon failed", err)
+                        }["ProfilePage.useEffect.handleBeforeUnload"]);
+                    }
+                }
+            }["ProfilePage.useEffect.handleBeforeUnload"];
+            window.addEventListener("beforeunload", handleBeforeUnload);
+            return ({
+                "ProfilePage.useEffect": ()=>window.removeEventListener("beforeunload", handleBeforeUnload)
+            })["ProfilePage.useEffect"];
+        }
+    }["ProfilePage.useEffect"], []);
     const handleLogout = async ()=>{
         setIsLoggingOut(true);
         try {
+            // Notify server we are leaving
+            const idToken = localStorage.getItem("idToken");
+            if (idToken) {
+                await fetch("/api/presence/leave", {
+                    method: "POST",
+                    headers: {
+                        Authorization: `Bearer ${idToken}`
+                    }
+                });
+            }
             console.log("Signing out...");
             await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f40$firebase$2f$auth$2f$dist$2f$esm$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["signOut"])(__TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$lib$2f$firebase$2e$js__$5b$client$5d$__$28$ecmascript$29$__["auth"]);
             localStorage.removeItem("idToken");
@@ -643,17 +712,17 @@ function ProfilePage() {
                     children: "Loading user data..."
                 }, void 0, false, {
                     fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                    lineNumber: 163,
+                    lineNumber: 211,
                     columnNumber: 11
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                lineNumber: 162,
+                lineNumber: 210,
                 columnNumber: 9
             }, this)
         }, void 0, false, {
             fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-            lineNumber: 161,
+            lineNumber: 209,
             columnNumber: 7
         }, this);
     }
@@ -673,7 +742,7 @@ function ProfilePage() {
                         children: "Error"
                     }, void 0, false, {
                         fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                        lineNumber: 173,
+                        lineNumber: 221,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -684,7 +753,7 @@ function ProfilePage() {
                         children: error
                     }, void 0, false, {
                         fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                        lineNumber: 183,
+                        lineNumber: 231,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -693,18 +762,18 @@ function ProfilePage() {
                         children: "Back to Login"
                     }, void 0, false, {
                         fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                        lineNumber: 184,
+                        lineNumber: 232,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                lineNumber: 172,
+                lineNumber: 220,
                 columnNumber: 9
             }, this)
         }, void 0, false, {
             fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-            lineNumber: 171,
+            lineNumber: 219,
             columnNumber: 7
         }, this);
     }
@@ -723,7 +792,7 @@ function ProfilePage() {
                         children: "No user data"
                     }, void 0, false, {
                         fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                        lineNumber: 196,
+                        lineNumber: 244,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -734,7 +803,7 @@ function ProfilePage() {
                         children: "Could not load user profile"
                     }, void 0, false, {
                         fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                        lineNumber: 201,
+                        lineNumber: 249,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -743,18 +812,18 @@ function ProfilePage() {
                         children: "Back to Login"
                     }, void 0, false, {
                         fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                        lineNumber: 204,
+                        lineNumber: 252,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                lineNumber: 195,
+                lineNumber: 243,
                 columnNumber: 9
             }, this)
         }, void 0, false, {
             fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-            lineNumber: 194,
+            lineNumber: 242,
             columnNumber: 7
         }, this);
     }
@@ -768,7 +837,7 @@ function ProfilePage() {
                     children: "Your Profile"
                 }, void 0, false, {
                     fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                    lineNumber: 215,
+                    lineNumber: 263,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -782,7 +851,7 @@ function ProfilePage() {
                                     children: "Username"
                                 }, void 0, false, {
                                     fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                                    lineNumber: 220,
+                                    lineNumber: 268,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -790,13 +859,13 @@ function ProfilePage() {
                                     children: user.username
                                 }, void 0, false, {
                                     fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                                    lineNumber: 221,
+                                    lineNumber: 269,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                            lineNumber: 219,
+                            lineNumber: 267,
                             columnNumber: 13
                         }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             style: styles.missingBox,
@@ -810,7 +879,7 @@ function ProfilePage() {
                                             children: "Choose a username"
                                         }, void 0, false, {
                                             fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                                            lineNumber: 226,
+                                            lineNumber: 274,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -826,7 +895,7 @@ function ProfilePage() {
                                             maxLength: 20
                                         }, void 0, false, {
                                             fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                                            lineNumber: 229,
+                                            lineNumber: 277,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -834,13 +903,13 @@ function ProfilePage() {
                                             children: "3-20 characters. Letters, numbers, underscores, or hyphens."
                                         }, void 0, false, {
                                             fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                                            lineNumber: 242,
+                                            lineNumber: 290,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                                    lineNumber: 225,
+                                    lineNumber: 273,
                                     columnNumber: 15
                                 }, this),
                                 usernameError && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -848,7 +917,7 @@ function ProfilePage() {
                                     children: usernameError
                                 }, void 0, false, {
                                     fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                                    lineNumber: 247,
+                                    lineNumber: 295,
                                     columnNumber: 17
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -862,13 +931,13 @@ function ProfilePage() {
                                     children: usernameSaving ? "Saving..." : "Save username"
                                 }, void 0, false, {
                                     fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                                    lineNumber: 249,
+                                    lineNumber: 297,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                            lineNumber: 224,
+                            lineNumber: 272,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -879,7 +948,7 @@ function ProfilePage() {
                                     children: "Firebase UID"
                                 }, void 0, false, {
                                     fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                                    lineNumber: 264,
+                                    lineNumber: 312,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("code", {
@@ -887,13 +956,13 @@ function ProfilePage() {
                                     children: user._id
                                 }, void 0, false, {
                                     fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                                    lineNumber: 265,
+                                    lineNumber: 313,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                            lineNumber: 263,
+                            lineNumber: 311,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -904,7 +973,7 @@ function ProfilePage() {
                                     children: "Email"
                                 }, void 0, false, {
                                     fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                                    lineNumber: 269,
+                                    lineNumber: 317,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -912,13 +981,13 @@ function ProfilePage() {
                                     children: user.email
                                 }, void 0, false, {
                                     fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                                    lineNumber: 270,
+                                    lineNumber: 318,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                            lineNumber: 268,
+                            lineNumber: 316,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -929,7 +998,7 @@ function ProfilePage() {
                                     children: "Rank"
                                 }, void 0, false, {
                                     fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                                    lineNumber: 274,
+                                    lineNumber: 322,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -937,13 +1006,13 @@ function ProfilePage() {
                                     children: user.rank
                                 }, void 0, false, {
                                     fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                                    lineNumber: 275,
+                                    lineNumber: 323,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                            lineNumber: 273,
+                            lineNumber: 321,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -954,7 +1023,7 @@ function ProfilePage() {
                                     children: "Coins"
                                 }, void 0, false, {
                                     fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                                    lineNumber: 279,
+                                    lineNumber: 327,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -962,13 +1031,13 @@ function ProfilePage() {
                                     children: user.coins
                                 }, void 0, false, {
                                     fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                                    lineNumber: 280,
+                                    lineNumber: 328,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                            lineNumber: 278,
+                            lineNumber: 326,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -979,7 +1048,7 @@ function ProfilePage() {
                                     children: "Created At"
                                 }, void 0, false, {
                                     fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                                    lineNumber: 284,
+                                    lineNumber: 332,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -987,13 +1056,13 @@ function ProfilePage() {
                                     children: new Date(user.created_at).toLocaleString()
                                 }, void 0, false, {
                                     fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                                    lineNumber: 285,
+                                    lineNumber: 333,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                            lineNumber: 283,
+                            lineNumber: 331,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1004,7 +1073,7 @@ function ProfilePage() {
                                     children: "Updated At"
                                 }, void 0, false, {
                                     fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                                    lineNumber: 291,
+                                    lineNumber: 339,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1012,19 +1081,39 @@ function ProfilePage() {
                                     children: new Date(user.updated_at).toLocaleString()
                                 }, void 0, false, {
                                     fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                                    lineNumber: 292,
+                                    lineNumber: 340,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                            lineNumber: 290,
+                            lineNumber: 338,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                    lineNumber: 217,
+                    lineNumber: 265,
+                    columnNumber: 9
+                }, this),
+                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                    style: styles.sectionDivider
+                }, void 0, false, {
+                    fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
+                    lineNumber: 346,
+                    columnNumber: 9
+                }, this),
+                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                    onClick: ()=>router.push("/social"),
+                    style: {
+                        ...styles.button,
+                        background: "#2563eb",
+                        borderColor: "#1d4ed8"
+                    },
+                    children: "Go to Social Hub (Friends & Party)"
+                }, void 0, false, {
+                    fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
+                    lineNumber: 348,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1041,7 +1130,7 @@ function ProfilePage() {
                     children: isLoggingOut ? "Logging out..." : "Logout"
                 }, void 0, false, {
                     fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                    lineNumber: 298,
+                    lineNumber: 355,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1056,7 +1145,7 @@ function ProfilePage() {
                             children: "What this proves"
                         }, void 0, false, {
                             fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                            lineNumber: 314,
+                            lineNumber: 371,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("ul", {
@@ -1066,34 +1155,34 @@ function ProfilePage() {
                                     children: "Firebase Auth works (you logged in)"
                                 }, void 0, false, {
                                     fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                                    lineNumber: 320,
+                                    lineNumber: 377,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
                                     children: "Bootstrap endpoint works (created user in MongoDB)"
                                 }, void 0, false, {
                                     fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                                    lineNumber: 321,
+                                    lineNumber: 378,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
                                     children: "MongoDB persistence works (data survives refresh)"
                                 }, void 0, false, {
                                     fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                                    lineNumber: 322,
+                                    lineNumber: 379,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
                                     children: "Backend is ready for Unreal Engine"
                                 }, void 0, false, {
                                     fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                                    lineNumber: 323,
+                                    lineNumber: 380,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                            lineNumber: 319,
+                            lineNumber: 376,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1109,35 +1198,35 @@ function ProfilePage() {
                                     children: "game.users"
                                 }, void 0, false, {
                                     fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                                    lineNumber: 327,
+                                    lineNumber: 384,
                                     columnNumber: 13
                                 }, this),
                                 " collection."
                             ]
                         }, void 0, true, {
                             fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                            lineNumber: 325,
+                            lineNumber: 382,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-                    lineNumber: 313,
+                    lineNumber: 370,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-            lineNumber: 214,
+            lineNumber: 262,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/Documents/GitHub/ThangBackend/pages/profile.tsx",
-        lineNumber: 213,
+        lineNumber: 261,
         columnNumber: 5
     }, this);
 }
-_s(ProfilePage, "t/joNRj0T/19wnBvHXjLGUbNBJE=", false, function() {
+_s(ProfilePage, "fl89f1VnlKF5eWwpzjhB072yXEw=", false, function() {
     return [
         __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"]
     ];
@@ -1204,10 +1293,8 @@ const styles = {
     inputLabel: {
         display: "block",
         marginBottom: "6px",
-        fontSize: "12px",
-        letterSpacing: "0.02em",
-        color: "#9aa3b5",
-        textTransform: "uppercase"
+        fontSize: "14px",
+        color: "#e7e9ed"
     },
     input: {
         width: "100%",
@@ -1269,6 +1356,11 @@ const styles = {
         margin: "0 0 0 20px",
         fontSize: "13px",
         color: "#c8cbd2"
+    },
+    sectionDivider: {
+        height: "1px",
+        background: "#1e232d",
+        margin: "24px 0"
     }
 };
 var _c;

@@ -62,7 +62,9 @@ if (!process.env.MONGODB_URI) {
 }
 const uri = process.env.MONGODB_URI;
 const options = {
-    maxPoolSize: 10
+    maxPoolSize: 10,
+    serverSelectionTimeoutMS: 5000,
+    socketTimeoutMS: 45000
 };
 let client;
 let clientPromise;

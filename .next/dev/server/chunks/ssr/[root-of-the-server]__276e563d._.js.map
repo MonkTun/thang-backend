@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 28, "column": 0}, "map": {"version":3,"sources":["file:///Users/youngjepark/Documents/GitHub/ThangBackend/pages/index.tsx"],"sourcesContent":["import { useEffect } from \"react\";\nimport { useRouter } from \"next/router\";\n\n/**\n * INDEX PAGE\n *\n * PURPOSE:\n * - Automatically redirect to /login on app startup\n * - Ensures users start at the correct entry point\n */\n\nexport default function IndexPage() {\n  const router = useRouter();\n\n  useEffect(() => {\n    router.replace(\"/login\");\n  }, [router]);\n\n  return null;\n}\n"],"names":[],"mappings":";;;;AAAA;AACA;;;AAUe,SAAS;IACtB,MAAM,SAAS,IAAA,2KAAS;IAExB,IAAA,gHAAS,EAAC;QACR,OAAO,OAAO,CAAC;IACjB,GAAG;QAAC;KAAO;IAEX,OAAO;AACT"}}]
+}

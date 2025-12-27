@@ -1,0 +1,27 @@
+[00:00:00.589] Server  LOG     ✓ Ready in 396ms
+[00:01:18.535] Server  LOG     ✓ Compiled in 6ms
+[00:01:18.724] Server  LOG     ✓ Compiled in 2ms
+[00:02:58.731] Server  LOG     ✓ Compiled in 3ms
+[00:04:42.718] Server  LOG     ✓ Compiled in 4ms
+[00:04:42.765] Server  LOG     ✓ Compiled in 2ms
+[00:05:05.221] Server  LOG     ✓ Compiled in 6ms
+[00:05:05.287] Server  LOG     ✓ Compiled in 5ms
+[00:05:10.422] Server  LOG     ✓ Compiled in 1ms
+[00:05:17.921] Server  LOG     ✓ Compiled in 8ms
+[00:05:28.235] Server  LOG     ✓ Compiled in 2ms
+[00:06:27.226] Server  LOG     ✓ Compiled in 2ms
+[00:06:27.274] Server  LOG     ✓ Compiled in 3ms
+[00:06:39.320] Server  LOG     ✓ Compiled in 3ms
+[00:08:11.957] Server  LOG     [FirebaseAdmin] Successfully initialized
+[00:08:12.117] Server  LOG     [Bootstrap] Verifying Firebase token...
+[00:08:12.122] Browser LOG     Fetching user data from /api/auth/bootstrap...
+[00:08:12.272] Server  ERROR   [Bootstrap] Firebase verification error: "Firebase ID token has expired. Get a fresh ID token from your client app and try again (auth/id-token-expired). See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token."
+[00:08:12.375] Browser ERROR   Error fetching user: Failed to fetch user: 401 - Invalid or expired token
+[00:08:34.728] Server  LOG     ✓ Compiled in 9ms
+[00:10:14.926] Server  LOG     ✓ Compiled in 6ms
+[00:11:52.699] Server  LOG     ✓ Compiled in 8ms
+[00:11:52.884] Server  LOG     ✓ Compiled in 4ms
+[00:11:53.012] Server  LOG     ✓ Compiled in 3ms
+[00:13:25.346] Server  LOG     ✓ Compiled in 3ms
+[00:13:28.787] Server  LOG     ✓ Compiled in 5ms
+[00:13:48.604] Server  LOG     ✓ Compiled in 3ms

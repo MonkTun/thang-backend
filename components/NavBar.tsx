@@ -30,7 +30,7 @@ export default function NavBar() {
     const win = getWindow();
     const token = win?.localStorage?.getItem("idToken") || null;
     setIsAuthed(Boolean(token));
-  }, []);
+  }, [router.pathname]);
 
   useEffect(() => {
     const handleResize = () => {

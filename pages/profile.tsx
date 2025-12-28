@@ -1,6 +1,6 @@
 import { useState, useEffect, type ChangeEvent } from "react";
 import { useRouter } from "next/router";
-import { signOut } from "firebase/auth";
+import { signOut, updatePassword } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 
 /**
@@ -34,6 +34,12 @@ export default function ProfilePage() {
   const [username, setUsername] = useState("");
   const [usernameSaving, setUsernameSaving] = useState(false);
   const [usernameError, setUsernameError] = useState<string | null>(null);
+
+  // Password State
+  const [newPassword, setNewPassword] = useState("");
+  const [passwordMessage, setPasswordMessage] = useState<string | null>(null);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [passwordLoading, setPasswordLoading] = useState(false);
 
   // 1. Initial Data Fetch
   useEffect(() => {
@@ -204,6 +210,34 @@ export default function ProfilePage() {
     }
   };
 
+  const handleSetPassword = async () => {
+    setPasswordMessage(null);
+    setPasswordError(null);
+    if (newPassword.length < 6) {
+      setPasswordError("Password must be at least 6 characters");
+      return;
+    }
+
+    try {
+      setPasswordLoading(true);
+      const currentUser = auth.currentUser;
+      if (!currentUser) throw new Error("Not authenticated");
+
+      await updatePassword(currentUser, newPassword);
+      setPasswordMessage("Password updated successfully!");
+      setNewPassword("");
+    } catch (err: any) {
+      console.error("Set Password Error:", err);
+      if (err.code === "auth/requires-recent-login") {
+        setPasswordError("Please log out and log back in to set a password.");
+      } else {
+        setPasswordError(err.message || "Failed to update password");
+      }
+    } finally {
+      setPasswordLoading(false);
+    }
+  };
+
   if (loading) {
     return (
       <div style={styles.container}>
@@ -344,12 +378,72 @@ export default function ProfilePage() {
         </div>
 
         <div style={styles.sectionDivider} />
-        
-        <button 
-          onClick={() => router.push("/social")} 
-          style={{...styles.button, background: "#2563eb", borderColor: "#1d4ed8"}}
+
+        {/* Set Password Section */}
+        <div
+          style={{
+            marginBottom: "24px",
+          }}
         >
-          Go to Social Hub (Friends & Party)
+          <h3 style={{ ...styles.label, marginBottom: "12px" }}>Security</h3>
+          <div style={styles.inputGroup}>
+            <label style={styles.inputLabel}>Set/Update Password</label>
+            <div style={{ display: "flex", gap: "8px" }}>
+              <input
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="New Password"
+                style={{ ...styles.input, flex: 1 }}
+              />
+              <button
+                onClick={handleSetPassword}
+                disabled={passwordLoading || !newPassword}
+                style={{
+                  ...styles.button,
+                  width: "auto",
+                  marginBottom: 0,
+                  padding: "0 16px",
+                  opacity: passwordLoading || !newPassword ? 0.5 : 1,
+                }}
+              >
+                {passwordLoading ? "..." : "Update"}
+              </button>
+            </div>
+            {passwordMessage && (
+              <div
+                style={{
+                  marginTop: "8px",
+                  fontSize: "13px",
+                  color: "#22c55e",
+                }}
+              >
+                {passwordMessage}
+              </div>
+            )}
+            {passwordError && (
+              <div
+                style={{
+                  marginTop: "8px",
+                  fontSize: "13px",
+                  color: "#f2c2cb",
+                }}
+              >
+                {passwordError}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <button
+          onClick={() => router.push("/social")}
+          style={{
+            ...styles.button,
+            background: "#1e232d",
+            borderColor: "#2b3544",
+          }}
+        >
+          Go to Social Hub
         </button>
 
         <button

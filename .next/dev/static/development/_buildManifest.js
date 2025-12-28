@@ -27,6 +27,7 @@ self.__BUILD_MANIFEST = {
     "/_app",
     "/_error",
     "/api/auth/bootstrap",
+    "/api/auth/find-email",
     "/api/auth/steam",
     "/api/auth/username",
     "/api/friends/accept",

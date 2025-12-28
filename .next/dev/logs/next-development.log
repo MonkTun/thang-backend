@@ -1,735 +1,213 @@
-[00:00:00.484] Server  LOG     ✓ Ready in 303ms
-[00:00:16.909] Browser LOG     🔐 Starting Google Sign-In...
-[00:00:21.002] Server  LOG     [FirebaseAdmin] Successfully initialized
-[00:00:21.151] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:00:21.152] Browser LOG     Google Sign-In successful: {"displayName":"Youngje Park","email":"peroni014@gmail.com","uid":"vaPLUidUM0SV0iN94vhiWsZlWHO2"}
-[00:00:21.152] Browser LOG     🔑 Got ID Token: eyJhbGciOiJSUzI1NiIsImtpZCI6Ijk4OGQ1YTM3OWI3OGJkZj...
-[00:00:21.152] Browser LOG     📡 Calling /api/auth/bootstrap...
-[00:00:21.272] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:00:21.272] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:00:22.495] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:00:22.639] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:00:22.779] Server  LOG     [Bootstrap] User found: "yes"
-[00:00:22.779] Server  LOG     [Bootstrap] Returning user data
-[00:00:22.817] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:00:22.817] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:00:22.817] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:00:22.817] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:00:22.913] Browser LOG     Bootstrap successful, user data: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","rank":0,"updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
-[00:00:22.913] Browser LOG     🎯 Redirecting to /profile...
-[00:00:22.913] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:00:22.958] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:00:23.094] Server  LOG     [Bootstrap] User found: "yes"
-[00:00:23.095] Server  LOG     [Bootstrap] Returning user data
-[00:00:23.200] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","rank":0,"updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
-[00:01:44.121] Browser LOG     🔐 Starting Google Sign-In...
-[00:01:54.503] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:01:54.504] Server  LOG     [Bootstrap] Token verified for UID: "rnyYdGe5ChfxFPR3Yn86WDJctqt1"
-[00:01:54.504] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:01:54.504] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:01:54.588] Browser LOG     Google Sign-In successful: {"displayName":"Yj Park","email":"youngjep@usc.edu","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1"}
-[00:01:54.588] Browser LOG     🔑 Got ID Token: eyJhbGciOiJSUzI1NiIsImtpZCI6Ijk4OGQ1YTM3OWI3OGJkZj...
-[00:01:54.588] Browser LOG     📡 Calling /api/auth/bootstrap...
-[00:01:54.642] Server  LOG     [Bootstrap] Looking for existing user: "rnyYdGe5ChfxFPR3Yn86WDJctqt1"
-[00:01:54.780] Server  LOG     [Bootstrap] User found: "yes"
-[00:01:54.780] Server  LOG     [Bootstrap] Returning user data
-[00:01:54.809] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:01:54.809] Server  LOG     [Bootstrap] Token verified for UID: "rnyYdGe5ChfxFPR3Yn86WDJctqt1"
-[00:01:54.809] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:01:54.809] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:01:54.905] Browser LOG     Bootstrap successful, user data: {"_id":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","coins":100,"created_at":"2025-12-27T16:25:17.278Z","email":"youngjep@usc.edu","friendRequests":[{"createdAt":"2025-12-27T17:14:58.666Z","type":"incoming","uid":"vaPLUidUM0SV0iN94vhiWsZlWHO2","username":"Tundraswan"}],"rank":0,"updated_at":"2025-12-27T16:25:26.280Z","username":"youngjepUSC"}
-[00:01:54.905] Browser LOG     🎯 Redirecting to /profile...
-[00:01:54.905] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:01:54.947] Server  LOG     [Bootstrap] Looking for existing user: "rnyYdGe5ChfxFPR3Yn86WDJctqt1"
-[00:01:55.081] Server  LOG     [Bootstrap] User found: "yes"
-[00:01:55.081] Server  LOG     [Bootstrap] Returning user data
-[00:01:55.186] Browser LOG     User data fetched: {"_id":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","coins":100,"created_at":"2025-12-27T16:25:17.278Z","email":"youngjep@usc.edu","friendRequests":[{"createdAt":"2025-12-27T17:14:58.666Z","type":"incoming","uid":"vaPLUidUM0SV0iN94vhiWsZlWHO2","username":"Tundraswan"}],"rank":0,"updated_at":"2025-12-27T16:25:26.280Z","username":"youngjepUSC"}
-[00:02:31.410] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:02:31.410] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:31.410] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:02:31.410] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:02:31.510] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:02:31.549] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:31.692] Server  LOG     [Bootstrap] User found: "yes"
-[00:02:31.693] Server  LOG     [Bootstrap] Returning user data
-[00:02:31.797] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[],"friends":[{"addedAt":"2025-12-27T17:16:23.337Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"}],"lastSeen":"2025-12-27T17:16:48.338Z","rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
-[00:02:32.921] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:02:32.921] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:32.921] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:02:32.921] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:02:33.021] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:02:33.085] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:33.220] Server  LOG     [Bootstrap] User found: "yes"
-[00:02:33.220] Server  LOG     [Bootstrap] Returning user data
-[00:02:33.323] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[],"friends":[{"addedAt":"2025-12-27T17:16:23.337Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"}],"lastSeen":"2025-12-27T17:16:56.917Z","rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
-[00:02:34.180] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:02:34.180] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:34.180] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:02:34.180] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:02:34.280] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:02:34.319] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:34.452] Server  LOG     [Bootstrap] User found: "yes"
-[00:02:34.452] Server  LOG     [Bootstrap] Returning user data
-[00:02:34.556] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[],"friends":[{"addedAt":"2025-12-27T17:16:23.337Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"}],"lastSeen":"2025-12-27T17:16:58.443Z","rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
-[00:02:35.013] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:02:35.013] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:35.013] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:02:35.013] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:02:35.113] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:02:35.138] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:35.260] Server  LOG     [Bootstrap] User found: "yes"
-[00:02:35.260] Server  LOG     [Bootstrap] Returning user data
-[00:02:35.365] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[],"friends":[{"addedAt":"2025-12-27T17:16:23.337Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"}],"lastSeen":"2025-12-27T17:16:59.667Z","rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
-[00:02:36.030] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:02:36.030] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:36.030] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:02:36.030] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:02:36.130] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:02:36.157] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:36.280] Server  LOG     [Bootstrap] User found: "yes"
-[00:02:36.280] Server  LOG     [Bootstrap] Returning user data
-[00:02:36.384] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[],"friends":[{"addedAt":"2025-12-27T17:16:23.337Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"}],"lastSeen":"2025-12-27T17:17:00.487Z","rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
-[00:02:36.862] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:02:36.863] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:36.863] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:02:36.863] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:02:36.962] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:02:37.006] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:37.141] Server  LOG     [Bootstrap] User found: "yes"
-[00:02:37.141] Server  LOG     [Bootstrap] Returning user data
-[00:02:37.246] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[],"friends":[{"addedAt":"2025-12-27T17:16:23.337Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"}],"lastSeen":"2025-12-27T17:17:01.498Z","rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
-[00:02:37.739] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:02:37.739] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:37.739] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:02:37.739] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:02:37.839] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:02:37.865] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:37.989] Server  LOG     [Bootstrap] User found: "yes"
-[00:02:37.989] Server  LOG     [Bootstrap] Returning user data
-[00:02:38.093] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[],"friends":[{"addedAt":"2025-12-27T17:16:23.337Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"}],"lastSeen":"2025-12-27T17:17:02.362Z","rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
-[00:02:38.580] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:02:38.580] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:38.580] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:02:38.580] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:02:38.679] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:02:38.716] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:38.840] Server  LOG     [Bootstrap] User found: "yes"
-[00:02:38.840] Server  LOG     [Bootstrap] Returning user data
-[00:02:38.944] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[],"friends":[{"addedAt":"2025-12-27T17:16:23.337Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"}],"lastSeen":"2025-12-27T17:17:03.214Z","rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
-[00:02:39.381] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:02:39.381] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:39.381] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:02:39.381] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:02:39.481] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:02:39.506] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:39.627] Server  LOG     [Bootstrap] User found: "yes"
-[00:02:39.628] Server  LOG     [Bootstrap] Returning user data
-[00:02:39.732] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[],"friends":[{"addedAt":"2025-12-27T17:16:23.337Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"}],"lastSeen":"2025-12-27T17:17:04.062Z","rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
-[00:02:40.198] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:02:40.198] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:40.198] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:02:40.198] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:02:40.298] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:02:40.323] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:40.447] Server  LOG     [Bootstrap] User found: "yes"
-[00:02:40.447] Server  LOG     [Bootstrap] Returning user data
-[00:02:40.551] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[],"friends":[{"addedAt":"2025-12-27T17:16:23.337Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"}],"lastSeen":"2025-12-27T17:17:04.852Z","rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
-[00:02:40.995] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:02:40.995] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:40.995] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:02:40.995] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:02:41.095] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:02:41.122] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:41.243] Server  LOG     [Bootstrap] User found: "yes"
-[00:02:41.243] Server  LOG     [Bootstrap] Returning user data
-[00:02:41.350] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[],"friends":[{"addedAt":"2025-12-27T17:16:23.337Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"}],"lastSeen":"2025-12-27T17:17:05.666Z","rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
-[00:02:41.804] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:02:41.804] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:41.804] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:02:41.804] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:02:41.904] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:02:41.929] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:42.051] Server  LOG     [Bootstrap] User found: "yes"
-[00:02:42.051] Server  LOG     [Bootstrap] Returning user data
-[00:02:42.154] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[],"friends":[{"addedAt":"2025-12-27T17:16:23.337Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"}],"lastSeen":"2025-12-27T17:17:06.467Z","rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
-[00:02:42.562] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:02:42.562] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:42.562] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:02:42.562] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:02:42.662] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:02:42.700] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:42.833] Server  LOG     [Bootstrap] User found: "yes"
-[00:02:42.834] Server  LOG     [Bootstrap] Returning user data
-[00:02:42.938] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[],"friends":[{"addedAt":"2025-12-27T17:16:23.337Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"}],"lastSeen":"2025-12-27T17:17:07.267Z","rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
-[00:02:43.328] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:02:43.328] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:43.328] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:02:43.328] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:02:43.428] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:02:43.454] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:43.578] Server  LOG     [Bootstrap] User found: "yes"
-[00:02:43.578] Server  LOG     [Bootstrap] Returning user data
-[00:02:43.681] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[],"friends":[{"addedAt":"2025-12-27T17:16:23.337Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"}],"lastSeen":"2025-12-27T17:17:08.055Z","rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
-[00:02:44.120] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:02:44.120] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:44.120] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:02:44.120] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:02:44.219] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:02:44.245] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:44.366] Server  LOG     [Bootstrap] User found: "yes"
-[00:02:44.366] Server  LOG     [Bootstrap] Returning user data
-[00:02:44.471] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[],"friends":[{"addedAt":"2025-12-27T17:16:23.337Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"}],"lastSeen":"2025-12-27T17:17:08.795Z","rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
-[00:02:46.589] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:02:46.589] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:46.589] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:02:46.589] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:02:46.689] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:02:46.715] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:46.835] Server  LOG     [Bootstrap] User found: "yes"
-[00:02:46.836] Server  LOG     [Bootstrap] Returning user data
-[00:02:46.939] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[],"friends":[{"addedAt":"2025-12-27T17:16:23.337Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"}],"lastSeen":"2025-12-27T17:17:09.588Z","rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
-[00:02:47.799] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:02:47.799] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:47.799] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:02:47.799] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:02:47.898] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:02:47.925] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:48.046] Server  LOG     [Bootstrap] User found: "yes"
-[00:02:48.046] Server  LOG     [Bootstrap] Returning user data
-[00:02:48.152] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[],"friends":[{"addedAt":"2025-12-27T17:16:23.337Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"}],"lastSeen":"2025-12-27T17:17:12.053Z","rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
-[00:02:48.650] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:02:48.650] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:48.650] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:02:48.650] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:02:48.749] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:02:48.775] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:48.896] Server  LOG     [Bootstrap] User found: "yes"
-[00:02:48.896] Server  LOG     [Bootstrap] Returning user data
-[00:02:49.001] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[],"friends":[{"addedAt":"2025-12-27T17:16:23.337Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"}],"lastSeen":"2025-12-27T17:17:13.271Z","rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
-[00:02:49.987] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:02:49.987] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:49.987] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:02:49.987] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:02:50.087] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:02:50.112] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:50.236] Server  LOG     [Bootstrap] User found: "yes"
-[00:02:50.236] Server  LOG     [Bootstrap] Returning user data
-[00:02:50.341] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[],"friends":[{"addedAt":"2025-12-27T17:16:23.337Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"}],"lastSeen":"2025-12-27T17:17:14.122Z","rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
-[00:02:51.073] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:02:51.073] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:51.073] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:02:51.073] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:02:51.173] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:02:51.208] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:51.328] Server  LOG     [Bootstrap] User found: "yes"
-[00:02:51.328] Server  LOG     [Bootstrap] Returning user data
-[00:02:51.432] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[],"friends":[{"addedAt":"2025-12-27T17:16:23.337Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"}],"lastSeen":"2025-12-27T17:17:15.460Z","rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
-[00:02:51.887] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:02:51.888] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:51.888] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:02:51.888] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:02:51.987] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:02:52.013] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:52.133] Server  LOG     [Bootstrap] User found: "yes"
-[00:02:52.134] Server  LOG     [Bootstrap] Returning user data
-[00:02:52.237] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[],"friends":[{"addedAt":"2025-12-27T17:16:23.337Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"}],"lastSeen":"2025-12-27T17:17:16.550Z","rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
-[00:02:52.713] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:02:52.713] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:52.713] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:02:52.714] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:02:52.812] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:02:52.839] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:52.963] Server  LOG     [Bootstrap] User found: "yes"
-[00:02:52.963] Server  LOG     [Bootstrap] Returning user data
-[00:02:53.067] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[],"friends":[{"addedAt":"2025-12-27T17:16:23.337Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"}],"lastSeen":"2025-12-27T17:17:17.355Z","rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
-[00:02:53.512] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:02:53.512] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:53.512] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:02:53.512] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:02:53.611] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:02:53.641] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:53.763] Server  LOG     [Bootstrap] User found: "yes"
-[00:02:53.763] Server  LOG     [Bootstrap] Returning user data
-[00:02:53.866] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[],"friends":[{"addedAt":"2025-12-27T17:16:23.337Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"}],"lastSeen":"2025-12-27T17:17:18.181Z","rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
-[00:02:54.434] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:02:54.434] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:54.434] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:02:54.434] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:02:54.533] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:02:54.559] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:54.684] Server  LOG     [Bootstrap] User found: "yes"
-[00:02:54.684] Server  LOG     [Bootstrap] Returning user data
-[00:02:54.788] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[],"friends":[{"addedAt":"2025-12-27T17:16:23.337Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"}],"lastSeen":"2025-12-27T17:17:18.982Z","rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
-[00:02:55.179] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:02:55.180] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:55.180] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:02:55.180] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:02:55.279] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:02:55.306] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:55.431] Server  LOG     [Bootstrap] User found: "yes"
-[00:02:55.431] Server  LOG     [Bootstrap] Returning user data
-[00:02:55.535] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[],"friends":[{"addedAt":"2025-12-27T17:16:23.337Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"}],"lastSeen":"2025-12-27T17:17:19.905Z","rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
-[00:02:58.303] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:02:58.303] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:58.303] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:02:58.303] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:02:58.400] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:02:58.428] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:02:58.556] Server  LOG     [Bootstrap] User found: "yes"
-[00:02:58.556] Server  LOG     [Bootstrap] Returning user data
-[00:02:58.659] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[],"friends":[{"addedAt":"2025-12-27T17:16:23.337Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"}],"lastSeen":"2025-12-27T17:17:20.650Z","rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
-[00:03:07.834] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:03:07.835] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:03:07.835] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:03:07.835] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:03:07.932] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:03:07.960] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:03:08.081] Server  LOG     [Bootstrap] User found: "yes"
-[00:03:08.081] Server  LOG     [Bootstrap] Returning user data
-[00:03:08.187] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[],"friends":[{"addedAt":"2025-12-27T17:16:23.337Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"}],"lastSeen":"2025-12-27T17:17:23.773Z","rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
-[00:03:30.616] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:03:30.616] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:03:30.616] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:03:30.616] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:03:30.715] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:03:30.742] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:03:30.865] Server  LOG     [Bootstrap] User found: "yes"
-[00:03:30.866] Server  LOG     [Bootstrap] Returning user data
-[00:03:30.969] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[],"friends":[{"addedAt":"2025-12-27T17:16:23.337Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"}],"lastSeen":"2025-12-27T17:17:33.298Z","rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
-[00:04:21.430] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:04:21.430] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:04:21.430] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:04:21.430] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:04:21.462] Server  LOG     ✓ Compiled in 10ms
-[00:04:21.550] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:04:21.568] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:04:21.705] Server  LOG     [Bootstrap] User found: "yes"
-[00:04:21.705] Server  LOG     [Bootstrap] Returning user data
-[00:04:22.545] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[],"friends":[{"addedAt":"2025-12-27T17:16:23.337Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"}],"lastSeen":"2025-12-27T17:18:26.762Z","rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
-[00:05:04.192] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:05:04.193] Server  LOG     [Bootstrap] Token verified for UID: "rnyYdGe5ChfxFPR3Yn86WDJctqt1"
-[00:05:04.193] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:05:04.193] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:05:04.292] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:05:04.332] Server  LOG     [Bootstrap] Looking for existing user: "rnyYdGe5ChfxFPR3Yn86WDJctqt1"
-[00:05:04.467] Server  LOG     [Bootstrap] User found: "yes"
-[00:05:04.467] Server  LOG     [Bootstrap] Returning user data
-[00:05:04.569] Browser LOG     User data fetched: {"_id":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","coins":100,"created_at":"2025-12-27T16:25:17.278Z","email":"youngjep@usc.edu","friendRequests":[],"friends":[{"addedAt":"2025-12-27T17:16:23.337Z","uid":"vaPLUidUM0SV0iN94vhiWsZlWHO2","username":"Tundraswan"}],"lastSeen":"2025-12-27T17:16:50.327Z","rank":0,"status":"online","updated_at":"2025-12-27T16:25:26.280Z","username":"youngjepUSC"}
-[00:05:10.611] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:05:10.611] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:05:10.611] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:05:10.611] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:05:10.711] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:05:10.751] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:05:10.884] Server  LOG     [Bootstrap] User found: "yes"
-[00:05:10.884] Server  LOG     [Bootstrap] Returning user data
-[00:05:10.988] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[],"friends":[{"addedAt":"2025-12-27T17:16:23.337Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"}],"lastSeen":"2025-12-27T17:19:35.743Z","rank":0,"status":"offline","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
-[00:05:16.617] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:05:16.617] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:05:16.617] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:05:16.617] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:05:16.717] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:05:16.746] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:05:16.868] Server  LOG     [Bootstrap] User found: "yes"
-[00:05:16.868] Server  LOG     [Bootstrap] Returning user data
-[00:05:16.972] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[],"friends":[{"addedAt":"2025-12-27T17:16:23.337Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"}],"lastSeen":"2025-12-27T17:19:41.734Z","rank":0,"status":"offline","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
-[00:05:19.945] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:05:19.945] Server  LOG     [Bootstrap] Token verified for UID: "rnyYdGe5ChfxFPR3Yn86WDJctqt1"
-[00:05:19.945] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:05:19.945] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:05:20.042] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:05:20.071] Server  LOG     [Bootstrap] Looking for existing user: "rnyYdGe5ChfxFPR3Yn86WDJctqt1"
-[00:05:20.193] Server  LOG     [Bootstrap] User found: "yes"
-[00:05:20.193] Server  LOG     [Bootstrap] Returning user data
-[00:05:20.297] Browser LOG     User data fetched: {"_id":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","coins":100,"created_at":"2025-12-27T16:25:17.278Z","email":"youngjep@usc.edu","friendRequests":[],"friends":[{"addedAt":"2025-12-27T17:16:23.337Z","uid":"vaPLUidUM0SV0iN94vhiWsZlWHO2","username":"Tundraswan"}],"lastSeen":"2025-12-27T17:19:39.341Z","rank":0,"status":"offline","updated_at":"2025-12-27T16:25:26.280Z","username":"youngjepUSC"}
-[00:05:42.777] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:05:42.778] Server  LOG     [Bootstrap] Token verified for UID: "rnyYdGe5ChfxFPR3Yn86WDJctqt1"
-[00:05:42.778] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:05:42.778] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:05:42.875] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:05:42.904] Server  LOG     [Bootstrap] Looking for existing user: "rnyYdGe5ChfxFPR3Yn86WDJctqt1"
-[00:05:43.024] Server  LOG     [Bootstrap] User found: "yes"
-[00:05:43.024] Server  LOG     [Bootstrap] Returning user data
-[00:05:43.127] Browser LOG     User data fetched: {"_id":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","coins":100,"created_at":"2025-12-27T16:25:17.278Z","email":"youngjep@usc.edu","friendRequests":[],"friends":[{"addedAt":"2025-12-27T17:16:23.337Z","uid":"vaPLUidUM0SV0iN94vhiWsZlWHO2","username":"Tundraswan"}],"lastSeen":"2025-12-27T17:19:45.421Z","rank":0,"status":"online","updated_at":"2025-12-27T16:25:26.280Z","username":"youngjepUSC"}
-[00:11:59.889] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:11:59.889] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:11:59.889] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:11:59.890] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:11:59.920] Server  LOG     ✓ Compiled in 8ms
-[00:11:59.962] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:11:59.963] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:11:59.963] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:11:59.963] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:11:59.993] Server  LOG     ✓ Compiled in 7ms
-[00:12:00.030] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:12:00.041] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:12:00.041] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:12:00.041] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:12:00.041] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:12:00.078] Server  LOG     ✓ Compiled in 8ms
-[00:12:00.087] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:12:00.212] Server  LOG     [Bootstrap] User found: "yes"
-[00:12:00.212] Server  LOG     [Bootstrap] Returning user data
-[00:12:00.224] Server  LOG     [Bootstrap] User found: "yes"
-[00:12:00.224] Server  LOG     [Bootstrap] Returning user data
-[00:12:00.547] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:12:00.547] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:12:00.547] Browser LOG     Refreshing page data due to server-side change
-[00:12:00.547] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:12:00.547] Browser ERROR   ./Documents/GitHub/ThangBackend/pages/profile.tsx:210:7
-Parsing ecmascript source code failed
-  208 |     } catch (err: any) {
-  209 |       setUsernameError(err.message || "Failed to set username");
-> 210 |     } finally {
-      |       ^^^^^^^
-  211 |       setUsernameSaving(false);
-  212 |     }
-  213 |   };
-
-Expected a semicolon
-[00:12:00.547] Browser ERROR   ./Documents/GitHub/ThangBackend/pages/profile.tsx
-Code generation for chunk item errored
-An error occurred while generating the chunk item [project]/Documents/GitHub/ThangBackend/pages/profile.tsx [ssr] (ecmascript)
-
-Caused by:
-- CJS module can't be async.
-
-Debug info:
-- An error occurred while generating the chunk item [project]/Documents/GitHub/ThangBackend/pages/profile.tsx [ssr] (ecmascript)
-- Execution of <ModuleChunkItem as EcmascriptChunkItem>::content_with_async_module_info failed
-- Execution of EcmascriptChunkItemContent::new failed
-- CJS module can't be async.
-[00:12:00.547] Browser ERROR   ./Documents/GitHub/ThangBackend/pages/profile.tsx:210:7
-Parsing ecmascript source code failed
-  208 |     } catch (err: any) {
-  209 |       setUsernameError(err.message || "Failed to set username");
-> 210 |     } finally {
-      |       ^^^^^^^
-  211 |       setUsernameSaving(false);
-  212 |     }
-  213 |   };
-
-Expected a semicolon
-[00:12:00.547] Browser ERROR   ./Documents/GitHub/ThangBackend/pages/profile.tsx
-Code generation for chunk item errored
-An error occurred while generating the chunk item [project]/Documents/GitHub/ThangBackend/pages/profile.tsx [ssr] (ecmascript)
-
-Caused by:
-- CJS module can't be async.
-
-Debug info:
-- An error occurred while generating the chunk item [project]/Documents/GitHub/ThangBackend/pages/profile.tsx [ssr] (ecmascript)
-- Execution of <ModuleChunkItem as EcmascriptChunkItem>::content_with_async_module_info failed
-- Execution of EcmascriptChunkItemContent::new failed
-- CJS module can't be async.
-[00:12:00.547] Browser ERROR   ./Documents/GitHub/ThangBackend/pages/profile.tsx:210:7
-Parsing ecmascript source code failed
-  208 |     } catch (err: any) {
-  209 |       setUsernameError(err.message || "Failed to set username");
-> 210 |     } finally {
-      |       ^^^^^^^
-  211 |       setUsernameSaving(false);
-  212 |     }
-  213 |   };
-
-Expected a semicolon
-[00:12:00.547] Browser ERROR   ./Documents/GitHub/ThangBackend/pages/profile.tsx
-Code generation for chunk item errored
-An error occurred while generating the chunk item [project]/Documents/GitHub/ThangBackend/pages/profile.tsx [ssr] (ecmascript)
-
-Caused by:
-- CJS module can't be async.
-
-Debug info:
-- An error occurred while generating the chunk item [project]/Documents/GitHub/ThangBackend/pages/profile.tsx [ssr] (ecmascript)
-- Execution of <ModuleChunkItem as EcmascriptChunkItem>::content_with_async_module_info failed
-- Execution of EcmascriptChunkItemContent::new failed
-- CJS module can't be async.
-[00:12:00.547] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[],"friends":[{"addedAt":"2025-12-27T17:16:23.337Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"}],"lastSeen":"2025-12-27T17:25:33.745Z","rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
-[00:12:00.547] Browser ERROR   %o
-
-%s
-
-%s
- {} The above error occurred in the <ProfilePage> component. React will try to recreate this component tree from scratch using the error boundary you provided, PagesDevOverlayErrorBoundary.
-[00:12:00.547] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[],"friends":[{"addedAt":"2025-12-27T17:16:23.337Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"}],"lastSeen":"2025-12-27T17:25:33.745Z","rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
-[00:12:00.549] Browser ERROR   ./Documents/GitHub/ThangBackend/pages/profile.tsx:210:7
-Parsing ecmascript source code failed
-  208 |     } catch (err: any) {
-  209 |       setUsernameError(err.message || "Failed to set username");
-> 210 |     } finally {
-      |       ^^^^^^^
-  211 |       setUsernameSaving(false);
-  212 |     }
-  213 |   };
-
-Expected a semicolon
-[00:12:00.549] Browser ERROR   ./Documents/GitHub/ThangBackend/pages/profile.tsx
-Code generation for chunk item errored
-An error occurred while generating the chunk item [project]/Documents/GitHub/ThangBackend/pages/profile.tsx [ssr] (ecmascript)
-
-Caused by:
-- CJS module can't be async.
-
-Debug info:
-- An error occurred while generating the chunk item [project]/Documents/GitHub/ThangBackend/pages/profile.tsx [ssr] (ecmascript)
-- Execution of <ModuleChunkItem as EcmascriptChunkItem>::content_with_async_module_info failed
-- Execution of EcmascriptChunkItemContent::new failed
-- CJS module can't be async.
-[00:12:00.549] Browser ERROR   ./Documents/GitHub/ThangBackend/pages/profile.tsx:210:7
-Parsing ecmascript source code failed
-  208 |     } catch (err: any) {
-  209 |       setUsernameError(err.message || "Failed to set username");
-> 210 |     } finally {
-      |       ^^^^^^^
-  211 |       setUsernameSaving(false);
-  212 |     }
-  213 |   };
-
-Expected a semicolon
-[00:12:00.549] Browser ERROR   ./Documents/GitHub/ThangBackend/pages/profile.tsx
-Code generation for chunk item errored
-An error occurred while generating the chunk item [project]/Documents/GitHub/ThangBackend/pages/profile.tsx [ssr] (ecmascript)
-
-Caused by:
-- CJS module can't be async.
-
-Debug info:
-- An error occurred while generating the chunk item [project]/Documents/GitHub/ThangBackend/pages/profile.tsx [ssr] (ecmascript)
-- Execution of <ModuleChunkItem as EcmascriptChunkItem>::content_with_async_module_info failed
-- Execution of EcmascriptChunkItemContent::new failed
-- CJS module can't be async.
-[00:12:00.549] Browser ERROR   ./Documents/GitHub/ThangBackend/pages/profile.tsx:210:7
-Parsing ecmascript source code failed
-  208 |     } catch (err: any) {
-  209 |       setUsernameError(err.message || "Failed to set username");
-> 210 |     } finally {
-      |       ^^^^^^^
-  211 |       setUsernameSaving(false);
-  212 |     }
-  213 |   };
-
-Expected a semicolon
-[00:12:00.549] Browser ERROR   ./Documents/GitHub/ThangBackend/pages/profile.tsx
-Code generation for chunk item errored
-An error occurred while generating the chunk item [project]/Documents/GitHub/ThangBackend/pages/profile.tsx [ssr] (ecmascript)
-
-Caused by:
-- CJS module can't be async.
-
-Debug info:
-- An error occurred while generating the chunk item [project]/Documents/GitHub/ThangBackend/pages/profile.tsx [ssr] (ecmascript)
-- Execution of <ModuleChunkItem as EcmascriptChunkItem>::content_with_async_module_info failed
-- Execution of EcmascriptChunkItemContent::new failed
-- CJS module can't be async.
-[00:12:01.000] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:12:01.120] Server  LOG     [Bootstrap] User found: "yes"
-[00:12:01.120] Server  LOG     [Bootstrap] Returning user data
-[00:12:01.549] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[],"friends":[{"addedAt":"2025-12-27T17:16:23.337Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"}],"lastSeen":"2025-12-27T17:25:33.745Z","rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
-[00:12:14.552] Browser ERROR   ./Documents/GitHub/ThangBackend/pages/profile.tsx:210:7
-Parsing ecmascript source code failed
-  208 |     } catch (err: any) {
-  209 |       setUsernameError(err.message || "Failed to set username");
-> 210 |     } finally {
-      |       ^^^^^^^
-  211 |       setUsernameSaving(false);
-  212 |     }
-  213 |   };
-
-Expected a semicolon
-[00:12:14.552] Browser ERROR   ./Documents/GitHub/ThangBackend/pages/profile.tsx
-Code generation for chunk item errored
-An error occurred while generating the chunk item [project]/Documents/GitHub/ThangBackend/pages/profile.tsx [ssr] (ecmascript)
-
-Caused by:
-- CJS module can't be async.
-
-Debug info:
-- An error occurred while generating the chunk item [project]/Documents/GitHub/ThangBackend/pages/profile.tsx [ssr] (ecmascript)
-- Execution of <ModuleChunkItem as EcmascriptChunkItem>::content_with_async_module_info failed
-- Execution of EcmascriptChunkItemContent::new failed
-- CJS module can't be async.
-[00:12:14.552] Browser ERROR   ./Documents/GitHub/ThangBackend/pages/profile.tsx:210:7
-Parsing ecmascript source code failed
-  208 |     } catch (err: any) {
-  209 |       setUsernameError(err.message || "Failed to set username");
-> 210 |     } finally {
-      |       ^^^^^^^
-  211 |       setUsernameSaving(false);
-  212 |     }
-  213 |   };
-
-Expected a semicolon
-[00:12:14.552] Browser ERROR   ./Documents/GitHub/ThangBackend/pages/profile.tsx
-Code generation for chunk item errored
-An error occurred while generating the chunk item [project]/Documents/GitHub/ThangBackend/pages/profile.tsx [ssr] (ecmascript)
-
-Caused by:
-- CJS module can't be async.
-
-Debug info:
-- An error occurred while generating the chunk item [project]/Documents/GitHub/ThangBackend/pages/profile.tsx [ssr] (ecmascript)
-- Execution of <ModuleChunkItem as EcmascriptChunkItem>::content_with_async_module_info failed
-- Execution of EcmascriptChunkItemContent::new failed
-- CJS module can't be async.
-[00:15:09.207] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:15:09.207] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:15:09.207] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:15:09.207] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:15:09.238] Server  LOG     ✓ Compiled in 7ms
-[00:15:09.335] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:15:09.494] Server  LOG     [Bootstrap] User found: "yes"
-[00:15:09.494] Server  LOG     [Bootstrap] Returning user data
-[00:15:10.547] Browser LOG     Refreshing page data due to server-side change
-[00:15:10.547] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:15:10.547] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[],"friends":[{"addedAt":"2025-12-27T17:16:23.337Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"}],"lastSeen":"2025-12-27T17:25:33.745Z","rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
-[00:15:35.480] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:15:35.481] Server  LOG     [Bootstrap] Token verified for UID: "rnyYdGe5ChfxFPR3Yn86WDJctqt1"
-[00:15:35.481] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:15:35.481] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:15:35.579] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:15:35.607] Server  LOG     [Bootstrap] Looking for existing user: "rnyYdGe5ChfxFPR3Yn86WDJctqt1"
-[00:15:35.729] Server  LOG     [Bootstrap] User found: "yes"
-[00:15:35.729] Server  LOG     [Bootstrap] Returning user data
-[00:15:35.832] Browser LOG     User data fetched: {"_id":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","coins":100,"created_at":"2025-12-27T16:25:17.278Z","email":"youngjep@usc.edu","friendRequests":[],"friends":[{"addedAt":"2025-12-27T17:16:23.337Z","uid":"vaPLUidUM0SV0iN94vhiWsZlWHO2","username":"Tundraswan"}],"lastSeen":"2025-12-27T17:25:36.765Z","rank":0,"status":"online","updated_at":"2025-12-27T16:25:26.280Z","username":"youngjepUSC"}
-[00:19:04.873] Server  LOG     ✓ Compiled in 6ms
-[00:19:12.400] Server  LOG     ✓ Compiled in 8ms
-[00:19:18.099] Server  LOG     ✓ Compiled in 6ms
-[00:19:23.407] Server  LOG     ✓ Compiled in 3ms
-[00:19:52.280] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:19:52.280] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:19:52.280] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:19:52.280] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:19:52.375] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:19:52.406] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:19:52.528] Server  LOG     [Bootstrap] User found: "yes"
-[00:19:52.528] Server  LOG     [Bootstrap] Returning user data
-[00:19:52.634] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[],"friends":[{"addedAt":"2025-12-27T17:16:23.337Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"}],"lastSeen":"2025-12-27T17:33:46.576Z","partyId":"6950179d3190a7dffe015062","partyInvites":[],"rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
-[00:19:54.589] Browser LOG     Signing out...
-[00:19:54.589] Browser LOG     Logged out
-[00:21:23.578] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:21:23.579] Server  LOG     [Bootstrap] Token verified for UID: "rnyYdGe5ChfxFPR3Yn86WDJctqt1"
-[00:21:23.579] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:21:23.579] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:21:23.676] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:21:23.704] Server  LOG     [Bootstrap] Looking for existing user: "rnyYdGe5ChfxFPR3Yn86WDJctqt1"
-[00:21:23.825] Server  LOG     [Bootstrap] User found: "yes"
-[00:21:23.825] Server  LOG     [Bootstrap] Returning user data
-[00:21:23.928] Browser LOG     User data fetched: {"_id":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","coins":100,"created_at":"2025-12-27T16:25:17.278Z","email":"youngjep@usc.edu","friendRequests":[],"friends":[{"addedAt":"2025-12-27T17:16:23.337Z","uid":"vaPLUidUM0SV0iN94vhiWsZlWHO2","username":"Tundraswan"}],"lastSeen":"2025-12-27T17:35:28.753Z","partyId":"6950179d3190a7dffe015062","rank":0,"status":"online","updated_at":"2025-12-27T16:25:26.280Z","username":"youngjepUSC"}
-[00:22:07.998] Browser LOG     🔐 Starting Google Sign-In...
-[00:22:11.460] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:22:11.460] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:22:11.460] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:22:11.460] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:22:11.541] Browser LOG     Google Sign-In successful: {"displayName":"Youngje Park","email":"peroni014@gmail.com","uid":"vaPLUidUM0SV0iN94vhiWsZlWHO2"}
-[00:22:11.541] Browser LOG     🔑 Got ID Token: eyJhbGciOiJSUzI1NiIsImtpZCI6Ijk4OGQ1YTM3OWI3OGJkZj...
-[00:22:11.541] Browser LOG     📡 Calling /api/auth/bootstrap...
-[00:22:11.598] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:22:11.731] Server  LOG     [Bootstrap] User found: "yes"
-[00:22:11.731] Server  LOG     [Bootstrap] Returning user data
-[00:22:11.751] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:22:11.752] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:22:11.752] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:22:11.752] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:22:11.844] Browser LOG     Bootstrap successful, user data: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[],"friends":[{"addedAt":"2025-12-27T17:16:23.337Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"}],"lastSeen":"2025-12-27T17:34:17.526Z","partyId":"6950179d3190a7dffe015062","partyInvites":[],"rank":0,"status":"offline","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
-[00:22:11.844] Browser LOG     🎯 Redirecting to /profile...
-[00:22:11.844] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:22:11.897] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:22:12.031] Server  LOG     [Bootstrap] User found: "yes"
-[00:22:12.031] Server  LOG     [Bootstrap] Returning user data
-[00:22:12.134] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[],"friends":[{"addedAt":"2025-12-27T17:16:23.337Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"}],"lastSeen":"2025-12-27T17:34:17.526Z","partyId":"6950179d3190a7dffe015062","partyInvites":[],"rank":0,"status":"offline","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
-[00:22:21.506] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:22:21.506] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:22:21.506] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:22:21.506] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:22:21.600] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:22:21.652] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:22:21.780] Server  LOG     [Bootstrap] User found: "yes"
-[00:22:21.780] Server  LOG     [Bootstrap] Returning user data
-[00:22:21.883] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[],"friends":[{"addedAt":"2025-12-27T17:16:23.337Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"}],"lastSeen":"2025-12-27T17:36:36.874Z","partyId":"6950179d3190a7dffe015062","partyInvites":[],"rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
-[00:22:23.522] Browser LOG     Signing out...
-[00:22:23.522] Browser LOG     Logged out
-[00:22:24.373] Browser LOG     🔐 Starting Google Sign-In...
-[00:22:27.640] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:22:27.640] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:22:27.640] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:22:27.640] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:22:27.734] Browser LOG     Google Sign-In successful: {"displayName":"Youngje Park","email":"peroni014@gmail.com","uid":"vaPLUidUM0SV0iN94vhiWsZlWHO2"}
-[00:22:27.734] Browser LOG     🔑 Got ID Token: eyJhbGciOiJSUzI1NiIsImtpZCI6Ijk4OGQ1YTM3OWI3OGJkZj...
-[00:22:27.734] Browser LOG     📡 Calling /api/auth/bootstrap...
-[00:22:27.774] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:22:27.901] Server  LOG     [Bootstrap] User found: "yes"
-[00:22:27.901] Server  LOG     [Bootstrap] Returning user data
-[00:22:27.922] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:22:27.922] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:22:27.922] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:22:27.922] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:22:28.014] Browser LOG     Bootstrap successful, user data: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[],"friends":[{"addedAt":"2025-12-27T17:16:23.337Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"}],"lastSeen":"2025-12-27T17:36:46.479Z","partyInvites":[],"rank":0,"status":"offline","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
-[00:22:28.014] Browser LOG     🎯 Redirecting to /profile...
-[00:22:28.014] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:22:28.055] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:22:28.185] Server  LOG     [Bootstrap] User found: "yes"
-[00:22:28.185] Server  LOG     [Bootstrap] Returning user data
-[00:22:28.288] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[],"friends":[{"addedAt":"2025-12-27T17:16:23.337Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"}],"lastSeen":"2025-12-27T17:36:46.479Z","partyInvites":[],"rank":0,"status":"offline","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
-[00:23:52.192] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:23:52.193] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:23:52.193] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:23:52.193] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:23:52.292] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:23:52.320] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:23:52.441] Server  LOG     [Bootstrap] User found: "yes"
-[00:23:52.441] Server  LOG     [Bootstrap] Returning user data
-[00:23:52.544] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[],"friends":[{"addedAt":"2025-12-27T17:16:23.337Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"}],"lastSeen":"2025-12-27T17:37:55.142Z","partyId":"6950190e3190a7dffe015063","partyInvites":[],"rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
-[00:23:54.190] Browser LOG     Signing out...
-[00:23:54.190] Browser LOG     Logged out
-[00:30:46.548] Server  LOG     ✓ Compiled in 6ms
-[00:30:51.033] Server  LOG     ✓ Compiled in 6ms
-[00:30:55.716] Server  LOG     ✓ Compiled in 3ms
-[00:31:03.237] Server  LOG     ✓ Compiled in 8ms
-[00:31:09.687] Server  LOG     ✓ Compiled in 7ms
-[00:31:18.061] Server  LOG     ✓ Compiled in 7ms
-[00:31:29.121] Server  LOG     ✓ Compiled in 8ms
-[00:32:05.194] Server  LOG     ✓ Compiled in 4ms
-[00:32:23.589] Browser LOG     🔐 Starting Google Sign-In...
-[00:32:27.012] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:32:27.012] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:32:27.012] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:32:27.012] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:32:27.087] Browser LOG     Google Sign-In successful: {"displayName":"Youngje Park","email":"peroni014@gmail.com","uid":"vaPLUidUM0SV0iN94vhiWsZlWHO2"}
-[00:32:27.087] Browser LOG     🔑 Got ID Token: eyJhbGciOiJSUzI1NiIsImtpZCI6Ijk4OGQ1YTM3OWI3OGJkZj...
-[00:32:27.087] Browser LOG     📡 Calling /api/auth/bootstrap...
-[00:32:27.139] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:32:27.263] Server  LOG     [Bootstrap] User found: "yes"
-[00:32:27.264] Server  LOG     [Bootstrap] Returning user data
-[00:32:27.286] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:32:27.287] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:32:27.287] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:32:27.287] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:32:27.382] Browser LOG     Bootstrap successful, user data: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[{"createdAt":"2025-12-27T17:46:35.278Z","type":"incoming","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"}],"friends":[],"lastSeen":"2025-12-27T17:38:17.152Z","partyInvites":[],"rank":0,"status":"offline","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
-[00:32:27.382] Browser LOG     🎯 Redirecting to /profile...
-[00:32:27.382] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:32:27.413] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
-[00:32:27.534] Server  LOG     [Bootstrap] User found: "yes"
-[00:32:27.534] Server  LOG     [Bootstrap] Returning user data
-[00:32:27.638] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[{"createdAt":"2025-12-27T17:46:35.278Z","type":"incoming","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"}],"friends":[],"lastSeen":"2025-12-27T17:38:17.152Z","partyInvites":[],"rank":0,"status":"offline","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
-[00:36:47.687] Server  LOG     ✓ Compiled in 4ms
-[00:36:51.481] Server  LOG     ✓ Compiled in 7ms
-[00:37:07.764] Server  LOG     ✓ Compiled in 8ms
-[00:42:40.355] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:42:40.355] Server  LOG     [Bootstrap] Token verified for UID: "rnyYdGe5ChfxFPR3Yn86WDJctqt1"
-[00:42:40.355] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:42:40.355] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:42:40.449] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:42:40.504] Server  LOG     [Bootstrap] Looking for existing user: "rnyYdGe5ChfxFPR3Yn86WDJctqt1"
-[00:42:40.637] Server  LOG     [Bootstrap] User found: "yes"
-[00:42:40.637] Server  LOG     [Bootstrap] Returning user data
-[00:42:40.740] Browser LOG     User data fetched: {"_id":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","coins":100,"created_at":"2025-12-27T16:25:17.278Z","email":"youngjep@usc.edu","friendRequests":[],"friends":[{"addedAt":"2025-12-27T17:47:33.967Z","uid":"vaPLUidUM0SV0iN94vhiWsZlWHO2","username":"Tundraswan"}],"lastSeen":"2025-12-27T17:57:02.695Z","partyInvites":[],"rank":0,"status":"online","updated_at":"2025-12-27T16:25:26.280Z","username":"youngjepUSC"}
-[00:42:43.738] Server  LOG     [Bootstrap] Verifying Firebase token...
-[00:42:43.739] Server  LOG     [Bootstrap] Token verified for UID: "rnyYdGe5ChfxFPR3Yn86WDJctqt1"
-[00:42:43.739] Server  LOG     [Bootstrap] Connecting to MongoDB...
-[00:42:43.739] Server  LOG     [Bootstrap] Connected to MongoDB
-[00:42:43.836] Browser LOG     Fetching user data from /api/auth/bootstrap...
-[00:42:43.871] Server  LOG     [Bootstrap] Looking for existing user: "rnyYdGe5ChfxFPR3Yn86WDJctqt1"
-[00:42:44.000] Server  LOG     [Bootstrap] User found: "yes"
-[00:42:44.000] Server  LOG     [Bootstrap] Returning user data
-[00:42:44.103] Browser LOG     User data fetched: {"_id":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","coins":100,"created_at":"2025-12-27T16:25:17.278Z","email":"youngjep@usc.edu","friendRequests":[],"friends":[{"addedAt":"2025-12-27T17:47:33.967Z","uid":"vaPLUidUM0SV0iN94vhiWsZlWHO2","username":"Tundraswan"}],"lastSeen":"2025-12-27T17:57:05.972Z","partyInvites":[],"rank":0,"status":"online","updated_at":"2025-12-27T16:25:26.280Z","username":"youngjepUSC"}
+[00:00:00.660] Server  LOG     ✓ Ready in 468ms
+[00:00:06.119] Server  LOG     [FirebaseAdmin] Successfully initialized
+[00:00:06.268] Server  LOG     [Bootstrap] Verifying Firebase token...
+[00:00:06.269] Browser LOG     Fetching user data from /api/auth/bootstrap...
+[00:00:06.395] Server  ERROR   [Bootstrap] Firebase verification error: "Firebase ID token has expired. Get a fresh ID token from your client app and try again (auth/id-token-expired). See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token."
+[00:00:06.500] Browser ERROR   Error fetching user: Failed to fetch user: 401 - Invalid or expired token
+[00:01:03.113] Browser LOG     🔐 Starting Google Sign-In...
+[00:01:06.154] Server  LOG     [Bootstrap] Verifying Firebase token...
+[00:01:06.155] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
+[00:01:06.155] Server  LOG     [Bootstrap] Connecting to MongoDB...
+[00:01:06.155] Server  LOG     [Bootstrap] Connected to MongoDB
+[00:01:06.235] Browser LOG     Auth successful: {"displayName":"Youngje Park","email":"peroni014@gmail.com","uid":"vaPLUidUM0SV0iN94vhiWsZlWHO2"}
+[00:01:06.235] Browser LOG     🔑 Got ID Token: eyJhbGciOiJSUzI1NiIsImtpZCI6Ijk4OGQ1YTM3OWI3OGJkZj...
+[00:01:06.235] Browser LOG     📡 Calling /api/auth/bootstrap...
+[00:01:06.285] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
+[00:01:06.414] Server  LOG     [Bootstrap] User found: "yes"
+[00:01:06.414] Server  LOG     [Bootstrap] Returning user data
+[00:01:06.430] Server  LOG     [Bootstrap] Verifying Firebase token...
+[00:01:06.430] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
+[00:01:06.430] Server  LOG     [Bootstrap] Connecting to MongoDB...
+[00:01:06.430] Server  LOG     [Bootstrap] Connected to MongoDB
+[00:01:06.524] Browser LOG     Bootstrap successful, user data: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","blocked":[],"coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[{"createdAt":"2025-12-28T00:24:12.221Z","type":"outgoing","uid":"8eTux02QJsaHrvGunpQCVF1a7ef2","username":"tankgewehr"},{"createdAt":"2025-12-28T00:24:39.727Z","type":"outgoing","uid":"dDM8fysOYcWqznHbXGfuMesuAkq1","username":"jhyk0516"}],"friends":[{"addedAt":"2025-12-27T17:47:33.967Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"},{"addedAt":"2025-12-28T00:23:58.855Z","uid":"uW7XCbh4Z0V9ZE5fbTEMY28dKec2","username":"HUISUNG"}],"lastSeen":"2025-12-28T00:35:24.985Z","partyInvites":[],"rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
+[00:01:06.524] Browser LOG     🎯 Redirecting to /profile...
+[00:01:06.524] Browser LOG     Fetching user data from /api/auth/bootstrap...
+[00:01:06.558] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
+[00:01:06.681] Server  LOG     [Bootstrap] User found: "yes"
+[00:01:06.681] Server  LOG     [Bootstrap] Returning user data
+[00:01:06.786] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","blocked":[],"coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[{"createdAt":"2025-12-28T00:24:12.221Z","type":"outgoing","uid":"8eTux02QJsaHrvGunpQCVF1a7ef2","username":"tankgewehr"},{"createdAt":"2025-12-28T00:24:39.727Z","type":"outgoing","uid":"dDM8fysOYcWqznHbXGfuMesuAkq1","username":"jhyk0516"}],"friends":[{"addedAt":"2025-12-27T17:47:33.967Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"},{"addedAt":"2025-12-28T00:23:58.855Z","uid":"uW7XCbh4Z0V9ZE5fbTEMY28dKec2","username":"HUISUNG"}],"lastSeen":"2025-12-28T00:35:24.985Z","partyInvites":[],"rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
+[00:01:17.891] Server  LOG     [Bootstrap] Verifying Firebase token...
+[00:01:17.891] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
+[00:01:17.892] Server  LOG     [Bootstrap] Connecting to MongoDB...
+[00:01:17.892] Server  LOG     [Bootstrap] Connected to MongoDB
+[00:01:17.982] Browser LOG     Fetching user data from /api/auth/bootstrap...
+[00:01:18.037] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
+[00:01:18.176] Server  LOG     [Bootstrap] User found: "yes"
+[00:01:18.176] Server  LOG     [Bootstrap] Returning user data
+[00:01:18.282] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","blocked":[],"coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[{"createdAt":"2025-12-28T00:24:12.221Z","type":"outgoing","uid":"8eTux02QJsaHrvGunpQCVF1a7ef2","username":"tankgewehr"},{"createdAt":"2025-12-28T00:24:39.727Z","type":"outgoing","uid":"dDM8fysOYcWqznHbXGfuMesuAkq1","username":"jhyk0516"}],"friends":[{"addedAt":"2025-12-27T17:47:33.967Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"},{"addedAt":"2025-12-28T00:23:58.855Z","uid":"uW7XCbh4Z0V9ZE5fbTEMY28dKec2","username":"HUISUNG"}],"lastSeen":"2025-12-28T00:36:00.773Z","partyInvites":[],"rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
+[00:01:22.641] Browser LOG     Signing out...
+[00:01:22.641] Browser LOG     Logged out
+[00:01:47.579] Browser LOG     🔐 Starting Google Sign-In...
+[00:01:49.285] Server  LOG     [Bootstrap] Verifying Firebase token...
+[00:01:49.286] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
+[00:01:49.286] Server  LOG     [Bootstrap] Connecting to MongoDB...
+[00:01:49.286] Server  LOG     [Bootstrap] Connected to MongoDB
+[00:01:49.379] Browser LOG     Auth successful: {"displayName":"Youngje Park","email":"peroni014@gmail.com","uid":"vaPLUidUM0SV0iN94vhiWsZlWHO2"}
+[00:01:49.379] Browser LOG     🔑 Got ID Token: eyJhbGciOiJSUzI1NiIsImtpZCI6Ijk4OGQ1YTM3OWI3OGJkZj...
+[00:01:49.379] Browser LOG     📡 Calling /api/auth/bootstrap...
+[00:01:49.432] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
+[00:01:49.571] Server  LOG     [Bootstrap] User found: "yes"
+[00:01:49.571] Server  LOG     [Bootstrap] Returning user data
+[00:01:49.588] Server  LOG     [Bootstrap] Verifying Firebase token...
+[00:01:49.588] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
+[00:01:49.588] Server  LOG     [Bootstrap] Connecting to MongoDB...
+[00:01:49.588] Server  LOG     [Bootstrap] Connected to MongoDB
+[00:01:49.685] Browser LOG     Bootstrap successful, user data: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","blocked":[],"coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[{"createdAt":"2025-12-28T00:24:12.221Z","type":"outgoing","uid":"8eTux02QJsaHrvGunpQCVF1a7ef2","username":"tankgewehr"},{"createdAt":"2025-12-28T00:24:39.727Z","type":"outgoing","uid":"dDM8fysOYcWqznHbXGfuMesuAkq1","username":"jhyk0516"}],"friends":[{"addedAt":"2025-12-27T17:47:33.967Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"},{"addedAt":"2025-12-28T00:23:58.855Z","uid":"uW7XCbh4Z0V9ZE5fbTEMY28dKec2","username":"HUISUNG"}],"lastSeen":"2025-12-28T00:36:24.984Z","partyInvites":[],"rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
+[00:01:49.685] Browser LOG     🎯 Redirecting to /profile...
+[00:01:49.685] Browser LOG     Fetching user data from /api/auth/bootstrap...
+[00:01:49.731] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
+[00:01:49.873] Server  LOG     [Bootstrap] User found: "yes"
+[00:01:49.873] Server  LOG     [Bootstrap] Returning user data
+[00:01:49.977] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","blocked":[],"coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[{"createdAt":"2025-12-28T00:24:12.221Z","type":"outgoing","uid":"8eTux02QJsaHrvGunpQCVF1a7ef2","username":"tankgewehr"},{"createdAt":"2025-12-28T00:24:39.727Z","type":"outgoing","uid":"dDM8fysOYcWqznHbXGfuMesuAkq1","username":"jhyk0516"}],"friends":[{"addedAt":"2025-12-27T17:47:33.967Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"},{"addedAt":"2025-12-28T00:23:58.855Z","uid":"uW7XCbh4Z0V9ZE5fbTEMY28dKec2","username":"HUISUNG"}],"lastSeen":"2025-12-28T00:36:24.984Z","partyInvites":[],"rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
+[00:01:52.428] Browser LOG     Signing out...
+[00:01:52.428] Browser LOG     Logged out
+[00:02:38.566] Server  LOG     [Bootstrap] Verifying Firebase token...
+[00:02:38.566] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
+[00:02:38.567] Server  LOG     [Bootstrap] Connecting to MongoDB...
+[00:02:38.567] Server  LOG     [Bootstrap] Connected to MongoDB
+[00:02:38.659] Browser LOG     Auth successful: {"displayName":"Youngje Park","email":"peroni014@gmail.com","uid":"vaPLUidUM0SV0iN94vhiWsZlWHO2"}
+[00:02:38.659] Browser LOG     🔑 Got ID Token: eyJhbGciOiJSUzI1NiIsImtpZCI6Ijk4OGQ1YTM3OWI3OGJkZj...
+[00:02:38.659] Browser LOG     📡 Calling /api/auth/bootstrap...
+[00:02:38.710] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
+[00:02:38.850] Server  LOG     [Bootstrap] User found: "yes"
+[00:02:38.850] Server  LOG     [Bootstrap] Returning user data
+[00:02:38.886] Server  LOG     [Bootstrap] Verifying Firebase token...
+[00:02:38.886] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
+[00:02:38.886] Server  LOG     [Bootstrap] Connecting to MongoDB...
+[00:02:38.886] Server  LOG     [Bootstrap] Connected to MongoDB
+[00:02:38.963] Browser LOG     Bootstrap successful, user data: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","blocked":[],"coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[{"createdAt":"2025-12-28T00:24:12.221Z","type":"outgoing","uid":"8eTux02QJsaHrvGunpQCVF1a7ef2","username":"tankgewehr"},{"createdAt":"2025-12-28T00:24:39.727Z","type":"outgoing","uid":"dDM8fysOYcWqznHbXGfuMesuAkq1","username":"jhyk0516"}],"friends":[{"addedAt":"2025-12-27T17:47:33.967Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"},{"addedAt":"2025-12-28T00:23:58.855Z","uid":"uW7XCbh4Z0V9ZE5fbTEMY28dKec2","username":"HUISUNG"}],"lastSeen":"2025-12-28T00:36:37.411Z","partyInvites":[],"rank":0,"status":"offline","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
+[00:02:38.963] Browser LOG     🎯 Redirecting to /profile...
+[00:02:38.963] Browser LOG     Fetching user data from /api/auth/bootstrap...
+[00:02:39.029] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
+[00:02:39.168] Server  LOG     [Bootstrap] User found: "yes"
+[00:02:39.168] Server  LOG     [Bootstrap] Returning user data
+[00:02:39.273] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","blocked":[],"coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[{"createdAt":"2025-12-28T00:24:12.221Z","type":"outgoing","uid":"8eTux02QJsaHrvGunpQCVF1a7ef2","username":"tankgewehr"},{"createdAt":"2025-12-28T00:24:39.727Z","type":"outgoing","uid":"dDM8fysOYcWqznHbXGfuMesuAkq1","username":"jhyk0516"}],"friends":[{"addedAt":"2025-12-27T17:47:33.967Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"},{"addedAt":"2025-12-28T00:23:58.855Z","uid":"uW7XCbh4Z0V9ZE5fbTEMY28dKec2","username":"HUISUNG"}],"lastSeen":"2025-12-28T00:36:37.411Z","partyInvites":[],"rank":0,"status":"offline","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
+[00:02:53.564] Server  LOG     [Bootstrap] Verifying Firebase token...
+[00:02:53.565] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
+[00:02:53.565] Server  LOG     [Bootstrap] Connecting to MongoDB...
+[00:02:53.565] Server  LOG     [Bootstrap] Connected to MongoDB
+[00:02:53.662] Browser LOG     Fetching user data from /api/auth/bootstrap...
+[00:02:53.695] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
+[00:02:53.816] Server  LOG     [Bootstrap] User found: "yes"
+[00:02:53.817] Server  LOG     [Bootstrap] Returning user data
+[00:02:53.922] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","blocked":[],"coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[{"createdAt":"2025-12-28T00:24:12.221Z","type":"outgoing","uid":"8eTux02QJsaHrvGunpQCVF1a7ef2","username":"tankgewehr"},{"createdAt":"2025-12-28T00:24:39.727Z","type":"outgoing","uid":"dDM8fysOYcWqznHbXGfuMesuAkq1","username":"jhyk0516"}],"friends":[{"addedAt":"2025-12-27T17:47:33.967Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"},{"addedAt":"2025-12-28T00:23:58.855Z","uid":"uW7XCbh4Z0V9ZE5fbTEMY28dKec2","username":"HUISUNG"}],"lastSeen":"2025-12-28T00:37:36.041Z","partyInvites":[],"rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
+[00:03:07.320] Server  LOG     [Bootstrap] Verifying Firebase token...
+[00:03:07.320] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
+[00:03:07.320] Server  LOG     [Bootstrap] Connecting to MongoDB...
+[00:03:07.320] Server  LOG     [Bootstrap] Connected to MongoDB
+[00:03:07.409] Browser LOG     Fetching user data from /api/auth/bootstrap...
+[00:03:07.463] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
+[00:03:07.601] Server  LOG     [Bootstrap] User found: "yes"
+[00:03:07.601] Server  LOG     [Bootstrap] Returning user data
+[00:03:07.703] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","blocked":[],"coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[{"createdAt":"2025-12-28T00:24:12.221Z","type":"outgoing","uid":"8eTux02QJsaHrvGunpQCVF1a7ef2","username":"tankgewehr"},{"createdAt":"2025-12-28T00:24:39.727Z","type":"outgoing","uid":"dDM8fysOYcWqznHbXGfuMesuAkq1","username":"jhyk0516"}],"friends":[{"addedAt":"2025-12-27T17:47:33.967Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"},{"addedAt":"2025-12-28T00:23:58.855Z","uid":"uW7XCbh4Z0V9ZE5fbTEMY28dKec2","username":"HUISUNG"}],"lastSeen":"2025-12-28T00:37:51.033Z","partyInvites":[],"rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
+[00:03:32.904] Browser LOG     Signing out...
+[00:03:32.904] Browser LOG     Logged out
+[00:04:54.504] Server  LOG     ✓ Compiled in 7ms
+[00:05:01.105] Server  LOG     ✓ Compiled in 5ms
+[00:06:53.157] Server  LOG     ✓ Compiled in 6ms
+[00:07:41.025] Browser LOG     🔐 Starting Google Sign-In...
+[00:07:43.860] Server  LOG     [Bootstrap] Verifying Firebase token...
+[00:07:43.861] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
+[00:07:43.861] Server  LOG     [Bootstrap] Connecting to MongoDB...
+[00:07:43.861] Server  LOG     [Bootstrap] Connected to MongoDB
+[00:07:43.940] Browser LOG     Auth successful: {"displayName":"Youngje Park","email":"peroni014@gmail.com","uid":"vaPLUidUM0SV0iN94vhiWsZlWHO2"}
+[00:07:43.940] Browser LOG     🔑 Got ID Token: eyJhbGciOiJSUzI1NiIsImtpZCI6Ijk4OGQ1YTM3OWI3OGJkZj...
+[00:07:43.940] Browser LOG     📡 Calling /api/auth/bootstrap...
+[00:07:44.004] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
+[00:07:44.145] Server  LOG     [Bootstrap] User found: "yes"
+[00:07:44.145] Server  LOG     [Bootstrap] Returning user data
+[00:07:44.165] Server  LOG     [Bootstrap] Verifying Firebase token...
+[00:07:44.165] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
+[00:07:44.165] Server  LOG     [Bootstrap] Connecting to MongoDB...
+[00:07:44.165] Server  LOG     [Bootstrap] Connected to MongoDB
+[00:07:44.265] Browser LOG     Bootstrap successful, user data: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","blocked":[],"coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[{"createdAt":"2025-12-28T00:24:12.221Z","type":"outgoing","uid":"8eTux02QJsaHrvGunpQCVF1a7ef2","username":"tankgewehr"},{"createdAt":"2025-12-28T00:24:39.727Z","type":"outgoing","uid":"dDM8fysOYcWqznHbXGfuMesuAkq1","username":"jhyk0516"}],"friends":[{"addedAt":"2025-12-27T17:47:33.967Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"},{"addedAt":"2025-12-28T00:23:58.855Z","uid":"uW7XCbh4Z0V9ZE5fbTEMY28dKec2","username":"HUISUNG"}],"lastSeen":"2025-12-28T00:42:24.987Z","partyInvites":[],"rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
+[00:07:44.265] Browser LOG     🎯 Redirecting to /profile...
+[00:07:44.265] Browser LOG     Fetching user data from /api/auth/bootstrap...
+[00:07:44.312] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
+[00:07:44.451] Server  LOG     [Bootstrap] User found: "yes"
+[00:07:44.451] Server  LOG     [Bootstrap] Returning user data
+[00:07:44.555] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","blocked":[],"coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[{"createdAt":"2025-12-28T00:24:12.221Z","type":"outgoing","uid":"8eTux02QJsaHrvGunpQCVF1a7ef2","username":"tankgewehr"},{"createdAt":"2025-12-28T00:24:39.727Z","type":"outgoing","uid":"dDM8fysOYcWqznHbXGfuMesuAkq1","username":"jhyk0516"}],"friends":[{"addedAt":"2025-12-27T17:47:33.967Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"},{"addedAt":"2025-12-28T00:23:58.855Z","uid":"uW7XCbh4Z0V9ZE5fbTEMY28dKec2","username":"HUISUNG"}],"lastSeen":"2025-12-28T00:42:24.987Z","partyInvites":[],"rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
+[00:08:32.585] Browser LOG     🔐 Starting Google Sign-In...
+[00:08:34.474] Server  LOG     [Bootstrap] Verifying Firebase token...
+[00:08:34.474] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
+[00:08:34.474] Server  LOG     [Bootstrap] Connecting to MongoDB...
+[00:08:34.474] Server  LOG     [Bootstrap] Connected to MongoDB
+[00:08:34.559] Browser LOG     Auth successful: {"displayName":"Youngje Park","email":"peroni014@gmail.com","uid":"vaPLUidUM0SV0iN94vhiWsZlWHO2"}
+[00:08:34.559] Browser LOG     🔑 Got ID Token: eyJhbGciOiJSUzI1NiIsImtpZCI6Ijk4OGQ1YTM3OWI3OGJkZj...
+[00:08:34.559] Browser LOG     📡 Calling /api/auth/bootstrap...
+[00:08:34.625] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
+[00:08:34.764] Server  LOG     [Bootstrap] User found: "yes"
+[00:08:34.764] Server  LOG     [Bootstrap] Returning user data
+[00:08:34.786] Server  LOG     [Bootstrap] Verifying Firebase token...
+[00:08:34.787] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
+[00:08:34.787] Server  LOG     [Bootstrap] Connecting to MongoDB...
+[00:08:34.787] Server  LOG     [Bootstrap] Connected to MongoDB
+[00:08:34.880] Browser LOG     Bootstrap successful, user data: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","blocked":[],"coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[{"createdAt":"2025-12-28T00:24:12.221Z","type":"outgoing","uid":"8eTux02QJsaHrvGunpQCVF1a7ef2","username":"tankgewehr"},{"createdAt":"2025-12-28T00:24:39.727Z","type":"outgoing","uid":"dDM8fysOYcWqznHbXGfuMesuAkq1","username":"jhyk0516"}],"friends":[{"addedAt":"2025-12-27T17:47:33.967Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"},{"addedAt":"2025-12-28T00:23:58.855Z","uid":"uW7XCbh4Z0V9ZE5fbTEMY28dKec2","username":"HUISUNG"}],"lastSeen":"2025-12-28T00:42:59.809Z","partyInvites":[],"rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
+[00:08:34.880] Browser LOG     🎯 Redirecting to /profile...
+[00:08:34.880] Browser LOG     Fetching user data from /api/auth/bootstrap...
+[00:08:34.929] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
+[00:08:35.069] Server  LOG     [Bootstrap] User found: "yes"
+[00:08:35.069] Server  LOG     [Bootstrap] Returning user data
+[00:08:35.173] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","blocked":[],"coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[{"createdAt":"2025-12-28T00:24:12.221Z","type":"outgoing","uid":"8eTux02QJsaHrvGunpQCVF1a7ef2","username":"tankgewehr"},{"createdAt":"2025-12-28T00:24:39.727Z","type":"outgoing","uid":"dDM8fysOYcWqznHbXGfuMesuAkq1","username":"jhyk0516"}],"friends":[{"addedAt":"2025-12-27T17:47:33.967Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"},{"addedAt":"2025-12-28T00:23:58.855Z","uid":"uW7XCbh4Z0V9ZE5fbTEMY28dKec2","username":"HUISUNG"}],"lastSeen":"2025-12-28T00:42:59.809Z","partyInvites":[],"rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
+[00:08:44.062] Server  LOG     ✓ Compiled in 9ms
+[00:09:07.904] Browser LOG     Signing out...
+[00:09:07.904] Browser LOG     Logged out
+[00:09:09.577] Browser LOG     🔐 Starting Google Sign-In...
+[00:09:11.947] Server  LOG     [Bootstrap] Verifying Firebase token...
+[00:09:11.947] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
+[00:09:11.947] Server  LOG     [Bootstrap] Connecting to MongoDB...
+[00:09:11.947] Server  LOG     [Bootstrap] Connected to MongoDB
+[00:09:12.046] Browser LOG     Auth successful: {"displayName":"Youngje Park","email":"peroni014@gmail.com","uid":"vaPLUidUM0SV0iN94vhiWsZlWHO2"}
+[00:09:12.046] Browser LOG     🔑 Got ID Token: eyJhbGciOiJSUzI1NiIsImtpZCI6Ijk4OGQ1YTM3OWI3OGJkZj...
+[00:09:12.046] Browser LOG     📡 Calling /api/auth/bootstrap...
+[00:09:12.090] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
+[00:09:12.227] Server  LOG     [Bootstrap] User found: "yes"
+[00:09:12.227] Server  LOG     [Bootstrap] Returning user data
+[00:09:12.245] Server  LOG     [Bootstrap] Verifying Firebase token...
+[00:09:12.246] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
+[00:09:12.246] Server  LOG     [Bootstrap] Connecting to MongoDB...
+[00:09:12.246] Server  LOG     [Bootstrap] Connected to MongoDB
+[00:09:12.337] Browser LOG     Bootstrap successful, user data: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","blocked":[],"coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[{"createdAt":"2025-12-28T00:24:12.221Z","type":"outgoing","uid":"8eTux02QJsaHrvGunpQCVF1a7ef2","username":"tankgewehr"},{"createdAt":"2025-12-28T00:24:39.727Z","type":"outgoing","uid":"dDM8fysOYcWqznHbXGfuMesuAkq1","username":"jhyk0516"}],"friends":[{"addedAt":"2025-12-27T17:47:33.967Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"},{"addedAt":"2025-12-28T00:23:58.855Z","uid":"uW7XCbh4Z0V9ZE5fbTEMY28dKec2","username":"HUISUNG"}],"lastSeen":"2025-12-28T00:43:52.880Z","partyInvites":[],"rank":0,"status":"offline","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
+[00:09:12.337] Browser LOG     🎯 Redirecting to /profile...
+[00:09:12.337] Browser LOG     Fetching user data from /api/auth/bootstrap...
+[00:09:12.389] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
+[00:09:12.528] Server  LOG     [Bootstrap] User found: "yes"
+[00:09:12.528] Server  LOG     [Bootstrap] Returning user data
+[00:09:12.632] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","blocked":[],"coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[{"createdAt":"2025-12-28T00:24:12.221Z","type":"outgoing","uid":"8eTux02QJsaHrvGunpQCVF1a7ef2","username":"tankgewehr"},{"createdAt":"2025-12-28T00:24:39.727Z","type":"outgoing","uid":"dDM8fysOYcWqznHbXGfuMesuAkq1","username":"jhyk0516"}],"friends":[{"addedAt":"2025-12-27T17:47:33.967Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"},{"addedAt":"2025-12-28T00:23:58.855Z","uid":"uW7XCbh4Z0V9ZE5fbTEMY28dKec2","username":"HUISUNG"}],"lastSeen":"2025-12-28T00:43:52.880Z","partyInvites":[],"rank":0,"status":"offline","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
+[00:09:25.454] Server  LOG     [Bootstrap] Verifying Firebase token...
+[00:09:25.455] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
+[00:09:25.455] Server  LOG     [Bootstrap] Connecting to MongoDB...
+[00:09:25.455] Server  LOG     [Bootstrap] Connected to MongoDB
+[00:09:25.538] Browser LOG     Fetching user data from /api/auth/bootstrap...
+[00:09:25.584] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
+[00:09:25.712] Server  LOG     [Bootstrap] User found: "yes"
+[00:09:25.712] Server  LOG     [Bootstrap] Returning user data
+[00:09:25.817] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","blocked":[],"coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[{"createdAt":"2025-12-28T00:24:12.221Z","type":"outgoing","uid":"8eTux02QJsaHrvGunpQCVF1a7ef2","username":"tankgewehr"},{"createdAt":"2025-12-28T00:24:39.727Z","type":"outgoing","uid":"dDM8fysOYcWqznHbXGfuMesuAkq1","username":"jhyk0516"}],"friends":[{"addedAt":"2025-12-27T17:47:33.967Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"},{"addedAt":"2025-12-28T00:23:58.855Z","uid":"uW7XCbh4Z0V9ZE5fbTEMY28dKec2","username":"HUISUNG"}],"lastSeen":"2025-12-28T00:44:07.075Z","partyInvites":[],"rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
+[00:09:37.709] Server  LOG     [Bootstrap] Verifying Firebase token...
+[00:09:37.710] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
+[00:09:37.710] Server  LOG     [Bootstrap] Connecting to MongoDB...
+[00:09:37.710] Server  LOG     [Bootstrap] Connected to MongoDB
+[00:09:37.799] Browser LOG     Fetching user data from /api/auth/bootstrap...
+[00:09:37.838] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
+[00:09:37.960] Server  LOG     [Bootstrap] User found: "yes"
+[00:09:37.960] Server  LOG     [Bootstrap] Returning user data
+[00:09:38.065] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","blocked":[],"coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[{"createdAt":"2025-12-28T00:24:12.221Z","type":"outgoing","uid":"8eTux02QJsaHrvGunpQCVF1a7ef2","username":"tankgewehr"},{"createdAt":"2025-12-28T00:24:39.727Z","type":"outgoing","uid":"dDM8fysOYcWqznHbXGfuMesuAkq1","username":"jhyk0516"}],"friends":[{"addedAt":"2025-12-27T17:47:33.967Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"},{"addedAt":"2025-12-28T00:23:58.855Z","uid":"uW7XCbh4Z0V9ZE5fbTEMY28dKec2","username":"HUISUNG"}],"lastSeen":"2025-12-28T00:44:21.255Z","partyInvites":[],"rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
+[00:10:35.791] Server  LOG     [Bootstrap] Verifying Firebase token...
+[00:10:35.792] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
+[00:10:35.792] Server  LOG     [Bootstrap] Connecting to MongoDB...
+[00:10:35.792] Server  LOG     [Bootstrap] Connected to MongoDB
+[00:10:35.889] Browser LOG     Fetching user data from /api/auth/bootstrap...
+[00:10:35.921] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
+[00:10:36.046] Server  LOG     [Bootstrap] User found: "yes"
+[00:10:36.046] Server  LOG     [Bootstrap] Returning user data
+[00:10:36.149] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","blocked":[],"coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[{"createdAt":"2025-12-28T00:24:12.221Z","type":"outgoing","uid":"8eTux02QJsaHrvGunpQCVF1a7ef2","username":"tankgewehr"},{"createdAt":"2025-12-28T00:24:39.727Z","type":"outgoing","uid":"dDM8fysOYcWqznHbXGfuMesuAkq1","username":"jhyk0516"}],"friends":[{"addedAt":"2025-12-27T17:47:33.967Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"},{"addedAt":"2025-12-28T00:23:58.855Z","uid":"uW7XCbh4Z0V9ZE5fbTEMY28dKec2","username":"HUISUNG"}],"lastSeen":"2025-12-28T00:44:53.808Z","partyInvites":[],"rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}
+[00:10:48.908] Server  LOG     [Bootstrap] Verifying Firebase token...
+[00:10:48.908] Server  LOG     [Bootstrap] Token verified for UID: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
+[00:10:48.908] Server  LOG     [Bootstrap] Connecting to MongoDB...
+[00:10:48.908] Server  LOG     [Bootstrap] Connected to MongoDB
+[00:10:48.940] Server  LOG     ✓ Compiled in 3ms
+[00:10:49.069] Server  LOG     [Bootstrap] Looking for existing user: "vaPLUidUM0SV0iN94vhiWsZlWHO2"
+[00:10:49.195] Server  LOG     [Bootstrap] User found: "yes"
+[00:10:49.195] Server  LOG     [Bootstrap] Returning user data
+[00:10:49.581] Browser LOG     Fetching user data from /api/auth/bootstrap...
+[00:10:49.581] Browser LOG     User data fetched: {"_id":"vaPLUidUM0SV0iN94vhiWsZlWHO2","blocked":[],"coins":100,"created_at":"2025-12-27T14:10:22.404Z","email":"peroni014@gmail.com","friendRequests":[{"createdAt":"2025-12-28T00:24:12.221Z","type":"outgoing","uid":"8eTux02QJsaHrvGunpQCVF1a7ef2","username":"tankgewehr"},{"createdAt":"2025-12-28T00:24:39.727Z","type":"outgoing","uid":"dDM8fysOYcWqznHbXGfuMesuAkq1","username":"jhyk0516"}],"friends":[{"addedAt":"2025-12-27T17:47:33.967Z","uid":"rnyYdGe5ChfxFPR3Yn86WDJctqt1","username":"youngjepUSC"},{"addedAt":"2025-12-28T00:23:58.855Z","uid":"uW7XCbh4Z0V9ZE5fbTEMY28dKec2","username":"HUISUNG"}],"lastSeen":"2025-12-28T00:45:34.132Z","partyInvites":[],"rank":0,"status":"online","updated_at":"2025-12-27T14:37:36.175Z","username":"Tundraswan"}

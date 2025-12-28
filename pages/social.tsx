@@ -63,6 +63,8 @@ export default function SocialPage() {
   const [partyError, setPartyError] = useState<string | null>(null);
   const [partySuccess, setPartySuccess] = useState<string | null>(null);
   const [currentUserUid, setCurrentUserUid] = useState<string | null>(null);
+  const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
+  const [availableRegions, setAvailableRegions] = useState<string[]>([]);
 
   // 1. Auth Check & Initial Data
   useEffect(() => {
@@ -79,9 +81,28 @@ export default function SocialPage() {
       setLoading(false);
       fetchFriends();
       fetchPartyStatus();
+      fetchRegion();
     };
     init();
   }, [router]);
+
+  const fetchRegion = async () => {
+    try {
+      const res = await fetch("/api/region");
+      if (res.ok) {
+        const data = await res.json();
+        console.log("[Social] Region data:", data);
+        if (data.regions && data.regions.length > 0) {
+          setAvailableRegions(data.regions);
+          setSelectedRegion(data.regions[0]);
+        }
+      } else {
+        console.warn("[Social] Failed to fetch region:", res.status);
+      }
+    } catch (e) {
+      console.error("Failed to fetch region", e);
+    }
+  };
 
   // 2. Heartbeat Loop (Every 30s)
   useEffect(() => {
@@ -452,9 +473,26 @@ export default function SocialPage() {
         {party ? (
           <div style={styles.partyBox}>
             <div style={styles.partyHeader}>
-              <span style={{ color: "#10b981", fontWeight: "bold" }}>
-                In Party
-              </span>
+              <div
+                style={{ display: "flex", alignItems: "center", gap: "10px" }}
+              >
+                <span style={{ color: "#10b981", fontWeight: "bold" }}>
+                  In Party
+                </span>
+                {selectedRegion && (
+                  <span
+                    style={{
+                      fontSize: "12px",
+                      color: "#9ca3af",
+                      backgroundColor: "#1f2937",
+                      padding: "2px 6px",
+                      borderRadius: "4px",
+                    }}
+                  >
+                    {selectedRegion}
+                  </span>
+                )}
+              </div>
               <button onClick={handleLeaveParty} style={styles.dangerButton}>
                 Leave
               </button>
@@ -544,6 +582,37 @@ export default function SocialPage() {
             <p style={{ color: "#9ca3af", marginBottom: "12px" }}>
               You are not in a party.
             </p>
+            {availableRegions.length > 0 && (
+              <div style={{ marginBottom: "12px" }}>
+                <label
+                  style={{
+                    color: "#6b7280",
+                    fontSize: "12px",
+                    marginRight: "8px",
+                  }}
+                >
+                  Preferred Region:
+                </label>
+                <select
+                  value={selectedRegion || ""}
+                  onChange={(e) => setSelectedRegion(e.target.value)}
+                  style={{
+                    backgroundColor: "#1f2937",
+                    color: "#e5e7eb",
+                    border: "1px solid #374151",
+                    borderRadius: "4px",
+                    padding: "4px 8px",
+                    fontSize: "12px",
+                  }}
+                >
+                  {availableRegions.map((region) => (
+                    <option key={region} value={region}>
+                      {region}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
             <button onClick={handleCreateParty} style={styles.button}>
               Create Party
             </button>

@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 16, "column": 0}, "map": {"version":3,"sources":["file:///Users/youngjepark/Documents/GitHub/ThangBackend/pages/_app.tsx"],"sourcesContent":["import type { AppProps } from \"next/app\";\n\nexport default function App({ Component, pageProps }: AppProps) {\n  return (\n    <>\n      <style jsx global>{`\n        *,\n        *::before,\n        *::after {\n          box-sizing: border-box;\n        }\n\n        html,\n        body,\n        #__next {\n          min-height: 100%;\n          margin: 0;\n          background: #0b0d10;\n          color: #e7e9ed;\n        }\n\n        body {\n          font-family: Inter, system-ui, -apple-system, sans-serif;\n        }\n\n        :focus-visible {\n          outline: none;\n          box-shadow: none;\n        }\n\n        button:focus-visible,\n        input:focus-visible,\n        textarea:focus-visible,\n        select:focus-visible {\n          outline: none;\n          box-shadow: 0 0 0 1px #1e232d;\n        }\n      `}</style>\n      <Component {...pageProps} />\n    </>\n  );\n}\n"],"names":[],"mappings":";;;;;;;;AAEe,SAAS,IAAI,EAAE,SAAS,EAAE,SAAS,EAAY;IAC5D,qBACE;;;;;;0BAkCE,qKAAC;gBAAW,GAAG,SAAS;2DAAT,aAAA,+BAAA;;;;;;;;AAGrB"}}]
-}

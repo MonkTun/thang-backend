@@ -66,6 +66,20 @@ export default function SocialPage() {
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
   const [availableRegions, setAvailableRegions] = useState<string[]>([]);
 
+  // Matchmaking State
+  const [matchmakingStatus, setMatchmakingStatus] = useState<
+    "IDLE" | "QUEUED" | "PLACING" | "COMPLETED" | "FAILED"
+  >("IDLE");
+  const [ticketId, setTicketId] = useState<string | null>(null);
+  const [selectedConfig, setSelectedConfig] = useState<string>("");
+  const [availableConfigs, setAvailableConfigs] = useState<any[]>([]);
+  const [estimatedWaitTime, setEstimatedWaitTime] = useState<number | null>(
+    null
+  );
+  const [matchResult, setMatchResult] = useState<any>(null);
+  const [configsLoading, setConfigsLoading] = useState(false);
+  const [matchmakingError, setMatchmakingError] = useState<string | null>(null);
+
   // 1. Auth Check & Initial Data
   useEffect(() => {
     const init = async () => {
@@ -82,9 +96,135 @@ export default function SocialPage() {
       fetchFriends();
       fetchPartyStatus();
       fetchRegion();
+      fetchMatchmakingConfigs();
     };
     init();
   }, [router]);
+
+  const fetchMatchmakingConfigs = async () => {
+    setConfigsLoading(true);
+    try {
+      const idToken = localStorage.getItem("idToken");
+      const res = await fetch("/api/matchmaking/configs", {
+        headers: { Authorization: `Bearer ${idToken}` },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        console.log("[Social] Matchmaking Configs:", data);
+        setAvailableConfigs(data.configs || []);
+        if (data.configs && data.configs.length > 0) {
+          setSelectedConfig(data.configs[0].name);
+        }
+      } else {
+        console.warn("[Social] Failed to fetch configs:", res.status);
+      }
+    } catch (err) {
+      console.error("Failed to fetch matchmaking configs", err);
+    } finally {
+      setConfigsLoading(false);
+    }
+  }; // Matchmaking Polling
+  useEffect(() => {
+    let pollInterval: NodeJS.Timeout;
+
+    if (
+      (matchmakingStatus === "QUEUED" || matchmakingStatus === "PLACING") &&
+      ticketId
+    ) {
+      pollInterval = setInterval(async () => {
+        try {
+          const idToken = localStorage.getItem("idToken");
+          const res = await fetch(
+            `/api/matchmaking/status?ticketId=${ticketId}`,
+            {
+              headers: { Authorization: `Bearer ${idToken}` },
+            }
+          );
+          const data = await res.json();
+
+          if (data.status === "COMPLETED") {
+            setMatchmakingStatus("COMPLETED");
+            setMatchResult(data);
+            clearInterval(pollInterval);
+          } else if (data.status === "PLACING") {
+            setMatchmakingStatus("PLACING");
+          } else if (data.status === "FAILED" || data.status === "TIMED_OUT") {
+            setMatchmakingStatus("FAILED");
+            setMatchmakingError(`Matchmaking failed: ${data.status}`);
+            clearInterval(pollInterval);
+          } else {
+            // Still queuing
+            if (data.estimatedWaitTime) {
+              setEstimatedWaitTime(data.estimatedWaitTime);
+            }
+          }
+        } catch (err) {
+          console.error("Polling error:", err);
+        }
+      }, 2000); // Poll every 2 seconds
+    }
+
+    return () => {
+      if (pollInterval) clearInterval(pollInterval);
+    };
+  }, [matchmakingStatus, ticketId]);
+
+  const handleStartMatchmaking = async () => {
+    setMatchmakingError(null);
+    setMatchmakingStatus("QUEUED");
+    setMatchResult(null);
+
+    try {
+      const idToken = localStorage.getItem("idToken");
+      const res = await fetch("/api/matchmaking/queue", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${idToken}`,
+        },
+        body: JSON.stringify({
+          configName: selectedConfig,
+          latencyMap: selectedRegion ? { [selectedRegion]: 50 } : {}, // Mock latency for now
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to start matchmaking");
+      }
+
+      setTicketId(data.ticketId);
+      if (data.estimatedWaitTime) {
+        setEstimatedWaitTime(data.estimatedWaitTime);
+      }
+    } catch (err: any) {
+      setMatchmakingStatus("FAILED");
+      setMatchmakingError(err.message);
+    }
+  };
+
+  const handleCancelMatchmaking = async () => {
+    if (!ticketId) return;
+    setMatchmakingError(null);
+
+    try {
+      const idToken = localStorage.getItem("idToken");
+      await fetch("/api/matchmaking/leave", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${idToken}`,
+        },
+        body: JSON.stringify({ ticketId }),
+      });
+      setMatchmakingStatus("IDLE");
+      setTicketId(null);
+    } catch (err: any) {
+      console.error("Failed to cancel matchmaking:", err);
+      setMatchmakingError("Failed to cancel matchmaking");
+    }
+  };
 
   const fetchRegion = async () => {
     try {
@@ -206,6 +346,7 @@ export default function SocialPage() {
   };
 
   const handleAcceptFriendRequest = async (requesterUid: string) => {
+    setFriendError(null);
     const idToken = localStorage.getItem("idToken");
     if (!idToken) return;
 
@@ -221,16 +362,18 @@ export default function SocialPage() {
 
       if (!res.ok) throw new Error("Failed to accept");
       fetchFriends();
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
+      setFriendError(e.message || "Failed to accept friend request");
     }
   };
 
   const handleRemoveFriend = async (targetUid: string) => {
+    setFriendError(null);
     const idToken = localStorage.getItem("idToken");
     if (!idToken) return;
     try {
-      await fetch("/api/friends/remove", {
+      const res = await fetch("/api/friends/remove", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${idToken}`,
@@ -238,17 +381,20 @@ export default function SocialPage() {
         },
         body: JSON.stringify({ targetUid }),
       });
+      if (!res.ok) throw new Error("Failed to remove friend");
       fetchFriends();
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
+      setFriendError(e.message || "Failed to remove friend");
     }
   };
 
   const handleRejectRequest = async (requesterUid: string) => {
+    setFriendError(null);
     const idToken = localStorage.getItem("idToken");
     if (!idToken) return;
     try {
-      await fetch("/api/friends/reject", {
+      const res = await fetch("/api/friends/reject", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${idToken}`,
@@ -256,17 +402,20 @@ export default function SocialPage() {
         },
         body: JSON.stringify({ requesterUid }),
       });
+      if (!res.ok) throw new Error("Failed to reject request");
       fetchFriends();
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
+      setFriendError(e.message || "Failed to reject friend request");
     }
   };
 
   const handleBlockUser = async (targetUid: string) => {
+    setFriendError(null);
     const idToken = localStorage.getItem("idToken");
     if (!idToken) return;
     try {
-      await fetch("/api/friends/block", {
+      const res = await fetch("/api/friends/block", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${idToken}`,
@@ -274,17 +423,20 @@ export default function SocialPage() {
         },
         body: JSON.stringify({ targetUid }),
       });
+      if (!res.ok) throw new Error("Failed to block user");
       fetchFriends();
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
+      setFriendError(e.message || "Failed to block user");
     }
   };
 
   const handleUnblockUser = async (targetUid: string) => {
+    setFriendError(null);
     const idToken = localStorage.getItem("idToken");
     if (!idToken) return;
     try {
-      await fetch("/api/friends/unblock", {
+      const res = await fetch("/api/friends/unblock", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${idToken}`,
@@ -292,9 +444,11 @@ export default function SocialPage() {
         },
         body: JSON.stringify({ targetUid }),
       });
+      if (!res.ok) throw new Error("Failed to unblock user");
       fetchFriends();
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
+      setFriendError(e.message || "Failed to unblock user");
     }
   };
 
@@ -641,8 +795,152 @@ export default function SocialPage() {
 
         <div style={styles.sectionDivider} />
 
+        {/* --- MATCHMAKING SECTION --- */}
+        <h2 style={styles.sectionTitle}>Play</h2>
+
+        <div style={styles.partyBox}>
+          <div style={{ marginBottom: "16px" }}>
+            <label
+              style={{
+                display: "block",
+                marginBottom: "8px",
+                color: "#9ca3af",
+              }}
+            >
+              Game Mode (Config)
+            </label>
+            <select
+              value={selectedConfig}
+              onChange={(e) => setSelectedConfig(e.target.value)}
+              disabled={matchmakingStatus === "QUEUED"}
+              style={{
+                width: "100%",
+                backgroundColor: "#1f2937",
+                color: "#e5e7eb",
+                border: "1px solid #374151",
+                borderRadius: "4px",
+                padding: "8px",
+              }}
+            >
+              {configsLoading && <option>Loading...</option>}
+              {!configsLoading && availableConfigs.length === 0 && (
+                <option>No Game Modes Available</option>
+              )}
+              {availableConfigs.map((conf) => (
+                <option key={conf.name} value={conf.name}>
+                  {conf.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {matchmakingError && (
+            <p style={{ ...styles.errorText, marginBottom: "12px" }}>
+              {matchmakingError}
+            </p>
+          )}
+
+          {matchmakingStatus === "IDLE" || matchmakingStatus === "FAILED" ? (
+            <button onClick={handleStartMatchmaking} style={styles.button}>
+              Find Match
+            </button>
+          ) : matchmakingStatus === "QUEUED" ||
+            matchmakingStatus === "PLACING" ? (
+            <div style={{ textAlign: "center" }}>
+              <p style={{ color: "#fbbf24", fontWeight: "bold" }}>
+                {matchmakingStatus === "PLACING"
+                  ? "Match Found! Allocating Server..."
+                  : "Searching for match..."}
+              </p>
+              {estimatedWaitTime && matchmakingStatus === "QUEUED" && (
+                <p style={{ fontSize: "12px", color: "#9ca3af" }}>
+                  Est. wait: {estimatedWaitTime}s
+                </p>
+              )}
+              {matchmakingStatus === "QUEUED" && (
+                <button
+                  onClick={handleCancelMatchmaking}
+                  style={{
+                    ...styles.dangerButton,
+                    marginTop: "8px",
+                    width: "100%",
+                  }}
+                >
+                  Cancel Search
+                </button>
+              )}
+              {matchmakingStatus === "PLACING" && (
+                <p style={{ fontSize: "12px", color: "#9ca3af" }}>
+                  Waiting for server slot...
+                </p>
+              )}
+            </div>
+          ) : (
+            <div
+              style={{
+                textAlign: "center",
+                backgroundColor: "#064e3b",
+                padding: "16px",
+                borderRadius: "8px",
+              }}
+            >
+              <p
+                style={{
+                  color: "#34d399",
+                  fontWeight: "bold",
+                  fontSize: "18px",
+                }}
+              >
+                MATCH FOUND!
+              </p>
+              {matchResult?.connectionInfo && (
+                <div
+                  style={{
+                    marginTop: "8px",
+                    textAlign: "left",
+                    fontSize: "14px",
+                  }}
+                >
+                  <p>
+                    <b>IP:</b> {matchResult.connectionInfo.ipAddress}
+                  </p>
+                  <p>
+                    <b>Port:</b> {matchResult.connectionInfo.port}
+                  </p>
+                  <p>
+                    <b>Session ID:</b>{" "}
+                    {matchResult.connectionInfo.playerSessionId?.substring(
+                      0,
+                      10
+                    )}
+                    ...
+                  </p>
+                </div>
+              )}
+              <button
+                onClick={() => setMatchmakingStatus("IDLE")}
+                style={{
+                  ...styles.secondaryButton,
+                  marginTop: "12px",
+                  width: "100%",
+                }}
+              >
+                Close
+              </button>
+            </div>
+          )}
+        </div>
+
+        <div style={styles.sectionDivider} />
+
         {/* --- FRIENDS SECTION --- */}
         <h2 style={styles.sectionTitle}>Friends</h2>
+
+        {friendError && (
+          <p style={{ ...styles.errorText, marginBottom: "12px" }}>
+            {friendError}
+          </p>
+        )}
 
         {/* Add Friend Input */}
         <div style={styles.addFriendBox}>
@@ -661,10 +959,8 @@ export default function SocialPage() {
               Add
             </button>
           </div>
-          {friendError && <p style={styles.errorText}>{friendError}</p>}
           {friendSuccess && <p style={styles.successText}>{friendSuccess}</p>}
         </div>
-
         {/* Pending Requests */}
         {requests.filter((r) => r.type === "incoming").length > 0 && (
           <div style={styles.requestsBox}>

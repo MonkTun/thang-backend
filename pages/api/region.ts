@@ -85,7 +85,15 @@ export default async function handler(
       (req.headers["x-vercel-ip-country"] as string) ||
       "US"; // Default to US if not found
 
-    console.log(`Detected Country: ${country} (Source: ${req.geo?.country ? "req.geo" : req.headers["x-vercel-ip-country"] ? "header" : "default"})`);
+    console.log(
+      `Detected Country: ${country} (Source: ${
+        req.geo?.country
+          ? "req.geo"
+          : req.headers["x-vercel-ip-country"]
+          ? "header"
+          : "default"
+      })`
+    );
 
     // 2. Map country -> AWS regions
     const preferredRegions =

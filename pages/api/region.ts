@@ -78,8 +78,14 @@ export default async function handler(
   }
 
   try {
-    // 1. Read req.geo (Vercel specific)
-    const country = req.geo?.country || "US"; // Default to US if not found
+    // 1. Read req.geo (Vercel specific) or headers
+    // req.geo is available in Edge Middleware, but for Node.js Serverless Functions, we use headers.
+    const country =
+      req.geo?.country ||
+      (req.headers["x-vercel-ip-country"] as string) ||
+      "US"; // Default to US if not found
+
+    console.log(`Detected Country: ${country} (Source: ${req.geo?.country ? "req.geo" : req.headers["x-vercel-ip-country"] ? "header" : "default"})`);
 
     // 2. Map country -> AWS regions
     const preferredRegions =

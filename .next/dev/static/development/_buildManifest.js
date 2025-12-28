@@ -11,11 +11,17 @@ self.__BUILD_MANIFEST = {
   "/login": [
     "static/chunks/pages/login.js"
   ],
+  "/privacy": [
+    "static/chunks/pages/privacy.js"
+  ],
   "/profile": [
     "static/chunks/pages/profile.js"
   ],
   "/social": [
     "static/chunks/pages/social.js"
+  ],
+  "/terms": [
+    "static/chunks/pages/terms.js"
   ],
   "__rewrites": {
     "afterFiles": [],
@@ -53,7 +59,9 @@ self.__BUILD_MANIFEST = {
     "/download",
     "/learnmore",
     "/login",
+    "/privacy",
     "/profile",
-    "/social"
+    "/social",
+    "/terms"
   ]
 };self.__BUILD_MANIFEST_CB && self.__BUILD_MANIFEST_CB()

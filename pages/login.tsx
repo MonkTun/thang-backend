@@ -494,16 +494,24 @@ export default function LoginPage() {
                   </button>
                 </form>
 
-                <div style={styles.debugBox}>
-                  <h3 style={styles.debugTitle}>Debug Info</h3>
-                  <p style={styles.debugText}>
-                    Signs in with Firebase, then calls{" "}
-                    <code>/api/auth/bootstrap</code>
-                    to create or fetch your user in MongoDB.
-                  </p>
-                  <p style={styles.debugText}>
-                    Open the console (F12) for step-by-step logs.
-                  </p>
+                <div
+                  style={{ marginTop: "16px", fontSize: "12px", color: "#666" }}
+                >
+                  By logging in, you agree to our{" "}
+                  <a
+                    href="/terms"
+                    style={{ color: "#3b82f6", textDecoration: "none" }}
+                  >
+                    Terms of Service
+                  </a>{" "}
+                  and{" "}
+                  <a
+                    href="/privacy"
+                    style={{ color: "#3b82f6", textDecoration: "none" }}
+                  >
+                    Privacy Policy
+                  </a>
+                  .
                 </div>
               </>
             )}
@@ -644,27 +652,5 @@ const styles = {
     marginBottom: "18px",
     fontSize: "13px",
     textAlign: "left" as const,
-  } as React.CSSProperties,
-
-  debugBox: {
-    background: "#0f1218",
-    border: "1px solid #1e232d",
-    padding: "14px",
-    borderRadius: "4px",
-    fontSize: "12px",
-    textAlign: "left" as const,
-    color: "#98a2b3",
-  } as React.CSSProperties,
-
-  debugTitle: {
-    margin: "0 0 6px 0",
-    fontSize: "13px",
-    fontWeight: 600,
-    color: "#e7e9ed",
-  } as React.CSSProperties,
-
-  debugText: {
-    margin: "0 0 6px 0",
-    lineHeight: 1.5,
   } as React.CSSProperties,
 };

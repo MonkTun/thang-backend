@@ -3,7 +3,6 @@
   "/_app": "pages/_app.js",
   "/_document": "pages/_document.js",
   "/api/auth/bootstrap": "pages/api/auth/bootstrap.js",
-  "/api/auth/find-email": "pages/api/auth/find-email.js",
   "/api/friends/list": "pages/api/friends/list.js",
   "/api/party/status": "pages/api/party/status.js",
   "/api/presence/heartbeat": "pages/api/presence/heartbeat.js",
@@ -11,6 +10,8 @@
   "/download": "pages/download.js",
   "/learnmore": "pages/learnmore.js",
   "/login": "pages/login.js",
+  "/privacy": "pages/privacy.js",
   "/profile": "pages/profile.js",
-  "/social": "pages/social.js"
+  "/social": "pages/social.js",
+  "/terms": "pages/terms.js"
 }

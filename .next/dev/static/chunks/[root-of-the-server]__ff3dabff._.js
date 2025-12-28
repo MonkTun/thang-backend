@@ -1163,43 +1163,42 @@ function LoginPage() {
                                 columnNumber: 17
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                style: styles.debugBox,
+                                style: {
+                                    marginTop: "16px",
+                                    fontSize: "12px",
+                                    color: "#666"
+                                },
                                 children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
-                                        style: styles.debugTitle,
-                                        children: "Debug Info"
+                                    "By logging in, you agree to our",
+                                    " ",
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("a", {
+                                        href: "/terms",
+                                        style: {
+                                            color: "#3b82f6",
+                                            textDecoration: "none"
+                                        },
+                                        children: "Terms of Service"
                                     }, void 0, false, {
                                         fileName: "[project]/Documents/GitHub/ThangBackend/pages/login.tsx",
-                                        lineNumber: 498,
+                                        lineNumber: 501,
                                         columnNumber: 19
                                     }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                        style: styles.debugText,
-                                        children: [
-                                            "Signs in with Firebase, then calls",
-                                            " ",
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("code", {
-                                                children: "/api/auth/bootstrap"
-                                            }, void 0, false, {
-                                                fileName: "[project]/Documents/GitHub/ThangBackend/pages/login.tsx",
-                                                lineNumber: 501,
-                                                columnNumber: 21
-                                            }, this),
-                                            "to create or fetch your user in MongoDB."
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/Documents/GitHub/ThangBackend/pages/login.tsx",
-                                        lineNumber: 499,
-                                        columnNumber: 19
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                        style: styles.debugText,
-                                        children: "Open the console (F12) for step-by-step logs."
+                                    " ",
+                                    "and",
+                                    " ",
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("a", {
+                                        href: "/privacy",
+                                        style: {
+                                            color: "#3b82f6",
+                                            textDecoration: "none"
+                                        },
+                                        children: "Privacy Policy"
                                     }, void 0, false, {
                                         fileName: "[project]/Documents/GitHub/ThangBackend/pages/login.tsx",
-                                        lineNumber: 504,
+                                        lineNumber: 508,
                                         columnNumber: 19
-                                    }, this)
+                                    }, this),
+                                    "."
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/Documents/GitHub/ThangBackend/pages/login.tsx",
@@ -1219,7 +1218,7 @@ function LoginPage() {
                                     children: "Username"
                                 }, void 0, false, {
                                     fileName: "[project]/Documents/GitHub/ThangBackend/pages/login.tsx",
-                                    lineNumber: 514,
+                                    lineNumber: 522,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -1236,7 +1235,7 @@ function LoginPage() {
                                     autoFocus: true
                                 }, void 0, false, {
                                     fileName: "[project]/Documents/GitHub/ThangBackend/pages/login.tsx",
-                                    lineNumber: 517,
+                                    lineNumber: 525,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1244,13 +1243,13 @@ function LoginPage() {
                                     children: "3-20 characters. Letters, numbers, underscores, or hyphens."
                                 }, void 0, false, {
                                     fileName: "[project]/Documents/GitHub/ThangBackend/pages/login.tsx",
-                                    lineNumber: 531,
+                                    lineNumber: 539,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/Documents/GitHub/ThangBackend/pages/login.tsx",
-                            lineNumber: 513,
+                            lineNumber: 521,
                             columnNumber: 13
                         }, this),
                         usernameError && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1258,7 +1257,7 @@ function LoginPage() {
                             children: usernameError
                         }, void 0, false, {
                             fileName: "[project]/Documents/GitHub/ThangBackend/pages/login.tsx",
-                            lineNumber: 536,
+                            lineNumber: 544,
                             columnNumber: 31
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$ThangBackend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1272,7 +1271,7 @@ function LoginPage() {
                             children: usernameSaving ? "Saving..." : "Save username"
                         }, void 0, false, {
                             fileName: "[project]/Documents/GitHub/ThangBackend/pages/login.tsx",
-                            lineNumber: 538,
+                            lineNumber: 546,
                             columnNumber: 13
                         }, this)
                     ]
@@ -1376,25 +1375,6 @@ const styles = {
         marginBottom: "18px",
         fontSize: "13px",
         textAlign: "left"
-    },
-    debugBox: {
-        background: "#0f1218",
-        border: "1px solid #1e232d",
-        padding: "14px",
-        borderRadius: "4px",
-        fontSize: "12px",
-        textAlign: "left",
-        color: "#98a2b3"
-    },
-    debugTitle: {
-        margin: "0 0 6px 0",
-        fontSize: "13px",
-        fontWeight: 600,
-        color: "#e7e9ed"
-    },
-    debugText: {
-        margin: "0 0 6px 0",
-        lineHeight: 1.5
     }
 };
 var _c;

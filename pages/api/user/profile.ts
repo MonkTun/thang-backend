@@ -8,8 +8,8 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  // 1. Only allow GET
-  if (req.method !== "GET") {
+  // Allow GET and POST
+  if (req.method !== "GET" && req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
@@ -39,16 +39,44 @@ export default async function handler(
     const db = client.db(DB_NAME);
     const users = db.collection("users");
 
-    // 4. Fetch User Data
-    const user = await users.findOne({ _id: uid });
+    // 4. Handle GET (Fetch Profile)
+    if (req.method === "GET") {
+      const user = await users.findOne({ _id: uid });
 
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      return res.status(200).json({ user });
     }
 
-    // 5. Return User Data
-    return res.status(200).json({ user });
-  } catch (error: any) {
+    // 5. Handle POST (Update Profile)
+    if (req.method === "POST") {
+      const { avatarId, bannerId, equippedTitle } = req.body;
+      const updateFields: any = { updated_at: new Date() };
+
+      if (typeof avatarId === "string") updateFields.avatarId = avatarId;
+      if (typeof bannerId === "string") updateFields.bannerId = bannerId;
+      if (typeof equippedTitle === "string")
+        updateFields.equippedTitle = equippedTitle;
+
+      if (Object.keys(updateFields).length <= 1) {
+        return res.status(400).json({ error: "No valid fields to update" });
+      }
+
+      const result = await users.findOneAndUpdate(
+        { _id: uid },
+        { $set: updateFields },
+        { returnDocument: "after" }
+      );
+
+      if (!result) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      return res.status(200).json({ user: result });
+    }
+  } catch (error) {
     console.error("[User Profile] Internal Error:", error);
     return res.status(500).json({ error: "Internal Server Error" });
   }

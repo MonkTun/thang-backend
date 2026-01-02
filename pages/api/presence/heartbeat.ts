@@ -31,24 +31,53 @@ export default async function handler(
     const uid = decodedToken.uid;
 
     // 2. Connect to DB
-    const client = await clientPromise;
-    const db = client.db(DB_NAME);
+    const mongoClient = await clientPromise;
+    const db = mongoClient.db(DB_NAME);
     const users = db.collection("users");
 
     // 3. Update Presence
-    // We update 'lastSeen' to now.
-    // We can also accept a 'status' from the client (e.g. "lobby", "matchmaking", "in-game")
-    const { status } = req.body;
-    const validStatus =
-      status && typeof status === "string" ? status : "online";
+    // We accept 'client' ('web' | 'unreal') and 'status'
+    let body = req.body;
+    // Robustness: Handle case where body is not parsed automatically
+    if (typeof body === "string") {
+      try {
+        body = JSON.parse(body);
+      } catch (e) {
+        console.warn("[Heartbeat] Failed to parse body string:", body);
+      }
+    }
+
+    const { status, client } = body;
+    console.log(
+      `[Heartbeat] Received from ${uid}: client=${client}, status=${status}`
+    );
+
+    const clientType = client === "unreal" ? "unreal" : "web";
+    const now = new Date();
+
+    const updateDoc: any = {
+      lastSeen: now, // Global last seen
+    };
+
+    if (clientType === "unreal") {
+      updateDoc.lastSeenUnreal = now;
+      // Only Unreal updates the rich presence status (e.g. "In Lobby", "Playing")
+      if (status) {
+        updateDoc.status = status;
+      } else {
+        updateDoc.status = "in-game"; // Default for Unreal
+      }
+    } else {
+      updateDoc.lastSeenWeb = now;
+      // Web does not overwrite 'status' so we don't clobber "In Game"
+      // But if we want to clear "In Game" when Unreal crashes?
+      // We handle that in the read logic (friends/list.ts) by checking timestamps.
+    }
 
     await users.updateOne(
       { _id: uid },
       {
-        $set: {
-          lastSeen: new Date(),
-          status: validStatus,
-        },
+        $set: updateDoc,
       }
     );
 

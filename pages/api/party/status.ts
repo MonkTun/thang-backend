@@ -42,6 +42,24 @@ export default async function handler(
     if (user.partyId) {
       const party = await parties.findOne({ _id: new ObjectId(user.partyId) });
       if (party) {
+        // Hydrate members with avatarId and bannerId
+        const memberUids = party.members.map((m: any) => m.uid);
+        const membersData = await users
+          .find(
+            { _id: { $in: memberUids } },
+            { projection: { avatarId: 1, bannerId: 1 } }
+          )
+          .toArray();
+
+        const membersMap = new Map(membersData.map((m) => [m._id, m]));
+
+        party.members = party.members.map((m: any) => ({
+          ...m,
+          avatarId: (membersMap.get(m.uid) as any)?.avatarId || "Alpha",
+          bannerId: (membersMap.get(m.uid) as any)?.bannerId || "Alpha",
+          isReady: m.isReady || false, // Ensure isReady is returned
+        }));
+
         response.party = party;
       } else {
         // Stale partyId fix

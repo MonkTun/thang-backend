@@ -82,9 +82,10 @@ export default async function handler(
       return res.status(400).json({ error: "You cannot invite this user" });
     }
 
-    if (targetUser.partyId) {
-      return res.status(400).json({ error: "User is already in a party" });
-    }
+    // Allow inviting users who are already in a party (they will auto-leave when joining)
+    // if (targetUser.partyId) {
+    //   return res.status(400).json({ error: "User is already in a party" });
+    // }
 
     // Check if already invited
     const existingInvite = targetUser.partyInvites?.find(

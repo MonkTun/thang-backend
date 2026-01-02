@@ -23,13 +23,28 @@ export default function NavBar() {
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const [isAuthed, setIsAuthed] = useState<boolean | null>(null);
+  const [avatarId, setAvatarId] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     // Check auth status on client only
-    const win = getWindow();
-    const token = win?.localStorage?.getItem("idToken") || null;
-    setIsAuthed(Boolean(token));
+    const checkAuth = () => {
+      const win = getWindow();
+      const token = win?.localStorage?.getItem("idToken") || null;
+      const storedAvatar = win?.localStorage?.getItem("avatarId") || "Alpha";
+      setIsAuthed(Boolean(token));
+      setAvatarId(storedAvatar);
+    };
+
+    checkAuth();
+    window.addEventListener("storage", checkAuth); // Listen for cross-tab changes
+    // Custom event for same-tab updates
+    window.addEventListener("auth-change", checkAuth);
+
+    return () => {
+      window.removeEventListener("storage", checkAuth);
+      window.removeEventListener("auth-change", checkAuth);
+    };
   }, [router.pathname]);
 
   useEffect(() => {
@@ -99,8 +114,19 @@ export default function NavBar() {
           {isAuthed === null ? (
             <div style={styles.placeholder} />
           ) : isAuthed ? (
-            <Link href="/profile" style={styles.primaryButton}>
-              Profile
+            <Link href="/profile" style={styles.avatarLink}>
+              <img
+                src={`/profilepicture/${avatarId}.png`}
+                alt="Profile"
+                style={{
+                  width: "36px",
+                  height: "36px",
+                  borderRadius: "50%",
+                  border: "2px solid #1f2a3a",
+                  backgroundColor: "#11141a",
+                  objectFit: "cover",
+                }}
+              />
             </Link>
           ) : (
             <Link href="/login" style={styles.secondaryButton}>
@@ -191,6 +217,14 @@ const styles: Record<string, React.CSSProperties> = {
     textDecoration: "none",
     fontSize: "14px",
     transition: "all 0.15s ease",
+  } as React.CSSProperties,
+  avatarLink: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: "50%",
+    cursor: "pointer",
+    transition: "transform 0.2s ease",
   } as React.CSSProperties,
   actions: {
     display: "flex",

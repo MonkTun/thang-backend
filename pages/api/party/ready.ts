@@ -23,21 +23,9 @@ export default async function handler(
     const decodedToken = await admin.auth().verifyIdToken(token);
     const uid = decodedToken.uid;
 
-    const { privacy, region } = req.body;
-
-    const updateFields: any = {};
-    if (privacy) {
-      if (privacy !== "public" && privacy !== "private") {
-        return res.status(400).json({ error: "Invalid privacy setting." });
-      }
-      updateFields.privacy = privacy;
-    }
-    if (region) {
-      updateFields.region = region;
-    }
-
-    if (Object.keys(updateFields).length === 0) {
-      return res.status(400).json({ error: "No settings provided to update" });
+    const { isReady } = req.body;
+    if (typeof isReady !== "boolean") {
+      return res.status(400).json({ error: "isReady must be a boolean" });
     }
 
     // 2. Connect to DB
@@ -53,30 +41,21 @@ export default async function handler(
     }
 
     const partyId = user.partyId;
-    const party = await parties.findOne({ _id: new ObjectId(partyId) });
 
-    if (!party) {
-      return res.status(404).json({ error: "Party not found" });
-    }
-
-    // 4. Verify Leadership
-    if (party.leaderUid !== uid) {
-      return res
-        .status(403)
-        .json({ error: "Only the leader can change settings" });
-    }
-
-    // 5. Update Settings
-    await parties.updateOne(
-      { _id: new ObjectId(partyId) },
-      { $set: updateFields }
+    // 4. Update Ready Status
+    // We use arrayFilters to update the specific member in the array
+    const result = await parties.updateOne(
+      { _id: new ObjectId(partyId), "members.uid": uid },
+      { $set: { "members.$.isReady": isReady } }
     );
 
-    return res
-      .status(200)
-      .json({ message: "Party settings updated", settings: updateFields });
+    if (result.modifiedCount === 0) {
+      return res.status(404).json({ error: "Party or member not found" });
+    }
+
+    return res.status(200).json({ message: `Ready status set to ${isReady}` });
   } catch (error: any) {
-    console.error("[Party Settings] Error:", error);
+    console.error("[Party Ready] Error:", error);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 }

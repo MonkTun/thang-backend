@@ -67,10 +67,36 @@ export default async function handler(
       }
     }
 
-    // 5. Update User Doc
-    await users.updateOne({ _id: uid }, { $unset: { partyId: "" } });
+    // 5. Create New Solo Party for User
+    const newParty = {
+      leaderUid: uid,
+      region: party?.region || "US-East", // Keep same region or default
+      members: [
+        {
+          uid: uid,
+          username: user.username || "Unknown",
+          joinedAt: new Date(),
+          isReady: true,
+        },
+      ],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
 
-    return res.status(200).json({ message: "Left party" });
+    const result = await parties.insertOne(newParty);
+
+    // 6. Update User Doc
+    await users.updateOne(
+      { _id: uid },
+      { $set: { partyId: result.insertedId.toString() } }
+    );
+
+    return res
+      .status(200)
+      .json({
+        message: "Left party and created new solo party",
+        newPartyId: result.insertedId,
+      });
   } catch (error: any) {
     console.error("[Party Leave] Error:", error);
     return res.status(500).json({ error: "Internal Server Error" });

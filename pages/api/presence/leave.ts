@@ -72,13 +72,42 @@ export default async function handler(
     }
 
     // 4. Mark Offline
+    // We accept 'client' ('web' | 'unreal') to know which session ended
+    const { client: clientType } = req.body;
+    const updateDoc: any = {
+      lastSeen: new Date(), // Update global last seen
+    };
+
+    const now = new Date().getTime();
+    const ONLINE_THRESHOLD_MS = 60 * 1000;
+
+    if (clientType === "unreal") {
+      updateDoc.lastSeenUnreal = 0; // Expire Unreal session immediately
+      updateDoc.status = "offline"; // Unreal logout usually means full offline
+    } else if (clientType === "web") {
+      updateDoc.lastSeenWeb = 0; // Expire Web session immediately
+
+      // Check if Unreal is still online before setting status to offline
+      const lastSeenUnreal = user.lastSeenUnreal
+        ? new Date(user.lastSeenUnreal).getTime()
+        : 0;
+      const isUnrealOnline = now - lastSeenUnreal < ONLINE_THRESHOLD_MS;
+
+      if (!isUnrealOnline) {
+        updateDoc.status = "offline";
+      }
+      // If Unreal IS online, leave 'status' alone (it holds the Unreal status like "In Match")
+    } else {
+      // Fallback for legacy calls (assumes full logout)
+      updateDoc.status = "offline";
+      updateDoc.lastSeenWeb = 0;
+      updateDoc.lastSeenUnreal = 0;
+    }
+
     await users.updateOne(
       { _id: uid },
       {
-        $set: {
-          lastSeen: new Date(),
-          status: "offline",
-        },
+        $set: updateDoc,
       }
     );
 

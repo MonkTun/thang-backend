@@ -38,8 +38,31 @@ export default async function handler(
     const user = await users.findOne({ _id: uid });
     if (!user) return res.status(404).json({ error: "User not found" });
 
+    // If user is already in a party, remove them from it first (Auto-Leave)
     if (user.partyId) {
-      return res.status(400).json({ error: "You are already in a party" });
+      const oldPartyId = user.partyId;
+      if (oldPartyId === partyId) {
+        return res.status(400).json({ error: "You are already in this party" });
+      }
+
+      const oldParty = await parties.findOne({ _id: new ObjectId(oldPartyId) });
+      if (oldParty) {
+        const updatedMembers = oldParty.members.filter(
+          (m: any) => m.uid !== uid
+        );
+        if (updatedMembers.length === 0) {
+          await parties.deleteOne({ _id: new ObjectId(oldPartyId) });
+        } else {
+          let newLeaderUid = oldParty.leaderUid;
+          if (oldParty.leaderUid === uid) {
+            newLeaderUid = updatedMembers[0].uid;
+          }
+          await parties.updateOne(
+            { _id: new ObjectId(oldPartyId) },
+            { $set: { members: updatedMembers, leaderUid: newLeaderUid } }
+          );
+        }
+      }
     }
 
     // 4. Check Party Existence & Privacy
@@ -98,8 +121,9 @@ export default async function handler(
         $push: {
           members: {
             uid: uid,
-            username: user.username,
+            username: user.username || "Unknown",
             joinedAt: new Date(),
+            isReady: false,
           },
         } as any,
       }

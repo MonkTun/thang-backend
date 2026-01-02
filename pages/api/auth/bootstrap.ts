@@ -1,20 +1,17 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import admin from "@/lib/firebaseAdmin";
-import clientPromise from "@/lib/mongodb";
+import { getOrCreateUser, User } from "@/lib/userUtils";
 
-const DB_NAME = process.env.NEXT_PUBLIC_DB_NAME || "game";
-
-interface User {
-  _id: string;
-  email: string;
-  username?: string | null;
-  rank: number;
-  coins: number;
-  created_at: Date;
-  updated_at: Date;
-}
-
-type ResponseData = User | { error: string };
+type ResponseData =
+  | {
+      user: User;
+      serverTime: string;
+      config: {
+        version: string;
+        maintenance: boolean;
+      };
+    }
+  | { error: string };
 
 export default async function handler(
   req: NextApiRequest,
@@ -50,64 +47,19 @@ export default async function handler(
       return res.status(401).json({ error: "Invalid token: missing uid" });
     }
 
-    // Connect to MongoDB
-    console.log("[Bootstrap] Connecting to MongoDB...");
-    const client = await clientPromise;
-    console.log("[Bootstrap] Connected to MongoDB");
+    console.log("[Bootstrap] Getting or creating user:", uid);
+    const user = await getOrCreateUser(uid, email);
+    console.log("[Bootstrap] User retrieved successfully");
 
-    const db = client.db(DB_NAME);
-    const users = db.collection("users");
-
-    // Ensure username uniqueness without forcing it on existing docs
-    try {
-      await users.createIndex({ username: 1 }, { unique: true, sparse: true });
-    } catch (indexError: any) {
-      // Log and continue if index already exists or cannot be created
-      console.warn("[Bootstrap] Username index warning:", indexError.message);
-    }
-
-    // _id already has a unique index by default; no need to recreate
-
-    // Try to find existing user
-    console.log("[Bootstrap] Looking for existing user:", uid);
-    let user = await users.findOne({ _id: uid });
-    console.log("[Bootstrap] User found:", user ? "yes" : "no");
-
-    // If user doesn't exist, create a new one
-    if (!user) {
-      const newUser: User = {
-        _id: uid,
-        email,
-        username: null,
-        rank: 0,
-        coins: 100,
-        created_at: new Date(),
-        updated_at: new Date(),
-      };
-
-      try {
-        console.log("[Bootstrap] Creating new user:", uid);
-        await users.insertOne(newUser);
-        user = newUser;
-        console.log("[Bootstrap] User created successfully");
-      } catch (insertError: any) {
-        // Handle race condition where user was created between findOne and insertOne
-        if (insertError.code === 11000) {
-          console.log(
-            "[Bootstrap] Race condition detected, fetching user again"
-          );
-          user = await users.findOne({ _id: uid });
-          if (!user) {
-            throw insertError;
-          }
-        } else {
-          throw insertError;
-        }
-      }
-    }
-
-    console.log("[Bootstrap] Returning user data");
-    return res.status(200).json(user);
+    // Return richer payload for both Web and Game clients
+    return res.status(200).json({
+      user,
+      serverTime: new Date().toISOString(),
+      config: {
+        version: "1.0.0",
+        maintenance: false,
+      },
+    });
   } catch (error) {
     console.error(
       "[Bootstrap] CRITICAL ERROR:",

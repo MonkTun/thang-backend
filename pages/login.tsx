@@ -82,19 +82,27 @@ export default function LoginPage() {
       );
     }
 
-    const userData = (await bootstrapResponse.json()) as {
-      username?: string | null;
-    };
+    const data = await bootstrapResponse.json();
+    // Handle both old format (direct user object) and new format ({ user: ... })
+    const userData = data.user ? data.user : data;
+
     console.log("Bootstrap successful, user data:", userData);
 
     // Step 4: Store token in localStorage for profile page
     localStorage.setItem("idToken", idToken);
     localStorage.setItem("uid", user.uid);
+    if (userData.avatarId) {
+      localStorage.setItem("avatarId", userData.avatarId);
+    }
+    // Dispatch event to update NavBar immediately
+    window.dispatchEvent(new Event("auth-change"));
 
     // Step 5: Require username if missing
     if (userData.username) {
-      console.log("🎯 Redirecting to /profile...");
-      router.push("/profile");
+      const returnUrl = router.query.returnUrl;
+      const target = typeof returnUrl === "string" ? returnUrl : "/profile";
+      console.log(`🎯 Redirecting to ${target}...`);
+      router.push(target);
       return;
     }
 
@@ -236,8 +244,10 @@ export default function LoginPage() {
         throw new Error(data.error || "Failed to set username");
       }
 
-      console.log("Username set. Redirecting to profile...");
-      router.push("/profile");
+      console.log("Username set. Redirecting...");
+      const returnUrl = router.query.returnUrl;
+      const target = typeof returnUrl === "string" ? returnUrl : "/profile";
+      router.push(target);
     } catch (err: any) {
       setUsernameError(err.message || "Failed to set username");
     } finally {

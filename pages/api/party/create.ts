@@ -39,14 +39,18 @@ export default async function handler(
       return res.status(400).json({ error: "You are already in a party" });
     }
 
+    const { region } = req.body;
+
     // 4. Create Party
     const newParty = {
       leaderUid: uid,
+      region: region || "US-East", // Default region
       members: [
         {
           uid: uid,
           username: user.username || "Unknown",
           joinedAt: new Date(),
+          isReady: true, // Leader is always ready? Or false? Let's say false or true. Usually leader starts so ready doesn't matter as much, but let's default false.
         },
       ],
       createdAt: new Date(),

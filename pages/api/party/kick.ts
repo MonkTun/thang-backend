@@ -71,8 +71,29 @@ export default async function handler(
       { $pull: { members: { uid: targetUid } } as any }
     );
 
-    // Unset partyId for kicked user
-    await users.updateOne({ _id: targetUid }, { $unset: { partyId: "" } });
+    // Create new solo party for kicked user
+    const targetUser = await users.findOne({ _id: targetUid });
+    const newParty = {
+      leaderUid: targetUid,
+      region: party.region || "US-East",
+      members: [
+        {
+          uid: targetUid,
+          username: targetUser?.username || "Unknown",
+          joinedAt: new Date(),
+          isReady: true,
+        },
+      ],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    const result = await parties.insertOne(newParty);
+
+    // Update kicked user with new partyId
+    await users.updateOne(
+      { _id: targetUid },
+      { $set: { partyId: result.insertedId.toString() } }
+    );
 
     return res.status(200).json({ message: "User kicked from party" });
   } catch (error: any) {

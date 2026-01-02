@@ -1,6 +1,6 @@
 import { useState, useEffect, type ChangeEvent } from "react";
 import { useRouter } from "next/router";
-import { signOut, updatePassword } from "firebase/auth";
+import { signOut, updatePassword, onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 
 /**
@@ -19,6 +19,9 @@ interface UserData {
   username?: string | null;
   rank: number;
   coins: number;
+  avatarId?: string;
+  bannerId?: string;
+  equippedTitle?: string;
   created_at: string;
   updated_at: string;
 }
@@ -41,18 +44,47 @@ export default function ProfilePage() {
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [passwordLoading, setPasswordLoading] = useState(false);
 
+  // Customization State
+  const [avatarId, setAvatarId] = useState("Alpha");
+  const [bannerId, setBannerId] = useState("Alpha");
+  const [equippedTitle, setEquippedTitle] = useState("unequipped");
+  const [customizationSaving, setCustomizationSaving] = useState(false);
+  const [customizationMessage, setCustomizationMessage] = useState<
+    string | null
+  >(null);
+
+  //TODO update this data table everytime you add new avatars/banners
+  const AVATARS = [
+    "Alpha",
+    "ChristmasTree",
+    "HappySnowman",
+    "Koipoleon",
+    "SantaHat",
+    "Snowflake",
+  ];
+  const BANNERS = ["Alpha", "Christmas", "Snowflakes", "TheFireHorse"];
+  const TITLES = [
+    "unequipped",
+    "newcomer",
+    "epstein",
+    "calculator",
+    "experienced",
+  ];
+
   // 1. Initial Data Fetch
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const idToken = localStorage.getItem("idToken");
-        const uid = localStorage.getItem("uid");
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (!currentUser) {
+        console.warn("No user logged in, redirecting to login");
+        router.push("/login");
+        return;
+      }
 
-        if (!idToken || !uid) {
-          console.warn("No token or uid in localStorage, redirecting to login");
-          router.push("/login");
-          return;
-        }
+      try {
+        // Force refresh token to ensure it's valid
+        const idToken = await currentUser.getIdToken(true);
+        localStorage.setItem("idToken", idToken);
+        localStorage.setItem("uid", currentUser.uid);
 
         console.log("Fetching user data from /api/auth/bootstrap...");
         const response = await fetch("/api/auth/bootstrap", {
@@ -72,19 +104,25 @@ export default function ProfilePage() {
           );
         }
 
-        const userData = (await response.json()) as UserData;
+        const data = await response.json();
+        // Handle both old format (direct user object) and new format ({ user: ... })
+        const userData = data.user ? data.user : data;
+
         console.log("User data fetched:", userData);
         setUser(userData);
         setUsername(userData.username || "");
+        setAvatarId(userData.avatarId || "Alpha");
+        setBannerId(userData.bannerId || "Alpha");
+        setEquippedTitle(userData.equippedTitle || "unequipped");
       } catch (err: any) {
         console.error("Error fetching user:", err.message);
         setError(err.message);
       } finally {
         setLoading(false);
       }
-    };
+    });
 
-    fetchUserData();
+    return () => unsubscribe();
   }, [router]);
 
   // 2. Heartbeat Loop (Every 30s)
@@ -139,7 +177,11 @@ export default function ProfilePage() {
       if (idToken) {
         await fetch("/api/presence/leave", {
           method: "POST",
-          headers: { Authorization: `Bearer ${idToken}` },
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ client: "web" }),
         });
       }
 
@@ -209,6 +251,48 @@ export default function ProfilePage() {
       setUsernameSaving(false);
     }
   };
+  const handleSaveCustomization = async (overrides?: {
+    avatarId?: string;
+    bannerId?: string;
+    equippedTitle?: string;
+  }) => {
+    const newAvatarId = overrides?.avatarId ?? avatarId;
+    const newBannerId = overrides?.bannerId ?? bannerId;
+    const newEquippedTitle = overrides?.equippedTitle ?? equippedTitle;
+
+    setCustomizationSaving(true);
+    setCustomizationMessage(null);
+    try {
+      const idToken = localStorage.getItem("idToken");
+      const res = await fetch("/api/user/profile", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          avatarId: newAvatarId,
+          bannerId: newBannerId,
+          equippedTitle: newEquippedTitle,
+        }),
+      });
+
+      if (!res.ok) throw new Error("Failed to update profile");
+
+      const data = await res.json();
+      setUser(data.user);
+      setCustomizationMessage("Profile updated successfully!");
+
+      // Update localStorage and notify NavBar
+      localStorage.setItem("avatarId", newAvatarId);
+      window.dispatchEvent(new Event("auth-change"));
+    } catch (err) {
+      console.error(err);
+      setCustomizationMessage("Failed to save changes.");
+    } finally {
+      setCustomizationSaving(false);
+    }
+  };
 
   const handleSetPassword = async () => {
     setPasswordMessage(null);
@@ -242,7 +326,9 @@ export default function ProfilePage() {
     return (
       <div style={styles.container}>
         <div style={styles.card}>
-          <p style={{ color: "#c8cbd2" }}>Loading user data...</p>
+          <div style={{ padding: "36px", textAlign: "center" }}>
+            <p style={{ color: "#c8cbd2", margin: 0 }}>Loading user data...</p>
+          </div>
         </div>
       </div>
     );
@@ -252,20 +338,22 @@ export default function ProfilePage() {
     return (
       <div style={styles.container}>
         <div style={styles.card}>
-          <h2
-            style={{
-              ...styles.title,
-              fontSize: "22px",
-              color: "#f97068",
-              marginBottom: "12px",
-            }}
-          >
-            Error
-          </h2>
-          <p style={{ color: "#c8cbd2", marginBottom: "18px" }}>{error}</p>
-          <button onClick={() => router.push("/login")} style={styles.button}>
-            Back to Login
-          </button>
+          <div style={{ padding: "36px", textAlign: "center" }}>
+            <h2
+              style={{
+                ...styles.title,
+                fontSize: "22px",
+                color: "#f97068",
+                marginBottom: "12px",
+              }}
+            >
+              Error
+            </h2>
+            <p style={{ color: "#c8cbd2", marginBottom: "18px" }}>{error}</p>
+            <button onClick={() => router.push("/login")} style={styles.button}>
+              Back to Login
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -275,17 +363,23 @@ export default function ProfilePage() {
     return (
       <div style={styles.container}>
         <div style={styles.card}>
-          <h2
-            style={{ ...styles.title, fontSize: "22px", marginBottom: "12px" }}
-          >
-            No user data
-          </h2>
-          <p style={{ color: "#c8cbd2", marginBottom: "18px" }}>
-            Could not load user profile
-          </p>
-          <button onClick={() => router.push("/login")} style={styles.button}>
-            Back to Login
-          </button>
+          <div style={{ padding: "36px", textAlign: "center" }}>
+            <h2
+              style={{
+                ...styles.title,
+                fontSize: "22px",
+                marginBottom: "12px",
+              }}
+            >
+              No user data
+            </h2>
+            <p style={{ color: "#c8cbd2", marginBottom: "18px" }}>
+              Could not load user profile
+            </p>
+            <button onClick={() => router.push("/login")} style={styles.button}>
+              Back to Login
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -293,190 +387,295 @@ export default function ProfilePage() {
 
   return (
     <div style={styles.container}>
+      {/* Blurred Background */}
+      <div
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundImage: `url(/banners/${bannerId}.png)`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          filter: "blur(20px) brightness(0.4)",
+          zIndex: 0,
+          transform: "scale(1.1)", // Prevent white edges from blur
+        }}
+      />
+
       <div style={styles.card}>
-        <h1 style={styles.title}>Your Profile</h1>
-
-        <div style={styles.profileSection}>
-          {user.username ? (
-            <div style={styles.profileField}>
-              <label style={styles.label}>Username</label>
-              <p style={styles.value}>{user.username}</p>
+        {/* Header Section */}
+        <div style={styles.header}>
+          <img
+            src={`/banners/${bannerId}.png`}
+            alt="Banner"
+            style={styles.bannerImage}
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = "/banners/Alpha.png";
+            }}
+          />
+          <div style={styles.headerOverlay}>
+            <div style={styles.avatarContainer}>
+              <img
+                src={`/profilepicture/${avatarId}.png`}
+                alt="Avatar"
+                style={styles.avatarImage}
+              />
             </div>
-          ) : (
-            <div style={styles.missingBox}>
-              <div style={styles.inputGroup}>
-                <label style={styles.inputLabel} htmlFor="username">
-                  Choose a username
-                </label>
-                <input
-                  id="username"
-                  type="text"
-                  value={username}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                    const value = (e.target as unknown as { value: string })
-                      .value;
-                    setUsername(value);
-                  }}
-                  placeholder="Pick something unique"
-                  style={styles.input}
-                  maxLength={20}
-                />
-                <p style={styles.inputHelper}>
-                  3-20 characters. Letters, numbers, underscores, or hyphens.
-                </p>
-              </div>
-              {usernameError && (
-                <div style={styles.inlineError}>{usernameError}</div>
-              )}
-              <button
-                onClick={handleUsernameSave}
-                disabled={usernameSaving}
-                style={{
-                  ...styles.button,
-                  opacity: usernameSaving ? 0.6 : 1,
-                  cursor: usernameSaving ? "wait" : "pointer",
-                }}
-              >
-                {usernameSaving ? "Saving..." : "Save username"}
-              </button>
+            <div style={styles.headerText}>
+              <h1 style={styles.username}>{user.username || "No Username"}</h1>
+              <div style={styles.userTitle}>{equippedTitle}</div>
             </div>
-          )}
-
-          <div style={styles.profileField}>
-            <label style={styles.label}>Firebase UID</label>
-            <code style={styles.code}>{user._id}</code>
-          </div>
-
-          <div style={styles.profileField}>
-            <label style={styles.label}>Email</label>
-            <p style={styles.value}>{user.email}</p>
-          </div>
-
-          <div style={styles.profileField}>
-            <label style={styles.label}>Rank</label>
-            <p style={styles.value}>{user.rank}</p>
-          </div>
-
-          <div style={styles.profileField}>
-            <label style={styles.label}>Coins</label>
-            <p style={styles.value}>{user.coins}</p>
-          </div>
-
-          <div style={styles.profileField}>
-            <label style={styles.label}>Created At</label>
-            <p style={styles.value}>
-              {new Date(user.created_at).toLocaleString()}
-            </p>
-          </div>
-
-          <div style={styles.profileField}>
-            <label style={styles.label}>Updated At</label>
-            <p style={styles.value}>
-              {new Date(user.updated_at).toLocaleString()}
-            </p>
           </div>
         </div>
 
-        <div style={styles.sectionDivider} />
+        {/* Body Section */}
+        <div style={styles.body}>
+          <div style={styles.profileSection}>
+            {!user.username && (
+              <div style={styles.missingBox}>
+                <div style={styles.inputGroup}>
+                  <label style={styles.inputLabel} htmlFor="username">
+                    Choose a username
+                  </label>
+                  <input
+                    id="username"
+                    type="text"
+                    value={username}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                      const value = (e.target as unknown as { value: string })
+                        .value;
+                      setUsername(value);
+                    }}
+                    placeholder="Pick something unique"
+                    style={styles.input}
+                    maxLength={20}
+                  />
+                  <p style={styles.inputHelper}>
+                    3-20 characters. Letters, numbers, underscores, or hyphens.
+                  </p>
+                </div>
+                {usernameError && (
+                  <div style={styles.inlineError}>{usernameError}</div>
+                )}
+                <button
+                  onClick={handleUsernameSave}
+                  disabled={usernameSaving}
+                  style={{
+                    ...styles.button,
+                    opacity: usernameSaving ? 0.6 : 1,
+                    cursor: usernameSaving ? "wait" : "pointer",
+                  }}
+                >
+                  {usernameSaving ? "Saving..." : "Save username"}
+                </button>
+              </div>
+            )}
 
-        {/* Set Password Section */}
-        <div
-          style={{
-            marginBottom: "24px",
-          }}
-        >
-          <h3 style={{ ...styles.label, marginBottom: "12px" }}>Security</h3>
-          <div style={styles.inputGroup}>
-            <label style={styles.inputLabel}>Set/Update Password</label>
-            <div style={{ display: "flex", gap: "8px" }}>
-              <input
-                type="password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="New Password"
-                style={{ ...styles.input, flex: 1 }}
-              />
-              <button
-                onClick={handleSetPassword}
-                disabled={passwordLoading || !newPassword}
+            <div style={styles.profileField}>
+              <label style={styles.label}>Firebase UID</label>
+              <code style={styles.code}>{user._id}</code>
+            </div>
+
+            <div style={styles.profileField}>
+              <label style={styles.label}>Email</label>
+              <p style={styles.value}>{user.email}</p>
+            </div>
+
+            <div style={{ display: "flex", gap: "20px" }}>
+              <div style={{ ...styles.profileField, flex: 1 }}>
+                <label style={styles.label}>Rank</label>
+                <p style={styles.value}>{user.rank}</p>
+              </div>
+
+              <div style={{ ...styles.profileField, flex: 1 }}>
+                <label style={styles.label}>Coins</label>
+                <p style={styles.value}>{user.coins}</p>
+              </div>
+            </div>
+
+            <div style={styles.profileField}>
+              <label style={styles.label}>Member Since</label>
+              <p style={styles.value}>
+                {new Date(user.created_at).toLocaleDateString()}
+              </p>
+            </div>
+          </div>
+
+          <div style={styles.sectionDivider} />
+
+          {/* Customization Section */}
+          <div style={{ marginBottom: "24px" }}>
+            <h3 style={{ ...styles.label, marginBottom: "12px" }}>
+              Edit Profile
+            </h3>
+
+            <div style={styles.inputGroup}>
+              <label style={styles.inputLabel}>Avatar</label>
+              <select
+                value={avatarId}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setAvatarId(val);
+                  handleSaveCustomization({ avatarId: val });
+                }}
+                style={styles.select}
+              >
+                {AVATARS.map((a) => (
+                  <option key={a} value={a}>
+                    {a}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div style={styles.inputGroup}>
+              <label style={styles.inputLabel}>Banner</label>
+              <select
+                value={bannerId}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setBannerId(val);
+                  handleSaveCustomization({ bannerId: val });
+                }}
+                style={styles.select}
+              >
+                {BANNERS.map((b) => (
+                  <option key={b} value={b}>
+                    {b}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div style={styles.inputGroup}>
+              <label style={styles.inputLabel}>Title</label>
+              <select
+                value={equippedTitle}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setEquippedTitle(val);
+                  handleSaveCustomization({ equippedTitle: val });
+                }}
+                style={styles.select}
+              >
+                {TITLES.map((t) => (
+                  <option key={t} value={t}>
+                    {t}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {customizationSaving && (
+              <p
                 style={{
-                  ...styles.button,
-                  width: "auto",
-                  marginBottom: 0,
-                  padding: "0 16px",
-                  opacity: passwordLoading || !newPassword ? 0.5 : 1,
+                  fontSize: "13px",
+                  color: "#9ca3af",
+                  marginTop: "8px",
                 }}
               >
-                {passwordLoading ? "..." : "Update"}
-              </button>
-            </div>
-            {passwordMessage && (
-              <div
+                Saving...
+              </p>
+            )}
+
+            {customizationMessage && !customizationSaving && (
+              <p
                 style={{
-                  marginTop: "8px",
                   fontSize: "13px",
                   color: "#22c55e",
-                }}
-              >
-                {passwordMessage}
-              </div>
-            )}
-            {passwordError && (
-              <div
-                style={{
                   marginTop: "8px",
-                  fontSize: "13px",
-                  color: "#f2c2cb",
                 }}
               >
-                {passwordError}
-              </div>
+                {customizationMessage}
+              </p>
             )}
           </div>
-        </div>
 
-        <button
-          onClick={() => router.push("/social")}
-          style={{
-            ...styles.button,
-            background: "#1e232d",
-            borderColor: "#2b3544",
-          }}
-        >
-          Go to Social Hub
-        </button>
+          <div style={styles.sectionDivider} />
 
-        <button
-          onClick={handleLogout}
-          disabled={isLoggingOut}
-          style={{
-            ...styles.button,
-            background: isLoggingOut ? "#0d57e0" : "#0f62fe",
-            borderColor: isLoggingOut ? "#1c355c" : "#1f2a3a",
-            opacity: isLoggingOut ? 0.9 : 1,
-            cursor: isLoggingOut ? "wait" : "pointer",
-            transform: isLoggingOut ? "scale(0.995)" : "scale(1)",
-          }}
-        >
-          {isLoggingOut ? "Logging out..." : "Logout"}
-        </button>
-
-        <div style={styles.debugBox}>
-          <h3
-            style={{ margin: "0 0 10px 0", fontSize: "15px", color: "#e7e9ed" }}
+          {/* Set Password Section */}
+          <div
+            style={{
+              marginBottom: "24px",
+            }}
           >
-            What this proves
-          </h3>
-          <ul style={styles.list}>
-            <li>Firebase Auth works (you logged in)</li>
-            <li>Bootstrap endpoint works (created user in MongoDB)</li>
-            <li>MongoDB persistence works (data survives refresh)</li>
-            <li>Backend is ready for Unreal Engine</li>
-          </ul>
-          <p style={{ marginTop: "12px", fontSize: "12px", color: "#9aa3b5" }}>
-            Check MongoDB Atlas to see your user document in the{" "}
-            <code>game.users</code> collection.
-          </p>
+            <h3 style={{ ...styles.label, marginBottom: "12px" }}>Security</h3>
+            <div style={styles.inputGroup}>
+              <label style={styles.inputLabel}>Set/Update Password</label>
+              <div style={{ display: "flex", gap: "8px" }}>
+                <input
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="New Password"
+                  style={{ ...styles.input, flex: 1 }}
+                />
+                <button
+                  onClick={handleSetPassword}
+                  disabled={passwordLoading || !newPassword}
+                  style={{
+                    ...styles.button,
+                    width: "auto",
+                    marginBottom: 0,
+                    padding: "0 16px",
+                    opacity: passwordLoading || !newPassword ? 0.5 : 1,
+                  }}
+                >
+                  {passwordLoading ? "..." : "Update"}
+                </button>
+              </div>
+              {passwordMessage && (
+                <div
+                  style={{
+                    marginTop: "8px",
+                    fontSize: "13px",
+                    color: "#22c55e",
+                  }}
+                >
+                  {passwordMessage}
+                </div>
+              )}
+              {passwordError && (
+                <div
+                  style={{
+                    marginTop: "8px",
+                    fontSize: "13px",
+                    color: "#f2c2cb",
+                  }}
+                >
+                  {passwordError}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <button
+            onClick={() => router.push("/social")}
+            style={{
+              ...styles.button,
+              background: "#1e232d",
+              borderColor: "#2b3544",
+            }}
+          >
+            Go to Social Hub
+          </button>
+
+          <button
+            onClick={handleLogout}
+            disabled={isLoggingOut}
+            style={{
+              ...styles.button,
+              background: isLoggingOut ? "#0d57e0" : "#0f62fe",
+              borderColor: isLoggingOut ? "#1c355c" : "#1f2a3a",
+              opacity: isLoggingOut ? 0.9 : 1,
+              cursor: isLoggingOut ? "wait" : "pointer",
+              transform: isLoggingOut ? "scale(0.995)" : "scale(1)",
+            }}
+          >
+            {isLoggingOut ? "Logging out..." : "Logout"}
+          </button>
         </div>
       </div>
     </div>
@@ -489,20 +688,95 @@ const styles = {
     justifyContent: "center",
     alignItems: "center",
     minHeight: "100vh",
-    background: "#0b0d10",
+    // background: "#0b0d10", // Removed to allow blurred background to show
     color: "#e7e9ed",
     fontFamily: "Inter, system-ui, -apple-system, sans-serif",
     padding: "20px",
+    position: "relative", // Ensure z-index works for children
   } as React.CSSProperties,
 
   card: {
     background: "#11141a",
     border: "1px solid #1e232d",
-    borderRadius: "6px",
-    padding: "36px",
+    borderRadius: "12px",
+    overflow: "hidden", // Ensure banner doesn't overflow corners
     boxShadow: "0 12px 40px rgba(0, 0, 0, 0.35)",
     maxWidth: "540px",
     width: "100%",
+    position: "relative",
+    zIndex: 1,
+  } as React.CSSProperties,
+
+  header: {
+    position: "relative",
+    width: "100%",
+    height: "180px",
+    background: "#0b0d10",
+  } as React.CSSProperties,
+
+  bannerImage: {
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+    opacity: 0.8,
+  } as React.CSSProperties,
+
+  headerOverlay: {
+    position: "absolute",
+    bottom: "-40px", // Pull avatar down to overlap body
+    left: "0",
+    width: "100%",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    zIndex: 10,
+  } as React.CSSProperties,
+
+  avatarContainer: {
+    position: "relative",
+    width: "100px",
+    height: "100px",
+    borderRadius: "50%",
+    border: "4px solid #11141a", // Match card background to create "cutout" effect
+    background: "#11141a",
+    overflow: "hidden",
+    boxShadow: "0 4px 12px rgba(0,0,0,0.5)",
+  } as React.CSSProperties,
+
+  avatarImage: {
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+  } as React.CSSProperties,
+
+  headerText: {
+    marginTop: "12px",
+    textAlign: "center",
+  } as React.CSSProperties,
+
+  username: {
+    fontSize: "24px",
+    fontWeight: 800,
+    color: "#f5f7fb",
+    margin: 0,
+    textShadow: "0 2px 4px rgba(0,0,0,0.5)",
+  } as React.CSSProperties,
+
+  userTitle: {
+    fontSize: "14px",
+    color: "#9aa3b5",
+    fontWeight: 600,
+    marginTop: "4px",
+    textTransform: "uppercase",
+    letterSpacing: "0.05em",
+    background: "rgba(0,0,0,0.4)",
+    padding: "4px 12px",
+    borderRadius: "12px",
+    backdropFilter: "blur(4px)",
+  } as React.CSSProperties,
+
+  body: {
+    padding: "60px 36px 36px 36px", // Top padding accounts for overlapping avatar
   } as React.CSSProperties,
 
   title: {
@@ -568,6 +842,19 @@ const styles = {
     outline: "none",
   } as React.CSSProperties,
 
+  select: {
+    width: "100%",
+    padding: "12px",
+    borderRadius: "4px",
+    border: "1px solid #1f2a3a",
+    background: "#0b0d10",
+    color: "#f5f7fb",
+    fontSize: "14px",
+    outline: "none",
+    cursor: "pointer",
+    marginBottom: "12px",
+  } as React.CSSProperties,
+
   inputHelper: {
     margin: "6px 0 0 0",
     fontSize: "12px",
@@ -609,21 +896,6 @@ const styles = {
     marginBottom: "18px",
     transition:
       "background 0.2s ease, border-color 0.2s ease, transform 0.05s ease",
-  } as React.CSSProperties,
-
-  debugBox: {
-    background: "#0f1218",
-    border: "1px solid #1e232d",
-    padding: "14px",
-    borderRadius: "4px",
-    fontSize: "13px",
-    color: "#98a2b3",
-  } as React.CSSProperties,
-
-  list: {
-    margin: "0 0 0 20px",
-    fontSize: "13px",
-    color: "#c8cbd2",
   } as React.CSSProperties,
 
   sectionDivider: {

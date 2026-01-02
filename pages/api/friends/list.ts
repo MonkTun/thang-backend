@@ -55,9 +55,14 @@ export default async function handler(
             projection: {
               username: 1,
               lastSeen: 1,
+              lastSeenWeb: 1,
+              lastSeenUnreal: 1,
               status: 1,
               rank: 1,
               partyId: 1,
+              avatarId: 1,
+              equippedTitle: 1,
+              bannerId: 1,
             },
           }
         )
@@ -78,7 +83,7 @@ export default async function handler(
           .collection("parties")
           .find(
             { _id: { $in: partyIds } },
-            { projection: { privacy: 1, members: 1 } }
+            { projection: { privacy: 1, members: 1, leaderUid: 1 } }
           )
           .toArray();
         partiesMap = new Map(partiesData.map((p) => [p._id.toString(), p]));
@@ -90,51 +95,104 @@ export default async function handler(
       const now = new Date().getTime();
 
       hydratedFriends = friendList.map((f: any) => {
-        const data = friendsMap.get(f.uid) as any;
-        if (!data) return f; // Should not happen unless friend deleted account
+        const u = friendsMap.get(f.uid) as any;
 
-        const lastSeenTime = data.lastSeen
-          ? new Date(data.lastSeen).getTime()
+        // Determine Status Priority: Unreal > Web > Offline
+        let effectiveStatus = "Offline";
+        let clientType = "offline";
+        let isOnline = false;
+
+        const lastSeenUnreal = u?.lastSeenUnreal
+          ? new Date(u.lastSeenUnreal).getTime()
           : 0;
-        const isRecent = now - lastSeenTime < ONLINE_THRESHOLD_MS;
+        const lastSeenWeb = u?.lastSeenWeb
+          ? new Date(u.lastSeenWeb).getTime()
+          : 0;
 
-        // Determine effective status
-        // If explicitly "offline" OR timed out -> "offline"
-        // Otherwise use their status (e.g. "online", "in-game")
-        let effectiveStatus = "offline";
-        if (isRecent && data.status !== "offline") {
-          effectiveStatus = data.status || "online";
+        const isUnrealOnline = now - lastSeenUnreal < ONLINE_THRESHOLD_MS;
+        const isWebOnline = now - lastSeenWeb < ONLINE_THRESHOLD_MS;
+
+        if (isUnrealOnline) {
+          effectiveStatus = u?.status || "Online";
+          clientType = "unreal";
+          isOnline = true;
+        } else if (isWebOnline) {
+          effectiveStatus = "Online";
+          clientType = "web";
+          isOnline = true;
         }
 
-        // Determine Party Info
+        // Party Info
         let partyInfo = null;
-        if (data.partyId) {
-          const p = partiesMap.get(data.partyId.toString());
+        let isPartyLeader = false;
+        if (u?.partyId) {
+          const p = partiesMap.get(u.partyId.toString());
           if (p) {
             partyInfo = {
-              id: data.partyId.toString(),
+              id: u.partyId.toString(),
               privacy: p.privacy || "private",
               isFull: (p.members?.length || 0) >= 5,
             };
+            if (p.leaderUid === f.uid) {
+              isPartyLeader = true;
+            }
           }
         }
 
         return {
-          uid: f.uid,
-          username: data.username || f.username, // Prefer latest username
-          addedAt: f.addedAt,
+          ...f,
+          username: u?.username || f.username,
+          avatarId: u?.avatarId || "Alpha",
+          bannerId: u?.bannerId || "Alpha",
+          rank: u?.rank || 0,
+          equippedTitle: u?.equippedTitle || "unequipped",
           status: effectiveStatus,
-          lastSeen: data.lastSeen,
-          rank: data.rank || 0,
+          client: clientType,
+          isOnline,
           party: partyInfo,
+          isPartyLeader,
         };
       });
     }
 
-    // 5. Return Lists
+    // 5. Hydrate Friend Requests (Get Avatars)
+    let hydratedRequests = [];
+    const requestUids = friendRequests.map((r: any) => r.uid);
+    if (requestUids.length > 0) {
+      const requestData = await users
+        .find(
+          { _id: { $in: requestUids } },
+          {
+            projection: {
+              username: 1,
+              avatarId: 1,
+              rank: 1,
+              equippedTitle: 1,
+              bannerId: 1,
+            },
+          }
+        )
+        .toArray();
+
+      const requestMap = new Map(requestData.map((u) => [u._id, u]));
+
+      hydratedRequests = friendRequests.map((r: any) => {
+        const u = requestMap.get(r.uid) as any;
+        return {
+          ...r,
+          username: u?.username || r.username,
+          avatarId: u?.avatarId || "Alpha",
+          bannerId: u?.bannerId || "Alpha",
+          rank: u?.rank || 0,
+          equippedTitle: u?.equippedTitle || "unequipped",
+        };
+      });
+    }
+
+    // 6. Return Lists
     return res.status(200).json({
       friends: hydratedFriends,
-      friendRequests: friendRequests,
+      friendRequests: hydratedRequests,
       blocked: blockedUsers,
     });
   } catch (error: any) {

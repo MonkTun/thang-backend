@@ -718,7 +718,7 @@ export default function SocialPage() {
           right: 0,
           bottom: 0,
           backgroundColor: bannerId ? "transparent" : "#0b0d10",
-          backgroundImage: bannerId ? `url(/banners/${bannerId}.png)` : "none",
+          backgroundImage: bannerId ? `url(/Banners/${bannerId}.png)` : "none",
           backgroundSize: "cover",
           backgroundPosition: "center",
           filter: bannerId ? "blur(20px) brightness(0.5)" : "none",
@@ -872,7 +872,7 @@ export default function SocialPage() {
                         }}
                       >
                         <img
-                          src={`/profilepicture/${m.avatarId || "Alpha"}.png`}
+                          src={`/ProfilePicture/${m.avatarId || "Alpha"}.png`}
                           alt="Avatar"
                           style={{
                             width: "32px",
@@ -1262,7 +1262,7 @@ export default function SocialPage() {
                           }}
                         >
                           <img
-                            src={`/profilepicture/${
+                            src={`/ProfilePicture/${
                               friend.avatarId || "Alpha"
                             }.png`}
                             alt="Avatar"

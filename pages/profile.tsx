@@ -395,7 +395,7 @@ export default function ProfilePage() {
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundImage: `url(/banners/${bannerId}.png)`,
+          backgroundImage: `url(/Banners/${bannerId}.png)`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           filter: "blur(20px) brightness(0.4)",
@@ -408,17 +408,17 @@ export default function ProfilePage() {
         {/* Header Section */}
         <div style={styles.header}>
           <img
-            src={`/banners/${bannerId}.png`}
+            src={`/Banners/${bannerId}.png`}
             alt="Banner"
             style={styles.bannerImage}
             onError={(e) => {
-              (e.target as HTMLImageElement).src = "/banners/Alpha.png";
+              (e.target as HTMLImageElement).src = "/Banners/Alpha.png";
             }}
           />
           <div style={styles.headerOverlay}>
             <div style={styles.avatarContainer}>
               <img
-                src={`/profilepicture/${avatarId}.png`}
+                src={`/ProfilePicture/${avatarId}.png`}
                 alt="Avatar"
                 style={styles.avatarImage}
               />

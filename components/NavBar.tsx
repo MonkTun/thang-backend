@@ -116,7 +116,7 @@ export default function NavBar() {
           ) : isAuthed ? (
             <Link href="/profile" style={styles.avatarLink}>
               <img
-                src={`/profilepicture/${avatarId}.png`}
+                src={`/ProfilePicture/${avatarId}.png`}
                 alt="Profile"
                 style={{
                   width: "36px",

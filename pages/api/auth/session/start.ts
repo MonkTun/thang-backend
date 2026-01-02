@@ -4,7 +4,6 @@ import crypto from "crypto";
 
 const DB_NAME = process.env.NEXT_PUBLIC_DB_NAME || "game";
 const COLLECTION_NAME = "login_sessions";
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 
 interface LoginSession {
   deviceCode: string;
@@ -59,9 +58,17 @@ export default async function handler(
 
     await sessions.insertOne(newSession);
 
+    // Determine Base URL dynamically
+    let baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+    if (!baseUrl) {
+      const protocol = req.headers["x-forwarded-proto"] || "http";
+      const host = req.headers.host;
+      baseUrl = `${protocol}://${host}`;
+    }
+
     return res.status(200).json({
       deviceCode,
-      verificationUrl: `${BASE_URL}/verify?code=${deviceCode}`,
+      verificationUrl: `${baseUrl}/verify?code=${deviceCode}`,
       expiresIn: 300, // 5 minutes in seconds
     });
   } catch (error) {

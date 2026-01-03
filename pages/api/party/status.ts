@@ -42,25 +42,39 @@ export default async function handler(
     if (user.partyId) {
       const party = await parties.findOne({ _id: new ObjectId(user.partyId) });
       if (party) {
-        // Hydrate members with avatarId and bannerId
-        const memberUids = party.members.map((m: any) => m.uid);
-        const membersData = await users
-          .find(
-            { _id: { $in: memberUids } },
-            { projection: { avatarId: 1, bannerId: 1 } }
-          )
-          .toArray();
+        // Check if user is actually in the party members
+        const isMember = party.members.some((m: any) => m.uid === uid);
 
-        const membersMap = new Map(membersData.map((m) => [m._id, m]));
+        if (!isMember) {
+          // Inconsistency detected: User thinks they are in party, but party doesn't have them
+          console.warn(
+            `[Party Status] Inconsistency: User ${uid} has partyId ${user.partyId} but is not in members list. Fixing...`
+          );
 
-        party.members = party.members.map((m: any) => ({
-          ...m,
-          avatarId: (membersMap.get(m.uid) as any)?.avatarId || "Alpha",
-          bannerId: (membersMap.get(m.uid) as any)?.bannerId || "Alpha",
-          isReady: m.isReady || false, // Ensure isReady is returned
-        }));
+          // Remove partyId from user
+          await users.updateOne({ _id: uid }, { $unset: { partyId: "" } });
+          response.partyId = null;
+        } else {
+          // Hydrate members with avatarId and bannerId
+          const memberUids = party.members.map((m: any) => m.uid);
+          const membersData = await users
+            .find(
+              { _id: { $in: memberUids } },
+              { projection: { avatarId: 1, bannerId: 1 } }
+            )
+            .toArray();
 
-        response.party = party;
+          const membersMap = new Map(membersData.map((m) => [m._id, m]));
+
+          party.members = party.members.map((m: any) => ({
+            ...m,
+            avatarId: (membersMap.get(m.uid) as any)?.avatarId || "Alpha",
+            bannerId: (membersMap.get(m.uid) as any)?.bannerId || "Alpha",
+            isReady: m.isReady || false, // Ensure isReady is returned
+          }));
+
+          response.party = party;
+        }
       } else {
         // Stale partyId fix
         await users.updateOne({ _id: uid }, { $unset: { partyId: "" } });

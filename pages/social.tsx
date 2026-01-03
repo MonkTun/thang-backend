@@ -638,6 +638,8 @@ export default function SocialPage() {
       fetchPartyStatus();
     } catch (e: any) {
       setPartyError(e.message);
+      // Refresh status to clean up stale invites if the join failed (e.g. 404)
+      fetchPartyStatus();
     }
   };
 

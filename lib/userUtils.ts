@@ -92,20 +92,65 @@ export async function getOrCreateUser(
       updated_at: new Date(),
     };
 
-    try {
-      await users.insertOne(newUser);
-      user = newUser;
-    } catch (insertError: any) {
-      // Handle race condition (Duplicate Key Error 11000)
-      if (insertError.code === 11000) {
-        console.log("[UserUtils] Race condition detected, fetching user again");
-        user = await users.findOne({ _id: uid });
-        if (!user) {
+    // Retry loop for inviteCode collisions
+    let attempts = 0;
+    while (attempts < 3) {
+      try {
+        if (attempts > 0) {
+          newUser.inviteCode = generateInviteCode();
+        }
+        await users.insertOne(newUser);
+        user = newUser;
+        break; // Success
+      } catch (insertError: any) {
+        // Handle race condition (Duplicate Key Error 11000)
+        if (insertError.code === 11000) {
+          // Check if it's the _id (UID) that collided
+          // Note: keyPattern might be undefined in some drivers/versions, but usually present
+          const isUidCollision =
+            insertError.keyPattern?._id ||
+            insertError.message?.includes("_id_") ||
+            insertError.message?.includes("dup key: { _id");
+
+          if (isUidCollision) {
+            console.log(
+              "[UserUtils] Race condition: User already exists (UID collision)"
+            );
+            // Cleanup the unused party we just created
+            await parties.deleteOne({ _id: partyResult.insertedId });
+
+            user = await users.findOne({ _id: uid });
+            if (!user) {
+              // This is weird, it said duplicate but we can't find it?
+              throw insertError;
+            }
+            break; // Found existing user
+          }
+
+          // Check if it's the inviteCode that collided
+          const isInviteCodeCollision =
+            insertError.keyPattern?.inviteCode ||
+            insertError.message?.includes("inviteCode_") ||
+            insertError.message?.includes("dup key: { inviteCode");
+
+          if (isInviteCodeCollision) {
+            console.warn(
+              `[UserUtils] Invite code collision (${newUser.inviteCode}), retrying...`
+            );
+            attempts++;
+            continue;
+          }
+
+          // Unknown collision
+          throw insertError;
+        } else {
           throw insertError;
         }
-      } else {
-        throw insertError;
       }
+    }
+
+    if (!user) {
+      throw new Error("Failed to create user after multiple attempts");
     }
   }
 

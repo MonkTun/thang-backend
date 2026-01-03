@@ -71,7 +71,7 @@ export default async function handler(
     if (requester && requester.partyId) {
       const oldPartyId = requester.partyId;
       // If they are somehow already in this party (race condition), just remove request
-      if (oldPartyId === partyId) {
+      if (oldPartyId.toString() === partyId.toString()) {
         await parties.updateOne(
           { _id: new ObjectId(partyId) },
           { $pull: { joinRequests: { uid: requesterUid } } as any }

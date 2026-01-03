@@ -115,7 +115,7 @@ export default async function handler(
 
     // 6. Join Party (Atomic Update)
     // Add to party members
-    await parties.updateOne(
+    const updateResult = await parties.updateOne(
       { _id: new ObjectId(partyId) },
       {
         $push: {
@@ -128,6 +128,10 @@ export default async function handler(
         } as any,
       }
     );
+
+    if (updateResult.matchedCount === 0) {
+      return res.status(404).json({ error: "Party no longer exists" });
+    }
 
     // Update User: Set partyId, Remove Invite
     await users.updateOne(

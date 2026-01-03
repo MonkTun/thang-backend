@@ -91,80 +91,102 @@ export default async function handler(
       partyInvites: partyInvites,
     };
 
-    // 4. If in party, fetch details
+    // 4. Ensure User is in a Party
+    let party = null;
     if (user.partyId) {
-      const party = await parties.findOne({ _id: new ObjectId(user.partyId) });
-      if (party) {
-        // Check if user is actually in the party members
-        const isMember = party.members.some((m: any) => m.uid === uid);
-
-        if (!isMember) {
-          // Inconsistency detected: User thinks they are in party, but party doesn't have them
-          console.warn(
-            `[Party Status] Inconsistency: User ${uid} has partyId ${user.partyId} but is not in members list. Fixing...`
-          );
-
-          // Remove partyId from user
-          await users.updateOne({ _id: uid }, { $unset: { partyId: "" } });
-          response.partyId = null;
-        } else {
-          // Hydrate members with avatarId and bannerId
-          const memberUids = party.members.map((m: any) => m.uid);
-          const membersData = await users
-            .find(
-              { _id: { $in: memberUids } },
-              { projection: { avatarId: 1, bannerId: 1 } }
-            )
-            .toArray();
-
-          const membersMap = new Map(membersData.map((m) => [m._id, m]));
-
-          party.members = party.members.map((m: any) => ({
-            ...m,
-            avatarId: (membersMap.get(m.uid) as any)?.avatarId || "Alpha",
-            bannerId: (membersMap.get(m.uid) as any)?.bannerId || "Alpha",
-            isReady: m.isReady || false, // Ensure isReady is returned
-          }));
-
-          // Only show joinRequests to the leader
-          if (party.leaderUid === uid) {
-            let joinRequests = party.joinRequests || [];
-            let requestsChanged = false;
-
-            // Filter out requests from users who are already members
-            const memberIds = new Set(party.members.map((m: any) => m.uid));
-            const validRequests = [];
-
-            for (const req of joinRequests) {
-              if (memberIds.has(req.uid)) {
-                requestsChanged = true;
-                continue;
-              }
-              validRequests.push(req);
-            }
-
-            if (requestsChanged) {
-              await parties.updateOne(
-                { _id: party._id },
-                { $set: { joinRequests: validRequests } }
-              );
-              joinRequests = validRequests;
-            }
-
-            party.joinRequests = joinRequests;
-          } else {
-            delete party.joinRequests;
-          }
-
-          response.party = party;
-        }
-      } else {
-        // Stale partyId fix
-        await users.updateOne({ _id: uid }, { $unset: { partyId: "" } });
-        response.partyId = null;
-        response.party = null; // Explicitly set party to null
+      try {
+        party = await parties.findOne({ _id: new ObjectId(user.partyId) });
+      } catch (e) {
+        party = null;
       }
     }
+
+    // Check if party is valid (exists and user is a member)
+    let isValidParty = false;
+    if (party) {
+      isValidParty = party.members.some((m: any) => m.uid === uid);
+    }
+
+    // If not valid, create a new solo party
+    if (!isValidParty) {
+      console.log(
+        `[Party Status] User ${uid} not in valid party. Creating solo party.`
+      );
+
+      const newParty = {
+        leaderUid: uid,
+        members: [
+          {
+            uid: uid,
+            username: user.username || "Unknown",
+            joinedAt: new Date(),
+            isReady: false,
+          },
+        ],
+        privacy: "public",
+        region: "US-East", // Default region
+        createdAt: new Date(),
+        joinRequests: [],
+      };
+
+      const result = await parties.insertOne(newParty);
+      party = { ...newParty, _id: result.insertedId };
+
+      // Update User
+      await users.updateOne({ _id: uid }, { $set: { partyId: party._id } });
+
+      response.partyId = party._id;
+    }
+
+    // 5. Hydrate Party Details (Avatars, Banners)
+    const memberUids = party.members.map((m: any) => m.uid);
+    const membersData = await users
+      .find(
+        { _id: { $in: memberUids } },
+        { projection: { avatarId: 1, bannerId: 1 } }
+      )
+      .toArray();
+
+    const membersMap = new Map(membersData.map((m) => [m._id, m]));
+
+    party.members = party.members.map((m: any) => ({
+      ...m,
+      avatarId: (membersMap.get(m.uid) as any)?.avatarId || "Alpha",
+      bannerId: (membersMap.get(m.uid) as any)?.bannerId || "Alpha",
+      isReady: m.isReady || false,
+    }));
+
+    // 6. Filter Join Requests (Leader Only)
+    if (party.leaderUid === uid) {
+      let joinRequests = party.joinRequests || [];
+      let requestsChanged = false;
+
+      // Filter out requests from users who are already members
+      const memberIds = new Set(party.members.map((m: any) => m.uid));
+      const validRequests = [];
+
+      for (const req of joinRequests) {
+        if (memberIds.has(req.uid)) {
+          requestsChanged = true;
+          continue;
+        }
+        validRequests.push(req);
+      }
+
+      if (requestsChanged) {
+        await parties.updateOne(
+          { _id: party._id },
+          { $set: { joinRequests: validRequests } }
+        );
+        joinRequests = validRequests;
+      }
+
+      party.joinRequests = joinRequests;
+    } else {
+      delete party.joinRequests;
+    }
+
+    response.party = party;
 
     return res.status(200).json(response);
   } catch (error: any) {

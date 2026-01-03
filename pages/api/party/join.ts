@@ -98,11 +98,32 @@ export default async function handler(
     }
 
     const isPublic = party.privacy === "public";
-    const hasInvite = user.partyInvites?.some(
+
+    // Find the specific invite
+    const invite = user.partyInvites?.find(
       (inv: any) => inv.partyId.toString() === partyId
     );
 
-    if (!isPublic && !hasInvite) {
+    // Validate Invite (if it exists)
+    if (invite) {
+      // If the invite has a leaderUid, check if it matches the current party leader
+      if (invite.leaderUid && invite.leaderUid !== party.leaderUid) {
+        // Invite is invalid because leader changed/left
+        await users.updateOne(
+          { _id: uid },
+          { $pull: { partyInvites: { partyId: new ObjectId(partyId) } } as any }
+        );
+
+        if (!isPublic) {
+          return res
+            .status(403)
+            .json({ error: "Invite is no longer valid (Leader changed)" });
+        }
+        // If public, we continue but the invite is gone
+      }
+    }
+
+    if (!isPublic && !invite) {
       return res
         .status(403)
         .json({ error: "This party is private. You need an invite." });

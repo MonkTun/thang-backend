@@ -110,6 +110,7 @@ export default async function handler(
     // 5. Send Invite (Update Target User)
     const invite = {
       partyId: party._id,
+      leaderUid: currentUser._id,
       leaderUsername: currentUser.username,
       invitedAt: new Date(),
     };

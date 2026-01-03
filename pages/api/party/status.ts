@@ -33,9 +33,62 @@ export default async function handler(
     const user = await users.findOne({ _id: uid });
     if (!user) return res.status(404).json({ error: "User not found" });
 
+    // --- CLEANUP INVITES ---
+    let partyInvites = user.partyInvites || [];
+    let invitesChanged = false;
+    const validInvites: any[] = [];
+
+    if (partyInvites.length > 0) {
+      // Extract IDs safely
+      const partyIds = partyInvites
+        .map((inv: any) => {
+          try {
+            return new ObjectId(inv.partyId);
+          } catch (e) {
+            return null;
+          }
+        })
+        .filter((id: any) => id !== null) as ObjectId[];
+
+      const foundParties = await parties
+        .find({ _id: { $in: partyIds } })
+        .toArray();
+
+      const partyMap = new Map<string, any>();
+      foundParties.forEach((p: any) => {
+        if (p._id) partyMap.set(p._id.toString(), p);
+      });
+
+      for (const invite of partyInvites) {
+        const party = partyMap.get(invite.partyId.toString());
+
+        // 1. Party must exist
+        if (!party) {
+          invitesChanged = true;
+          continue;
+        }
+
+        // 2. Leader must match (if recorded in invite)
+        if (invite.leaderUid && party.leaderUid !== invite.leaderUid) {
+          invitesChanged = true;
+          continue;
+        }
+
+        validInvites.push(invite);
+      }
+
+      if (invitesChanged) {
+        await users.updateOne(
+          { _id: uid },
+          { $set: { partyInvites: validInvites } }
+        );
+        partyInvites = validInvites;
+      }
+    }
+
     const response: any = {
       partyId: user.partyId || null,
-      partyInvites: user.partyInvites || [],
+      partyInvites: partyInvites,
     };
 
     // 4. If in party, fetch details
@@ -75,7 +128,30 @@ export default async function handler(
 
           // Only show joinRequests to the leader
           if (party.leaderUid === uid) {
-            party.joinRequests = party.joinRequests || [];
+            let joinRequests = party.joinRequests || [];
+            let requestsChanged = false;
+
+            // Filter out requests from users who are already members
+            const memberIds = new Set(party.members.map((m: any) => m.uid));
+            const validRequests = [];
+
+            for (const req of joinRequests) {
+              if (memberIds.has(req.uid)) {
+                requestsChanged = true;
+                continue;
+              }
+              validRequests.push(req);
+            }
+
+            if (requestsChanged) {
+              await parties.updateOne(
+                { _id: party._id },
+                { $set: { joinRequests: validRequests } }
+              );
+              joinRequests = validRequests;
+            }
+
+            party.joinRequests = joinRequests;
           } else {
             delete party.joinRequests;
           }

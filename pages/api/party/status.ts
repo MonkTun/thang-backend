@@ -162,6 +162,7 @@ export default async function handler(
         // Stale partyId fix
         await users.updateOne({ _id: uid }, { $unset: { partyId: "" } });
         response.partyId = null;
+        response.party = null; // Explicitly set party to null
       }
     }
 

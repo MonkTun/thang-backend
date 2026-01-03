@@ -1121,7 +1121,77 @@ export default function SocialPage() {
             </div>
           ) : (
             <div style={styles.partyBox}>
-              <p style={{ color: "#c8cbd2" }}>Loading party data...</p>
+              {/* If party is null but we are not loading, it means we are in a "Solo" state but the UI expects a party object. 
+                  However, the backend now returns party: null if we are solo. 
+                  We should render a "Solo Party" view or a "Create Party" view here. 
+                  For now, let's assume if party is null, we are just not in a party. */}
+              <div style={styles.partyHeader}>
+                <div
+                  style={{ display: "flex", alignItems: "center", gap: "10px" }}
+                >
+                  <span style={{ color: "#9ca3af", fontWeight: "bold" }}>
+                    Not in a Party
+                  </span>
+                </div>
+              </div>
+
+              <div style={styles.divider} />
+
+              <h3 style={styles.subTitle}>Invite Player</h3>
+              <div style={{ display: "flex", gap: "8px" }}>
+                <input
+                  type="text"
+                  placeholder="Username"
+                  value={partyTargetUsername}
+                  onChange={(e) => setPartyTargetUsername(e.target.value)}
+                  style={styles.input}
+                />
+                <button
+                  onClick={() => handleInviteToParty()}
+                  style={styles.smallButton}
+                >
+                  Invite
+                </button>
+              </div>
+              {partyError && <p style={styles.errorText}>{partyError}</p>}
+              {partySuccess && <p style={styles.successText}>{partySuccess}</p>}
+
+              {/* Show Invites even if not in party */}
+              {partyInvites.length > 0 && (
+                <div
+                  style={{
+                    marginTop: "20px",
+                    borderTop: "1px solid #374151",
+                    paddingTop: "16px",
+                  }}
+                >
+                  <h3 style={styles.subTitle}>Party Invites</h3>
+                  {partyInvites.map((inv) => (
+                    <div key={inv.partyId} style={styles.inviteItem}>
+                      <span>
+                        Invited by <b>{inv.leaderUsername}</b>
+                      </span>
+                      <div style={{ display: "flex", gap: "8px" }}>
+                        <button
+                          onClick={() => handleJoinParty(inv.partyId)}
+                          style={styles.acceptButton}
+                        >
+                          Join
+                        </button>
+                        <button
+                          onClick={() => handleDeclinePartyInvite(inv.partyId)}
+                          style={{
+                            ...styles.dangerButton,
+                            background: "#ef4444",
+                          }}
+                        >
+                          Decline
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 

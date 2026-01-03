@@ -305,7 +305,8 @@ export default function SocialPage() {
         console.log("[Social] Region data:", data);
         if (data.regions && data.regions.length > 0) {
           setAvailableRegions(data.regions);
-          setSelectedRegion(data.regions[0]);
+          // Only set default if not already set (e.g. by party status)
+          setSelectedRegion((prev) => prev || data.regions[0]);
         }
       } else {
         console.warn("[Social] Failed to fetch region:", res.status);
@@ -382,11 +383,18 @@ export default function SocialPage() {
         headers: { Authorization: `Bearer ${idToken}` },
       });
       if (res.ok) {
-        const data = await res.json();
         setParty(data.party || null);
         setPartyInvites(data.partyInvites || []);
         if (data.party && data.party.region) {
           setSelectedRegion(data.party.region);
+          // Ensure the party's region is in the available list
+          setAvailableRegions((prev) => {
+            if (prev.length > 0 && !prev.includes(data.party.region)) {
+              return [...prev, data.party.region];
+            }
+            return prev;
+          });
+        } setSelectedRegion(data.party.region);
         }
       }
     } catch (e) {

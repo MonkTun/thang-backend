@@ -28,6 +28,12 @@ export default async function handler(
       return res.status(400).json({ error: "Missing requesterUid" });
     }
 
+    if (requesterUid === currentUserUid) {
+      return res
+        .status(400)
+        .json({ error: "Cannot accept friend request from yourself" });
+    }
+
     const client = await clientPromise;
     const db = client.db(DB_NAME);
     const users = db.collection("users");

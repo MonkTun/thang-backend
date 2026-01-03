@@ -42,6 +42,31 @@ export default async function handler(
     const friendRequests = currentUser.friendRequests || [];
     const blockedUsers = currentUser.blocked || [];
 
+    // Cleanup: Remove self from friends list if present
+    const selfInFriends = friendList.some((f: any) => f.uid === uid);
+    const selfInRequests = friendRequests.some((r: any) => r.uid === uid);
+
+    if (selfInFriends || selfInRequests) {
+      await users.updateOne(
+        { _id: uid },
+        {
+          $pull: {
+            friends: { uid: uid },
+            friendRequests: { uid: uid },
+          } as any,
+        }
+      );
+      // Filter locally for this request
+      if (selfInFriends) {
+        const index = friendList.findIndex((f: any) => f.uid === uid);
+        if (index > -1) friendList.splice(index, 1);
+      }
+      if (selfInRequests) {
+        const index = friendRequests.findIndex((r: any) => r.uid === uid);
+        if (index > -1) friendRequests.splice(index, 1);
+      }
+    }
+
     // 4. Hydrate Friends with Real-Time Presence
     // We need to fetch the latest data for each friend to check 'lastSeen'
     const friendUids = friendList.map((f: any) => f.uid);

@@ -697,6 +697,31 @@ export default function SocialPage() {
     }
   };
 
+  const handleDeclinePartyInvite = async (partyId: string) => {
+    const idToken = localStorage.getItem("idToken");
+    if (!idToken) return;
+
+    try {
+      const res = await fetch("/api/party/decline", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ partyId }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error);
+      }
+      // Refresh status to remove the invite from the list
+      fetchPartyStatus();
+    } catch (e: any) {
+      setPartyError(e.message);
+    }
+  };
+
   if (loading) {
     return (
       <div style={styles.container}>
@@ -945,12 +970,23 @@ export default function SocialPage() {
                       <span>
                         Invited by <b>{inv.leaderUsername}</b>
                       </span>
-                      <button
-                        onClick={() => handleJoinParty(inv.partyId)}
-                        style={styles.acceptButton}
-                      >
-                        Join
-                      </button>
+                      <div style={{ display: "flex", gap: "8px" }}>
+                        <button
+                          onClick={() => handleJoinParty(inv.partyId)}
+                          style={styles.acceptButton}
+                        >
+                          Join
+                        </button>
+                        <button
+                          onClick={() => handleDeclinePartyInvite(inv.partyId)}
+                          style={{
+                            ...styles.dangerButton,
+                            background: "#ef4444",
+                          }}
+                        >
+                          Decline
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>

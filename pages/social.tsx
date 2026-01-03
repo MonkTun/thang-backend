@@ -383,6 +383,7 @@ export default function SocialPage() {
         headers: { Authorization: `Bearer ${idToken}` },
       });
       if (res.ok) {
+        const data = await res.json();
         setParty(data.party || null);
         setPartyInvites(data.partyInvites || []);
         if (data.party && data.party.region) {
@@ -394,7 +395,6 @@ export default function SocialPage() {
             }
             return prev;
           });
-        } setSelectedRegion(data.party.region);
         }
       }
     } catch (e) {

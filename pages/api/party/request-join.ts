@@ -13,12 +13,12 @@ export default async function handler(
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { targetUsername, partyId } = req.body;
+  const { targetUsername, partyId, targetUid } = req.body;
 
-  if (!targetUsername && !partyId) {
+  if (!targetUsername && !partyId && !targetUid) {
     return res
       .status(400)
-      .json({ error: "Must provide targetUsername or partyId" });
+      .json({ error: "Must provide targetUsername, targetUid, or partyId" });
   }
 
   try {
@@ -48,6 +48,15 @@ export default async function handler(
 
     if (partyId) {
       targetPartyId = new ObjectId(partyId);
+    } else if (targetUid) {
+      const targetUser = await users.findOne({ _id: targetUid });
+      if (!targetUser) {
+        return res.status(404).json({ error: "Target user not found" });
+      }
+      if (!targetUser.partyId) {
+        return res.status(400).json({ error: "Target user is not in a party" });
+      }
+      targetPartyId = new ObjectId(targetUser.partyId);
     } else {
       // Find by username
       const targetUser = await users.findOne({ username: targetUsername });

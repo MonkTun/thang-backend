@@ -73,6 +73,13 @@ export default async function handler(
             isReady: m.isReady || false, // Ensure isReady is returned
           }));
 
+          // Only show joinRequests to the leader
+          if (party.leaderUid === uid) {
+            party.joinRequests = party.joinRequests || [];
+          } else {
+            delete party.joinRequests;
+          }
+
           response.party = party;
         }
       } else {

@@ -35,10 +35,17 @@ interface PartyMember {
   joinedAt: string;
 }
 
+interface JoinRequest {
+  uid: string;
+  username: string;
+  requestedAt: string;
+}
+
 interface Party {
   _id: string;
   leaderUid: string;
   members: PartyMember[];
+  joinRequests?: JoinRequest[];
   privacy: "public" | "private";
   region?: string;
 }
@@ -705,6 +712,77 @@ export default function SocialPage() {
     }
   };
 
+  const handleAcceptJoinRequest = async (requesterUid: string) => {
+    const idToken = localStorage.getItem("idToken");
+    if (!idToken) return;
+
+    try {
+      const res = await fetch("/api/party/accept-join", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ requesterUid }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error);
+      }
+      fetchPartyStatus();
+    } catch (e: any) {
+      setPartyError(e.message);
+    }
+  };
+
+  const handleRejectJoinRequest = async (requesterUid: string) => {
+    const idToken = localStorage.getItem("idToken");
+    if (!idToken) return;
+
+    try {
+      const res = await fetch("/api/party/reject-join", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ requesterUid }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error);
+      }
+      fetchPartyStatus();
+    } catch (e: any) {
+      setPartyError(e.message);
+    }
+  };
+
+  const handleAskToJoinParty = async (targetUsername: string) => {
+    const idToken = localStorage.getItem("idToken");
+    if (!idToken) return;
+
+    try {
+      const res = await fetch("/api/party/request-join", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ targetUsername }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+
+      setPartySuccess(`Sent join request to ${targetUsername}'s party`);
+    } catch (e: any) {
+      setPartyError(e.message);
+    }
+  };
+
   const handleDeclinePartyInvite = async (partyId: string) => {
     const idToken = localStorage.getItem("idToken");
     if (!idToken) return;
@@ -941,6 +1019,45 @@ export default function SocialPage() {
                   </div>
                 ))}
               </div>
+
+              {party.leaderUid === currentUserUid &&
+                party.joinRequests &&
+                party.joinRequests.length > 0 && (
+                  <>
+                    <div style={styles.divider} />
+                    <h3 style={styles.subTitle}>Join Requests</h3>
+                    <div style={styles.list}>
+                      {party.joinRequests.map((req) => (
+                        <div key={req.uid} style={styles.listItem}>
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                              width: "100%",
+                            }}
+                          >
+                            <span>{req.username}</span>
+                            <div style={{ display: "flex", gap: "4px" }}>
+                              <button
+                                onClick={() => handleAcceptJoinRequest(req.uid)}
+                                style={styles.acceptButton}
+                              >
+                                Accept
+                              </button>
+                              <button
+                                onClick={() => handleRejectJoinRequest(req.uid)}
+                                style={styles.dangerButton}
+                              >
+                                Reject
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
 
               <div style={styles.divider} />
 
@@ -1430,6 +1547,20 @@ export default function SocialPage() {
                             >
                               Invite to Party
                             </ContextMenuItem>
+                            {friend.party && friend.party.id !== party?._id && (
+                              <ContextMenuItem
+                                onClick={() => {
+                                  handleAskToJoinParty(friend.username);
+                                  setActiveMenuFriendId(null);
+                                }}
+                                style={{
+                                  ...styles.menuButton,
+                                  color: "#e5e7eb",
+                                }}
+                              >
+                                Ask to Join Party
+                              </ContextMenuItem>
+                            )}
                             <ContextMenuItem
                               onClick={() => {
                                 handleRemoveFriend(friend.uid);

@@ -67,6 +67,18 @@ export default async function handler(
       return res.status(404).json({ error: "User not found" });
     }
 
+    if (targetUser._id === uid) {
+      return res.status(400).json({ error: "Cannot invite yourself" });
+    }
+
+    // Check if user is already in the party
+    const isAlreadyMember = party.members.some(
+      (m: any) => m.uid === targetUser._id
+    );
+    if (isAlreadyMember) {
+      return res.status(400).json({ error: "User is already in the party" });
+    }
+
     // Check Block Status
     const isBlockedByMe = currentUser.blocked?.some(
       (b: any) => b.uid === targetUser._id

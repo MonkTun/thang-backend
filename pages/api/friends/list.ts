@@ -108,7 +108,14 @@ export default async function handler(
           .collection("parties")
           .find(
             { _id: { $in: partyIds } },
-            { projection: { privacy: 1, members: 1, leaderUid: 1 } }
+            {
+              projection: {
+                privacy: 1,
+                members: 1,
+                leaderUid: 1,
+                matchmakingTicketId: 1,
+              },
+            }
           )
           .toArray();
         partiesMap = new Map(partiesData.map((p) => [p._id.toString(), p]));
@@ -147,7 +154,7 @@ export default async function handler(
           isOnline = true;
         }
 
-        // Party Info
+        // Party Info & Enhanced Status
         let partyInfo = null;
         let isPartyLeader = false;
         if (u?.partyId) {
@@ -160,6 +167,15 @@ export default async function handler(
             };
             if (p.leaderUid === f.uid) {
               isPartyLeader = true;
+            }
+
+            // Enhance Status if Online and not already "In Game"
+            if (isOnline && effectiveStatus === "Online") {
+              if (p.matchmakingTicketId) {
+                effectiveStatus = "Matchmaking";
+              } else if (p.members && p.members.length > 1) {
+                effectiveStatus = "In Party";
+              }
             }
           }
         }

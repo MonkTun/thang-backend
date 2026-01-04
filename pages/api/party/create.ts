@@ -50,9 +50,10 @@ export default async function handler(
           uid: uid,
           username: user.username || "Unknown",
           joinedAt: new Date(),
-          isReady: true, // Leader is always ready? Or false? Let's say false or true. Usually leader starts so ready doesn't matter as much, but let's default false.
+          isReady: false,
         },
       ],
+      gameMode: null,
       createdAt: new Date(),
       updatedAt: new Date(),
     };

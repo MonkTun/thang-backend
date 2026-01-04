@@ -33,6 +33,7 @@ interface PartyMember {
   username: string;
   avatarId?: string;
   joinedAt: string;
+  isReady: boolean;
 }
 
 interface JoinRequest {
@@ -48,6 +49,8 @@ interface Party {
   joinRequests?: JoinRequest[];
   privacy: "public" | "private";
   region?: string;
+  gameMode?: string | null;
+  matchmakingTicketId?: string | null;
 }
 
 interface PartyInvite {
@@ -212,7 +215,27 @@ export default function SocialPage() {
     } finally {
       setConfigsLoading(false);
     }
-  }; // Matchmaking Polling
+  };
+
+  const handleMatchmakingFailure = async (errorMessage: string) => {
+    setMatchmakingStatus("FAILED");
+    setMatchmakingError(errorMessage);
+
+    // If leader, unready everyone so we don't get stuck in a loop
+    if (party && party.leaderUid === currentUserUid) {
+      try {
+        const idToken = localStorage.getItem("idToken");
+        await fetch("/api/party/unready-all", {
+          method: "POST",
+          headers: { Authorization: `Bearer ${idToken}` },
+        });
+      } catch (e) {
+        console.error("Failed to unready all:", e);
+      }
+    }
+  };
+
+  // Matchmaking Polling
   useEffect(() => {
     let pollInterval: NodeJS.Timeout;
 
@@ -238,8 +261,7 @@ export default function SocialPage() {
           } else if (data.status === "PLACING") {
             setMatchmakingStatus("PLACING");
           } else if (data.status === "FAILED" || data.status === "TIMED_OUT") {
-            setMatchmakingStatus("FAILED");
-            setMatchmakingError(`Matchmaking failed: ${data.status}`);
+            handleMatchmakingFailure(`Matchmaking failed: ${data.status}`);
             clearInterval(pollInterval);
           } else {
             // Still queuing
@@ -260,13 +282,12 @@ export default function SocialPage() {
 
   const handleStartMatchmaking = async () => {
     setMatchmakingError(null);
-    setMatchmakingStatus("QUEUED");
+    // Don't set status/ticket locally yet, wait for API success + Party Sync
+    // setMatchmakingStatus("QUEUED");
     setMatchResult(null);
 
     try {
       // 1. Measure Latency (Client-Side)
-      // We ping the available regions to get a real latency map.
-      // If this fails or returns empty, the backend will fallback to Geo-IP.
       let latencyMap = {};
       if (availableRegions.length > 0) {
         try {
@@ -299,13 +320,16 @@ export default function SocialPage() {
         throw new Error(data.error || "Failed to start matchmaking");
       }
 
-      setTicketId(data.ticketId);
+      // Optimistically update party to trigger sync
+      if (party) {
+        setParty({ ...party, matchmakingTicketId: data.ticketId });
+      }
+
       if (data.estimatedWaitTime) {
         setEstimatedWaitTime(data.estimatedWaitTime);
       }
     } catch (err: any) {
-      setMatchmakingStatus("FAILED");
-      setMatchmakingError(err.message);
+      handleMatchmakingFailure(err.message);
     }
   };
 
@@ -323,8 +347,11 @@ export default function SocialPage() {
         },
         body: JSON.stringify({ ticketId }),
       });
-      setMatchmakingStatus("IDLE");
-      setTicketId(null);
+
+      // Optimistically update party to trigger sync
+      if (party) {
+        setParty({ ...party, matchmakingTicketId: undefined });
+      }
     } catch (err: any) {
       console.error("Failed to cancel matchmaking:", err);
       setMatchmakingError("Failed to cancel matchmaking");
@@ -437,6 +464,52 @@ export default function SocialPage() {
     }
   }, [party, bestRegion, currentUserUid]);
 
+  // Sync Matchmaking Ticket from Party
+  useEffect(() => {
+    if (party?.matchmakingTicketId && party.matchmakingTicketId !== ticketId) {
+      console.log(
+        `[Social] Syncing ticket from party: ${party.matchmakingTicketId}`
+      );
+      setTicketId(party.matchmakingTicketId);
+      setMatchmakingStatus("QUEUED");
+    } else if (!party?.matchmakingTicketId && ticketId) {
+      // If ticket was removed from party (e.g. cancelled), clear local state
+      // But only if we are not in COMPLETED state (to show results)
+      if (matchmakingStatus !== "COMPLETED") {
+        setTicketId(null);
+        setMatchmakingStatus("IDLE");
+      }
+    }
+  }, [party?.matchmakingTicketId]);
+
+  // Auto-Matchmaking Effect
+  useEffect(() => {
+    if (!party || !currentUserUid) return;
+
+    // Only leader controls matchmaking
+    if (party.leaderUid !== currentUserUid) return;
+
+    const allReady =
+      party.members.length > 0 && party.members.every((m) => m.isReady);
+
+    if (allReady) {
+      if (matchmakingStatus === "IDLE") {
+        // Start
+        handleStartMatchmaking();
+      }
+    } else {
+      // Not all ready
+      if (matchmakingStatus === "QUEUED" || matchmakingStatus === "PLACING") {
+        // Cancel if currently searching
+        handleCancelMatchmaking();
+      } else if (matchmakingStatus === "FAILED") {
+        // Reset error state if someone unreadies
+        setMatchmakingStatus("IDLE");
+        setMatchmakingError(null);
+      }
+    }
+  }, [party, matchmakingStatus, currentUserUid]);
+
   // --- API CALLS ---
 
   const fetchFriends = async () => {
@@ -468,15 +541,20 @@ export default function SocialPage() {
         const data = await res.json();
         setParty(data.party || null);
         setPartyInvites(data.partyInvites || []);
-        if (data.party && data.party.region) {
-          setSelectedRegion(data.party.region);
-          // Ensure the party's region is in the available list
-          setAvailableRegions((prev) => {
-            if (prev.length > 0 && !prev.includes(data.party.region)) {
-              return [...prev, data.party.region];
-            }
-            return prev;
-          });
+        if (data.party) {
+          if (data.party.region) {
+            setSelectedRegion(data.party.region);
+            // Ensure the party's region is in the available list
+            setAvailableRegions((prev) => {
+              if (prev.length > 0 && !prev.includes(data.party.region)) {
+                return [...prev, data.party.region];
+              }
+              return prev;
+            });
+          }
+          if (data.party.gameMode) {
+            setSelectedConfig(data.party.gameMode);
+          }
         }
       }
     } catch (e) {
@@ -767,6 +845,7 @@ export default function SocialPage() {
   const handlePartySettings = async (updates: {
     privacy?: "public" | "private";
     region?: string;
+    gameMode?: string;
   }) => {
     const idToken = localStorage.getItem("idToken");
     if (!idToken) return;
@@ -779,6 +858,33 @@ export default function SocialPage() {
         },
         body: JSON.stringify(updates),
       });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error);
+      }
+      fetchPartyStatus();
+    } catch (e: any) {
+      setPartyError(e.message);
+    }
+  };
+
+  const handleToggleReady = async () => {
+    const idToken = localStorage.getItem("idToken");
+    if (!idToken || !party || !currentUserUid) return;
+
+    const me = party.members.find((m) => m.uid === currentUserUid);
+    const newStatus = !me?.isReady;
+
+    try {
+      const res = await fetch("/api/party/ready", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ isReady: newStatus }),
+      });
+
       if (!res.ok) {
         const data = await res.json();
         throw new Error(data.error);
@@ -1078,23 +1184,45 @@ export default function SocialPage() {
                           {m.uid === party.leaderUid && "👑"}
                         </span>
                       </div>
-                      {party.leaderUid === currentUserUid &&
-                        m.uid !== currentUserUid && (
-                          <div style={{ display: "flex", gap: "4px" }}>
-                            <button
-                              onClick={() => handleTransferLeadership(m.uid)}
-                              style={styles.promoteButton}
-                            >
-                              Promote
-                            </button>
-                            <button
-                              onClick={() => handleKickMember(m.uid)}
-                              style={styles.dangerButton}
-                            >
-                              Kick
-                            </button>
-                          </div>
-                        )}
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "10px",
+                        }}
+                      >
+                        {/* Ready Status Indicator */}
+                        <span
+                          style={{
+                            fontSize: "12px",
+                            fontWeight: "bold",
+                            color: m.isReady ? "#10b981" : "#ef4444",
+                            backgroundColor: "#1f2937",
+                            padding: "2px 6px",
+                            borderRadius: "4px",
+                          }}
+                        >
+                          {m.isReady ? "READY" : "NOT READY"}
+                        </span>
+
+                        {party.leaderUid === currentUserUid &&
+                          m.uid !== currentUserUid && (
+                            <div style={{ display: "flex", gap: "4px" }}>
+                              <button
+                                onClick={() => handleTransferLeadership(m.uid)}
+                                style={styles.promoteButton}
+                              >
+                                Promote
+                              </button>
+                              <button
+                                onClick={() => handleKickMember(m.uid)}
+                                style={styles.dangerButton}
+                              >
+                                Kick
+                              </button>
+                            </div>
+                          )}
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -1138,6 +1266,173 @@ export default function SocialPage() {
                     </div>
                   </>
                 )}
+
+              <div style={styles.divider} />
+
+              {/* --- GAME MODE & PLAY --- */}
+              <div style={{ marginBottom: "16px" }}>
+                <label
+                  style={{
+                    display: "block",
+                    marginBottom: "8px",
+                    color: "#9ca3af",
+                    fontSize: "14px",
+                  }}
+                >
+                  Game Mode
+                </label>
+                <select
+                  value={selectedConfig}
+                  onChange={(e) => {
+                    const newMode = e.target.value;
+                    setSelectedConfig(newMode);
+                    if (party.leaderUid === currentUserUid) {
+                      handlePartySettings({ gameMode: newMode });
+                    }
+                  }}
+                  disabled={
+                    matchmakingStatus === "QUEUED" ||
+                    party.leaderUid !== currentUserUid
+                  }
+                  style={{
+                    width: "100%",
+                    backgroundColor: "#1f2937",
+                    color: "#e5e7eb",
+                    border: "1px solid #374151",
+                    borderRadius: "4px",
+                    padding: "8px",
+                    cursor:
+                      party.leaderUid === currentUserUid
+                        ? "pointer"
+                        : "not-allowed",
+                    opacity: party.leaderUid === currentUserUid ? 1 : 0.7,
+                  }}
+                >
+                  {configsLoading && <option>Loading...</option>}
+                  {!configsLoading && availableConfigs.length === 0 && (
+                    <option>No Game Modes Available</option>
+                  )}
+                  {availableConfigs.map((conf) => (
+                    <option key={conf.name} value={conf.name}>
+                      {conf.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {matchmakingError && (
+                <p style={{ ...styles.errorText, marginBottom: "12px" }}>
+                  {matchmakingError}
+                </p>
+              )}
+
+              {/* Matchmaking / Ready Controls */}
+              <div style={{ marginBottom: "16px" }}>
+                {matchmakingStatus === "IDLE" ||
+                matchmakingStatus === "FAILED" ? (
+                  <div style={{ display: "flex", gap: "10px" }}>
+                    <button
+                      onClick={handleToggleReady}
+                      style={{
+                        ...styles.secondaryButton,
+                        flex: 1,
+                        backgroundColor: party.members.find(
+                          (m) => m.uid === currentUserUid
+                        )?.isReady
+                          ? "#ef4444" // Red for Unready
+                          : "#10b981", // Green for Ready
+                        color: "white",
+                      }}
+                    >
+                      {party.members.find((m) => m.uid === currentUserUid)
+                        ?.isReady
+                        ? "Unready"
+                        : "Ready"}
+                    </button>
+                  </div>
+                ) : matchmakingStatus === "QUEUED" ||
+                  matchmakingStatus === "PLACING" ? (
+                  <div style={{ textAlign: "center" }}>
+                    <p style={{ color: "#fbbf24", fontWeight: "bold" }}>
+                      {matchmakingStatus === "PLACING"
+                        ? "Match Found! Allocating Server..."
+                        : "Searching for match..."}
+                    </p>
+                    {estimatedWaitTime && matchmakingStatus === "QUEUED" && (
+                      <p style={{ fontSize: "12px", color: "#9ca3af" }}>
+                        Est. wait: {estimatedWaitTime}s
+                      </p>
+                    )}
+                    {/* Only leader can cancel */}
+                    {matchmakingStatus === "QUEUED" &&
+                      party.leaderUid === currentUserUid && (
+                        <button
+                          onClick={handleCancelMatchmaking}
+                          style={{
+                            ...styles.dangerButton,
+                            marginTop: "8px",
+                            width: "100%",
+                          }}
+                        >
+                          Cancel Search
+                        </button>
+                      )}
+                  </div>
+                ) : (
+                  <div
+                    style={{
+                      textAlign: "center",
+                      backgroundColor: "#064e3b",
+                      padding: "16px",
+                      borderRadius: "8px",
+                    }}
+                  >
+                    <p
+                      style={{
+                        color: "#34d399",
+                        fontWeight: "bold",
+                        fontSize: "18px",
+                      }}
+                    >
+                      MATCH FOUND!
+                    </p>
+                    {matchResult?.connectionInfo && (
+                      <div
+                        style={{
+                          marginTop: "8px",
+                          textAlign: "left",
+                          fontSize: "14px",
+                        }}
+                      >
+                        <p>
+                          <b>IP:</b> {matchResult.connectionInfo.ipAddress}
+                        </p>
+                        <p>
+                          <b>Port:</b> {matchResult.connectionInfo.port}
+                        </p>
+                        <p>
+                          <b>Session ID:</b>{" "}
+                          {matchResult.connectionInfo.playerSessionId?.substring(
+                            0,
+                            10
+                          )}
+                          ...
+                        </p>
+                      </div>
+                    )}
+                    <button
+                      onClick={() => setMatchmakingStatus("IDLE")}
+                      style={{
+                        ...styles.secondaryButton,
+                        marginTop: "12px",
+                        width: "100%",
+                      }}
+                    >
+                      Close
+                    </button>
+                  </div>
+                )}
+              </div>
 
               <div style={styles.divider} />
 
@@ -1272,145 +1567,6 @@ export default function SocialPage() {
               )}
             </div>
           )}
-
-          <div style={styles.sectionDivider} />
-
-          {/* --- MATCHMAKING SECTION --- */}
-          <h2 style={styles.sectionTitle}>Play</h2>
-
-          <div style={styles.partyBox}>
-            <div style={{ marginBottom: "16px" }}>
-              <label
-                style={{
-                  display: "block",
-                  marginBottom: "8px",
-                  color: "#9ca3af",
-                }}
-              >
-                Game Mode (Config)
-              </label>
-              <select
-                value={selectedConfig}
-                onChange={(e) => setSelectedConfig(e.target.value)}
-                disabled={matchmakingStatus === "QUEUED"}
-                style={{
-                  width: "100%",
-                  backgroundColor: "#1f2937",
-                  color: "#e5e7eb",
-                  border: "1px solid #374151",
-                  borderRadius: "4px",
-                  padding: "8px",
-                }}
-              >
-                {configsLoading && <option>Loading...</option>}
-                {!configsLoading && availableConfigs.length === 0 && (
-                  <option>No Game Modes Available</option>
-                )}
-                {availableConfigs.map((conf) => (
-                  <option key={conf.name} value={conf.name}>
-                    {conf.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {matchmakingError && (
-              <p style={{ ...styles.errorText, marginBottom: "12px" }}>
-                {matchmakingError}
-              </p>
-            )}
-
-            {/* Matchmaking Status */}
-            {matchmakingStatus === "IDLE" || matchmakingStatus === "FAILED" ? (
-              <button onClick={handleStartMatchmaking} style={styles.button}>
-                Find Match
-              </button>
-            ) : matchmakingStatus === "QUEUED" ||
-              matchmakingStatus === "PLACING" ? (
-              <div style={{ textAlign: "center" }}>
-                <p style={{ color: "#fbbf24", fontWeight: "bold" }}>
-                  {matchmakingStatus === "PLACING"
-                    ? "Match Found! Allocating Server..."
-                    : "Searching for match..."}
-                </p>
-                {estimatedWaitTime && matchmakingStatus === "QUEUED" && (
-                  <p style={{ fontSize: "12px", color: "#9ca3af" }}>
-                    Est. wait: {estimatedWaitTime}s
-                  </p>
-                )}
-                {matchmakingStatus === "QUEUED" && (
-                  <button
-                    onClick={handleCancelMatchmaking}
-                    style={{
-                      ...styles.dangerButton,
-                      marginTop: "8px",
-                      width: "100%",
-                    }}
-                  >
-                    Cancel Search
-                  </button>
-                )}
-                {matchmakingStatus === "PLACING" && (
-                  <p style={{ fontSize: "12px", color: "#9ca3af" }}>
-                    Waiting for server slot...
-                  </p>
-                )}
-              </div>
-            ) : (
-              <div
-                style={{
-                  textAlign: "center",
-                  backgroundColor: "#064e3b",
-                  padding: "16px",
-                  borderRadius: "8px",
-                }}
-              >
-                <p
-                  style={{
-                    color: "#34d399",
-                    fontWeight: "bold",
-                    fontSize: "18px",
-                  }}
-                >
-                  MATCH FOUND!
-                </p>
-                {matchResult?.connectionInfo && (
-                  <div
-                    style={{
-                      marginTop: "8px",
-                      textAlign: "left",
-                      fontSize: "14px",
-                    }}
-                  >
-                    <p>
-                      <b>IP:</b> {matchResult.connectionInfo.ipAddress}
-                    </p>
-                    <p>
-                      <b>Port:</b> {matchResult.connectionInfo.port}
-                    </p>
-                    <p>
-                      <b>Session ID:</b>{" "}
-                      {matchResult.connectionInfo.playerSessionId?.substring(
-                        0,
-                        10
-                      )}
-                      ...
-                    </p>
-                  </div>
-                )}
-                <button
-                  onClick={() => setMatchmakingStatus("IDLE")}
-                  style={{
-                    ...styles.secondaryButton,
-                    marginTop: "12px",
-                    width: "100%",
-                  }}
-                >
-                  Close
-                </button>
-              </div>
-            )}
-          </div>
 
           <div style={styles.sectionDivider} />
 

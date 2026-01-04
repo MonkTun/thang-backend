@@ -23,29 +23,6 @@ export default async function handler(
     const decodedToken = await admin.auth().verifyIdToken(token);
     const uid = decodedToken.uid;
 
-    const { privacy, region, gameMode } = req.body;
-
-    const updateFields: any = {};
-    let shouldResetReady = false;
-
-    if (privacy) {
-      if (privacy !== "public" && privacy !== "private") {
-        return res.status(400).json({ error: "Invalid privacy setting." });
-      }
-      updateFields.privacy = privacy;
-    }
-    if (region) {
-      updateFields.region = region;
-    }
-    if (gameMode) {
-      updateFields.gameMode = gameMode;
-      shouldResetReady = true;
-    }
-
-    if (Object.keys(updateFields).length === 0) {
-      return res.status(400).json({ error: "No settings provided to update" });
-    }
-
     // 2. Connect to DB
     const client = await clientPromise;
     const db = client.db(DB_NAME);
@@ -69,33 +46,23 @@ export default async function handler(
     if (party.leaderUid !== uid) {
       return res
         .status(403)
-        .json({ error: "Only the leader can change settings" });
+        .json({ error: "Only the leader can reset ready status" });
     }
 
-    // 5. Update Settings
-    if (shouldResetReady) {
-      // Reset everyone's ready status to false when game mode changes
-      await parties.updateOne(
-        { _id: new ObjectId(partyId) },
-        {
-          $set: {
-            ...updateFields,
-            "members.$[].isReady": false,
-          },
-        }
-      );
-    } else {
-      await parties.updateOne(
-        { _id: new ObjectId(partyId) },
-        { $set: updateFields }
-      );
-    }
+    // 5. Reset Ready Status for All Members
+    await parties.updateOne(
+      { _id: new ObjectId(partyId) },
+      {
+        $set: {
+          "members.$[].isReady": false,
+          matchmakingTicketId: null, // Also clear ticket if present
+        },
+      }
+    );
 
-    return res
-      .status(200)
-      .json({ message: "Party settings updated", settings: updateFields });
+    return res.status(200).json({ message: "All members unreadied" });
   } catch (error: any) {
-    console.error("[Party Settings] Error:", error);
+    console.error("[Party Unready All] Error:", error);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 }

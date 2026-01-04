@@ -4,6 +4,8 @@ import {
   StopMatchmakingCommand,
 } from "@aws-sdk/client-gamelift";
 import admin from "@/lib/firebaseAdmin";
+import clientPromise from "@/lib/mongodb";
+import { ObjectId } from "mongodb";
 
 const client = new GameLiftClient({
   region: process.env.AWS_REGION || "us-east-1",
@@ -33,7 +35,10 @@ export default async function handler(
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return res.status(401).json({ error: "Missing authorization header" });
     }
-    await admin.auth().verifyIdToken(authHeader.split("Bearer ")[1]);
+    const decodedToken = await admin
+      .auth()
+      .verifyIdToken(authHeader.split("Bearer ")[1]);
+    const uid = decodedToken.uid;
 
     // 2. Call GameLift StopMatchmaking
     const command = new StopMatchmakingCommand({
@@ -41,6 +46,20 @@ export default async function handler(
     });
 
     await client.send(command);
+
+    // 3. Clear Ticket ID from Party (if user is in one)
+    const mongoClient = await clientPromise;
+    const db = mongoClient.db(process.env.NEXT_PUBLIC_DB_NAME || "game");
+    const user = await db.collection("users").findOne({ _id: uid });
+
+    if (user && user.partyId) {
+      await db
+        .collection("parties")
+        .updateOne(
+          { _id: new ObjectId(user.partyId) },
+          { $unset: { matchmakingTicketId: "" } }
+        );
+    }
 
     return res.status(200).json({ message: "Matchmaking cancelled" });
   } catch (error: any) {

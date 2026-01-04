@@ -145,11 +145,22 @@ export default async function handler(
     });
 
     const response = await client.send(command);
+    const ticketId = response.MatchmakingTicket?.TicketId;
 
-    // 6. Return Ticket ID
+    // 6. Update Party with Ticket ID (if in a party)
+    if (user.partyId) {
+      await db
+        .collection("parties")
+        .updateOne(
+          { _id: new ObjectId(user.partyId) },
+          { $set: { matchmakingTicketId: ticketId } }
+        );
+    }
+
+    // 7. Return Ticket ID
     // The client will use this ID to poll /api/matchmaking/status
     return res.status(200).json({
-      ticketId: response.MatchmakingTicket?.TicketId,
+      ticketId: ticketId,
       status: "QUEUED",
       estimatedWaitTime: response.MatchmakingTicket?.EstimatedWaitTime,
     });

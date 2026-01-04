@@ -128,6 +128,7 @@ export default async function handler(
         ],
         privacy: "public",
         region: detectedRegion,
+        gameMode: null, // Initialize gameMode
         createdAt: new Date(),
         joinRequests: [],
       };

@@ -1,13 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import {
-  GameLiftClient,
-  StartMatchmakingCommand,
-  Player,
-} from "@aws-sdk/client-gamelift";
+import { Player } from "@aws-sdk/client-gamelift";
 import admin from "@/lib/firebaseAdmin";
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 import { COUNTRY_TO_REGION_MAP, DEFAULT_REGION } from "@/lib/regionUtils";
+import { startMatchmaking, createPlayerObject } from "@/lib/matchmaking";
 
 // Define the shape of your User document
 interface UserDocument {
@@ -16,15 +13,6 @@ interface UserDocument {
   rank?: number;
   partyId?: string;
 }
-
-// Initialize GameLift Client
-const client = new GameLiftClient({
-  region: process.env.AWS_REGION || "us-east-1",
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID || "",
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || "",
-  },
-});
 
 export default async function handler(
   req: NextApiRequest,
@@ -138,14 +126,10 @@ export default async function handler(
     }
 
     // 5. Call GameLift StartMatchmaking
-    const command = new StartMatchmakingCommand({
-      ConfigurationName: configName,
-      Players: playersToMatch,
-      // TicketId: Optional, AWS generates one if omitted.
-    });
-
-    const response = await client.send(command);
-    const ticketId = response.MatchmakingTicket?.TicketId;
+    const { ticketId, estimatedWaitTime } = await startMatchmaking(
+      configName,
+      playersToMatch
+    );
 
     // 6. Update Party with Ticket ID (if in a party)
     if (user.partyId) {
@@ -162,7 +146,7 @@ export default async function handler(
     return res.status(200).json({
       ticketId: ticketId,
       status: "QUEUED",
-      estimatedWaitTime: response.MatchmakingTicket?.EstimatedWaitTime,
+      estimatedWaitTime: estimatedWaitTime,
     });
   } catch (error: any) {
     console.error("Matchmaking Queue Error:", error);
@@ -170,21 +154,4 @@ export default async function handler(
       .status(500)
       .json({ error: error.message || "Internal Server Error" });
   }
-}
-
-// Helper to format Player object for GameLift
-function createPlayerObject(
-  playerId: string,
-  username: string,
-  skill: number,
-  latencyMap: Record<string, number>
-): Player {
-  return {
-    PlayerId: playerId,
-    PlayerAttributes: {
-      skill: { N: skill },
-      username: { S: username },
-    },
-    LatencyInMs: latencyMap, // GameLift expects { "region": latency }
-  };
 }

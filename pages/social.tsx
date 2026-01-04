@@ -280,58 +280,7 @@ export default function SocialPage() {
     };
   }, [matchmakingStatus, ticketId]);
 
-  const handleStartMatchmaking = async () => {
-    setMatchmakingError(null);
-    // Don't set status/ticket locally yet, wait for API success + Party Sync
-    // setMatchmakingStatus("QUEUED");
-    setMatchResult(null);
-
-    try {
-      // 1. Measure Latency (Client-Side)
-      let latencyMap = {};
-      if (availableRegions.length > 0) {
-        try {
-          latencyMap = await measureLatency(availableRegions);
-          console.log("[Social] Measured Latency:", latencyMap);
-        } catch (e) {
-          console.warn(
-            "[Social] Failed to measure latency, using backend fallback",
-            e
-          );
-        }
-      }
-
-      const idToken = localStorage.getItem("idToken");
-      const res = await fetch("/api/matchmaking/queue", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${idToken}`,
-        },
-        body: JSON.stringify({
-          configName: selectedConfig,
-          latencyMap: latencyMap,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || "Failed to start matchmaking");
-      }
-
-      // Optimistically update party to trigger sync
-      if (party) {
-        setParty({ ...party, matchmakingTicketId: data.ticketId });
-      }
-
-      if (data.estimatedWaitTime) {
-        setEstimatedWaitTime(data.estimatedWaitTime);
-      }
-    } catch (err: any) {
-      handleMatchmakingFailure(err.message);
-    }
-  };
+  // handleStartMatchmaking removed - logic moved to backend
 
   const handleCancelMatchmaking = async () => {
     if (!ticketId) return;
@@ -482,33 +431,16 @@ export default function SocialPage() {
     }
   }, [party?.matchmakingTicketId]);
 
-  // Auto-Matchmaking Effect
+  // Reset FAILED state when party becomes not ready
   useEffect(() => {
-    if (!party || !currentUserUid) return;
-
-    // Only leader controls matchmaking
-    if (party.leaderUid !== currentUserUid) return;
-
+    if (!party) return;
     const allReady =
       party.members.length > 0 && party.members.every((m) => m.isReady);
-
-    if (allReady) {
-      if (matchmakingStatus === "IDLE") {
-        // Start
-        handleStartMatchmaking();
-      }
-    } else {
-      // Not all ready
-      if (matchmakingStatus === "QUEUED" || matchmakingStatus === "PLACING") {
-        // Cancel if currently searching
-        handleCancelMatchmaking();
-      } else if (matchmakingStatus === "FAILED") {
-        // Reset error state if someone unreadies
-        setMatchmakingStatus("IDLE");
-        setMatchmakingError(null);
-      }
+    if (!allReady && matchmakingStatus === "FAILED") {
+      setMatchmakingStatus("IDLE");
+      setMatchmakingError(null);
     }
-  }, [party, matchmakingStatus, currentUserUid]);
+  }, [party, matchmakingStatus]);
 
   // --- API CALLS ---
 
@@ -876,13 +808,19 @@ export default function SocialPage() {
     const newStatus = !me?.isReady;
 
     try {
+      const body: any = { isReady: newStatus };
+      if (newStatus) {
+        // If readying up, send latency map
+        body.latencyMap = latencyMap;
+      }
+
       const res = await fetch("/api/party/ready", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${idToken}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ isReady: newStatus }),
+        body: JSON.stringify(body),
       });
 
       if (!res.ok) {

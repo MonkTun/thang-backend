@@ -49,7 +49,12 @@ export default async function handler(
       );
 
       if (locations && locations.length > 0) {
-        availableRegions = locations;
+        // Filter out Local Zones (e.g. us-west-2-lax-1) and keep only standard regions (e.g. us-west-2)
+        // Standard regions typically have 3 parts (e.g. us-east-1)
+        // Local zones have more (e.g. us-east-1-atl-1)
+        availableRegions = locations.filter(
+          (loc) => loc.split("-").length === 3
+        );
       }
     } catch (err) {
       console.warn("[Region] Failed to fetch from AWS, using defaults", err);

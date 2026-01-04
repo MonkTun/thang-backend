@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import admin from "@/lib/firebaseAdmin";
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
+import { detectRegion } from "@/lib/regionUtils";
 
 const DB_NAME = process.env.NEXT_PUBLIC_DB_NAME || "game";
 
@@ -113,6 +114,8 @@ export default async function handler(
         `[Party Status] User ${uid} not in valid party. Creating solo party.`
       );
 
+      const detectedRegion = detectRegion(req);
+
       const newParty = {
         leaderUid: uid,
         members: [
@@ -124,7 +127,7 @@ export default async function handler(
           },
         ],
         privacy: "public",
-        region: "US-East", // Default region
+        region: detectedRegion,
         createdAt: new Date(),
         joinRequests: [],
       };

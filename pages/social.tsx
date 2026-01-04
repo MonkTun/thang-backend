@@ -262,7 +262,7 @@ export default function SocialPage() {
         },
         body: JSON.stringify({
           configName: selectedConfig,
-          latencyMap: selectedRegion ? { [selectedRegion]: 50 } : {}, // Mock latency for now
+          latencyMap: {}, // Let backend auto-generate latency map based on IP
         }),
       });
 
@@ -306,7 +306,7 @@ export default function SocialPage() {
 
   const fetchRegion = async () => {
     try {
-      const res = await fetch("/api/region");
+      const res = await fetch("/api/matchmaking/regions");
       if (res.ok) {
         const data = await res.json();
         console.log("[Social] Region data:", data);
@@ -940,19 +940,16 @@ export default function SocialPage() {
                     </span>
                     <select
                       value={selectedRegion || ""}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        setSelectedRegion(val);
-                        handlePartySettings({ region: val });
-                      }}
+                      disabled={true} // Disable selection, purely informational
                       style={{
                         backgroundColor: "#1f2937",
-                        color: "#e5e7eb",
+                        color: "#9ca3af", // Dimmed color to indicate disabled state
                         border: "1px solid #374151",
                         borderRadius: "4px",
                         padding: "4px 8px",
                         fontSize: "12px",
                         outline: "none",
+                        cursor: "not-allowed",
                       }}
                     >
                       {availableRegions.map((r) => (

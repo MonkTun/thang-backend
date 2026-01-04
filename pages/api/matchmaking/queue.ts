@@ -7,6 +7,7 @@ import {
 import admin from "@/lib/firebaseAdmin";
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
+import { COUNTRY_TO_REGION_MAP, DEFAULT_REGION } from "@/lib/regionUtils";
 
 // Define the shape of your User document
 interface UserDocument {
@@ -45,10 +46,37 @@ export default async function handler(
 
     // 2. Parse Request Body
     // configName: The exact name of the Matchmaking Configuration in AWS (e.g. "Thang-Deathmatch-Config")
-    const { configName, latencyMap = {} } = req.body;
+    let { configName, latencyMap } = req.body;
 
     if (!configName) {
       return res.status(400).json({ error: "Missing configName" });
+    }
+
+    // --- AUTO-GENERATE LATENCY MAP (If Client didn't provide it) ---
+    // Since the client cannot ping AWS directly, we estimate latency based on their Country.
+    if (!latencyMap || Object.keys(latencyMap).length === 0) {
+      const country = (req.headers["x-vercel-ip-country"] as string) || "US"; // Default to US if unknown
+      latencyMap = {};
+
+      const preferredRegions =
+        COUNTRY_TO_REGION_MAP[country.toUpperCase()] ||
+        COUNTRY_TO_REGION_MAP["US"];
+
+      // Assign artificial latency: 1st pref = 50ms, 2nd = 60ms, etc.
+      // This tells GameLift "This player is close to these regions".
+      preferredRegions.forEach((region, index) => {
+        latencyMap[region] = 50 + index * 10;
+      });
+
+      // Ensure default region is always included as a fallback
+      if (!latencyMap[DEFAULT_REGION]) {
+        latencyMap[DEFAULT_REGION] = 150; // Higher latency for fallback
+      }
+
+      console.log(
+        `[Matchmaking] Auto-generated latency map for ${country}:`,
+        latencyMap
+      );
     }
 
     // 3. Get User/Party Data from MongoDB

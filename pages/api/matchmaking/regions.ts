@@ -29,8 +29,6 @@ export default async function handler(
   req: NextApiRequestWithGeo,
   res: NextApiResponse
 ) {
-  console.log("[Region API] Request received");
-
   if (req.method !== "GET") {
     return res.status(405).json({ error: "Method not allowed" });
   }
@@ -39,7 +37,6 @@ export default async function handler(
     // 1. Detect User's Country from Vercel Headers
     const recommendedRegion = detectRegion(req);
     const country = req.geo?.country || req.headers["x-vercel-ip-country"];
-    console.log(`[Region API] Detected country: ${country}, Recommended: ${recommendedRegion}`);
 
     // 2. Fetch available GameLift locations (source of truth)
     let availableRegions = DEFAULT_REGIONS;
@@ -54,7 +51,6 @@ export default async function handler(
       if (locations && locations.length > 0) {
         availableRegions = locations;
       }
-      console.log(`[Region API] Available regions: ${availableRegions.join(", ")}`);
     } catch (err) {
       console.warn("[Region] Failed to fetch from AWS, using defaults", err);
     }

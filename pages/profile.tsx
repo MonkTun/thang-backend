@@ -114,6 +114,12 @@ export default function ProfilePage() {
         setAvatarId(userData.avatarId || "Alpha");
         setBannerId(userData.bannerId || "Alpha");
         setEquippedTitle(userData.equippedTitle || "unequipped");
+
+        // Update localStorage and notify NavBar
+        if (userData.avatarId) {
+          localStorage.setItem("avatarId", userData.avatarId);
+          window.dispatchEvent(new Event("auth-change"));
+        }
       } catch (err: any) {
         console.error("Error fetching user:", err.message);
         setError(err.message);
@@ -189,6 +195,8 @@ export default function ProfilePage() {
       await signOut(auth);
       localStorage.removeItem("idToken");
       localStorage.removeItem("uid");
+      localStorage.removeItem("avatarId");
+      window.dispatchEvent(new Event("auth-change"));
       console.log("Logged out");
       router.push("/login");
     } catch (err: any) {

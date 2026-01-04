@@ -93,6 +93,8 @@ export default function LoginPage() {
     localStorage.setItem("uid", user.uid);
     if (userData.avatarId) {
       localStorage.setItem("avatarId", userData.avatarId);
+    } else {
+      localStorage.removeItem("avatarId");
     }
     // Dispatch event to update NavBar immediately
     window.dispatchEvent(new Event("auth-change"));

@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { GameLiftClient, ListLocationsCommand } from "@aws-sdk/client-gamelift";
-import { COUNTRY_TO_REGION_MAP, detectRegion } from "@/lib/regionUtils";
+import { detectRegion } from "@/lib/regionUtils";
 
 interface NextApiRequestWithGeo extends NextApiRequest {
   geo?: {
@@ -22,8 +22,8 @@ const client = new GameLiftClient({
   },
 });
 
-// Default fallback regions if country is unknown
-const DEFAULT_REGIONS = ["us-east-1", "eu-central-1", "ap-northeast-2"];
+// Fallback only if AWS call fails.
+const DEFAULT_REGIONS = ["us-east-1"];
 
 export default async function handler(
   req: NextApiRequestWithGeo,
@@ -38,7 +38,7 @@ export default async function handler(
     const recommendedRegion = detectRegion(req);
     const country = req.geo?.country || req.headers["x-vercel-ip-country"];
 
-    // 2. Fetch Available GameLift Locations
+    // 2. Fetch available GameLift locations (source of truth)
     let availableRegions = DEFAULT_REGIONS;
 
     try {

@@ -81,6 +81,8 @@ const ContextMenuItem = ({
   );
 };
 
+import { measureLatency, getBestRegion } from "@/lib/latencyUtils";
+
 export default function SocialPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -103,6 +105,8 @@ export default function SocialPage() {
   const [currentUserUid, setCurrentUserUid] = useState<string | null>(null);
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
   const [availableRegions, setAvailableRegions] = useState<string[]>([]);
+  const [sortedRegions, setSortedRegions] = useState<string[]>([]);
+  const [latencyMap, setLatencyMap] = useState<Record<string, number>>({});
   const [bannerId, setBannerId] = useState<string | null>(null);
   const [activeMenuFriendId, setActiveMenuFriendId] = useState<string | null>(
     null
@@ -123,6 +127,7 @@ export default function SocialPage() {
   const [matchResult, setMatchResult] = useState<any>(null);
   const [configsLoading, setConfigsLoading] = useState(false);
   const [matchmakingError, setMatchmakingError] = useState<string | null>(null);
+  const [bestRegion, setBestRegion] = useState<string | null>(null);
 
   // 1. Auth Check & Initial Data
   useEffect(() => {
@@ -172,6 +177,12 @@ export default function SocialPage() {
           if (data.user.bannerId) setBannerId(data.user.bannerId);
           if (data.user.username) setCurrentUsername(data.user.username);
           if (data.user.inviteCode) setInviteCode(data.user.inviteCode);
+
+          // Update avatar in localStorage and notify NavBar
+          if (data.user.avatarId) {
+            localStorage.setItem("avatarId", data.user.avatarId);
+            window.dispatchEvent(new Event("auth-change"));
+          }
         }
       }
     } catch (e) {
@@ -253,6 +264,22 @@ export default function SocialPage() {
     setMatchResult(null);
 
     try {
+      // 1. Measure Latency (Client-Side)
+      // We ping the available regions to get a real latency map.
+      // If this fails or returns empty, the backend will fallback to Geo-IP.
+      let latencyMap = {};
+      if (availableRegions.length > 0) {
+        try {
+          latencyMap = await measureLatency(availableRegions);
+          console.log("[Social] Measured Latency:", latencyMap);
+        } catch (e) {
+          console.warn(
+            "[Social] Failed to measure latency, using backend fallback",
+            e
+          );
+        }
+      }
+
       const idToken = localStorage.getItem("idToken");
       const res = await fetch("/api/matchmaking/queue", {
         method: "POST",
@@ -262,7 +289,7 @@ export default function SocialPage() {
         },
         body: JSON.stringify({
           configName: selectedConfig,
-          latencyMap: {}, // Let backend auto-generate latency map based on IP
+          latencyMap: latencyMap,
         }),
       });
 
@@ -361,6 +388,54 @@ export default function SocialPage() {
     const interval = setInterval(poll, 5000);
     return () => clearInterval(interval);
   }, []);
+
+  // 4. Measure Latency & Auto-Update Party Region
+  useEffect(() => {
+    if (availableRegions.length === 0) return;
+
+    const runLatencyCheck = async () => {
+      try {
+        const map = await measureLatency(availableRegions);
+        setLatencyMap(map);
+
+        // Sort regions by latency (lowest first)
+        const sorted = [...availableRegions].sort((a, b) => {
+          const latA = map[a] ?? 9999;
+          const latB = map[b] ?? 9999;
+          return latA - latB;
+        });
+        setSortedRegions(sorted);
+
+        const best = getBestRegion(map);
+        if (best) {
+          setBestRegion(best);
+          console.log(
+            `[Social] Best region detected: ${best} (${map[best]}ms)`
+          );
+        }
+      } catch (e) {
+        console.warn("[Social] Latency check failed", e);
+      }
+    };
+
+    runLatencyCheck();
+  }, [availableRegions]);
+
+  // Sync Best Region to Party (Leader Only)
+  useEffect(() => {
+    if (!party || !bestRegion || !currentUserUid) return;
+
+    // Only leader can update region
+    if (party.leaderUid !== currentUserUid) return;
+
+    // If current party region is different from best region, update it
+    if (party.region !== bestRegion) {
+      console.log(
+        `[Social] Updating party region from ${party.region} to ${bestRegion}`
+      );
+      handlePartySettings({ region: bestRegion });
+    }
+  }, [party, bestRegion, currentUserUid]);
 
   // --- API CALLS ---
 
@@ -940,21 +1015,27 @@ export default function SocialPage() {
                     </span>
                     <select
                       value={selectedRegion || ""}
-                      disabled={true} // Disable selection, purely informational
+                      onChange={() => {}} // Read-only but interactable
                       style={{
                         backgroundColor: "#1f2937",
-                        color: "#9ca3af", // Dimmed color to indicate disabled state
+                        color: "#9ca3af",
                         border: "1px solid #374151",
                         borderRadius: "4px",
                         padding: "4px 8px",
                         fontSize: "12px",
                         outline: "none",
-                        cursor: "not-allowed",
+                        cursor: "default",
                       }}
                     >
-                      {availableRegions.map((r) => (
+                      {(sortedRegions.length > 0
+                        ? sortedRegions
+                        : availableRegions
+                      ).map((r) => (
                         <option key={r} value={r}>
-                          {r}
+                          {r}{" "}
+                          {latencyMap[r] != null
+                            ? `(${latencyMap[r]}ms)`
+                            : "(N/A)"}
                         </option>
                       ))}
                     </select>

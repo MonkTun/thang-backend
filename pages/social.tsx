@@ -221,17 +221,13 @@ export default function SocialPage() {
     setMatchmakingStatus("FAILED");
     setMatchmakingError(errorMessage);
 
-    // If leader, unready everyone so we don't get stuck in a loop
+    // If leader, clear ticket so we don't get stuck in a loop
     if (party && party.leaderUid === currentUserUid) {
-      try {
-        const idToken = localStorage.getItem("idToken");
-        await fetch("/api/party/unready-all", {
-          method: "POST",
-          headers: { Authorization: `Bearer ${idToken}` },
-        });
-      } catch (e) {
-        console.error("Failed to unready all:", e);
-      }
+      // We used to call unready-all here, but that endpoint is gone.
+      // If we are in FAILED state, the user can click "Find Match" again.
+      // If the ticket is still valid in DB, queue.ts will overwrite it.
+      // If we want to explicitly clear it, we would need a new endpoint or use leave.ts with a valid ticketId.
+      // But we don't have a ticketId here if queue failed.
     }
   };
 
@@ -800,36 +796,56 @@ export default function SocialPage() {
     }
   };
 
-  const handleToggleReady = async () => {
-    const idToken = localStorage.getItem("idToken");
-    if (!idToken || !party || !currentUserUid) return;
-
-    const me = party.members.find((m) => m.uid === currentUserUid);
-    const newStatus = !me?.isReady;
+  const handleStartMatchmaking = async () => {
+    setMatchmakingError(null);
+    setMatchResult(null);
 
     try {
-      const body: any = { isReady: newStatus };
-      if (newStatus) {
-        // If readying up, send latency map
-        body.latencyMap = latencyMap;
+      // 1. Measure Latency (Client-Side)
+      let currentLatencyMap = latencyMap;
+      if (
+        Object.keys(currentLatencyMap).length === 0 &&
+        availableRegions.length > 0
+      ) {
+        try {
+          currentLatencyMap = await measureLatency(availableRegions);
+        } catch (e) {
+          console.warn("[Social] Failed to measure latency", e);
+        }
       }
 
-      const res = await fetch("/api/party/ready", {
+      const idToken = localStorage.getItem("idToken");
+      const res = await fetch("/api/matchmaking/queue", {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${idToken}`,
           "Content-Type": "application/json",
+          Authorization: `Bearer ${idToken}`,
         },
-        body: JSON.stringify(body),
+        body: JSON.stringify({
+          configName: selectedConfig,
+          latencyMap: currentLatencyMap,
+        }),
       });
 
+      const data = await res.json();
+
       if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error);
+        throw new Error(data.error || "Failed to start matchmaking");
       }
-      fetchPartyStatus();
-    } catch (e: any) {
-      setPartyError(e.message);
+
+      // Optimistically update party to trigger sync
+      if (party) {
+        setParty({ ...party, matchmakingTicketId: data.ticketId });
+      }
+
+      setTicketId(data.ticketId);
+      setMatchmakingStatus("QUEUED");
+
+      if (data.estimatedWaitTime) {
+        setEstimatedWaitTime(data.estimatedWaitTime);
+      }
+    } catch (err: any) {
+      handleMatchmakingFailure(err.message);
     }
   };
 
@@ -1129,19 +1145,7 @@ export default function SocialPage() {
                           gap: "10px",
                         }}
                       >
-                        {/* Ready Status Indicator */}
-                        <span
-                          style={{
-                            fontSize: "12px",
-                            fontWeight: "bold",
-                            color: m.isReady ? "#10b981" : "#ef4444",
-                            backgroundColor: "#1f2937",
-                            padding: "2px 6px",
-                            borderRadius: "4px",
-                          }}
-                        >
-                          {m.isReady ? "READY" : "NOT READY"}
-                        </span>
+                        {/* Ready Status Removed */}
 
                         {party.leaderUid === currentUserUid &&
                           m.uid !== currentUserUid && (
@@ -1264,29 +1268,38 @@ export default function SocialPage() {
                 </p>
               )}
 
-              {/* Matchmaking / Ready Controls */}
+              {/* Matchmaking Controls */}
               <div style={{ marginBottom: "16px" }}>
                 {matchmakingStatus === "IDLE" ||
                 matchmakingStatus === "FAILED" ? (
                   <div style={{ display: "flex", gap: "10px" }}>
-                    <button
-                      onClick={handleToggleReady}
-                      style={{
-                        ...styles.secondaryButton,
-                        flex: 1,
-                        backgroundColor: party.members.find(
-                          (m) => m.uid === currentUserUid
-                        )?.isReady
-                          ? "#ef4444" // Red for Unready
-                          : "#10b981", // Green for Ready
-                        color: "white",
-                      }}
-                    >
-                      {party.members.find((m) => m.uid === currentUserUid)
-                        ?.isReady
-                        ? "Unready"
-                        : "Ready"}
-                    </button>
+                    {party.leaderUid === currentUserUid ? (
+                      <button
+                        onClick={handleStartMatchmaking}
+                        style={{
+                          ...styles.secondaryButton,
+                          flex: 1,
+                          backgroundColor: "#10b981", // Green
+                          color: "white",
+                        }}
+                      >
+                        Find Match
+                      </button>
+                    ) : (
+                      <div
+                        style={{
+                          flex: 1,
+                          textAlign: "center",
+                          padding: "10px",
+                          backgroundColor: "#1f2937",
+                          borderRadius: "4px",
+                          color: "#9ca3af",
+                          fontSize: "14px",
+                        }}
+                      >
+                        Waiting for leader to start...
+                      </div>
+                    )}
                   </div>
                 ) : matchmakingStatus === "QUEUED" ||
                   matchmakingStatus === "PLACING" ? (

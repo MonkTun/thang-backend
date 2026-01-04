@@ -86,8 +86,22 @@ export default async function handler(
 
       if (!party) {
         // Inconsistent state, treat as solo
+        const cleanLatencyMap: Record<string, number> = {};
+        if (latencyMap && typeof latencyMap === "object") {
+          for (const [region, latency] of Object.entries(latencyMap)) {
+            const val = Number(latency);
+            if (!isNaN(val)) {
+              cleanLatencyMap[region] = Math.round(val);
+            }
+          }
+        }
         playersToMatch.push(
-          createPlayerObject(uid, user.username, user.rank || 100, latencyMap)
+          createPlayerObject(
+            uid,
+            user.username,
+            user.rank || 100,
+            cleanLatencyMap
+          )
         );
       } else {
         // Check if requester is leader
@@ -112,16 +126,44 @@ export default async function handler(
         // Add all members
         party.members.forEach((member: any) => {
           const memberDoc = memberMap.get(member.uid);
-          const rank = memberDoc?.rank || 100;
+          const rank = Number(memberDoc?.rank || 100);
+          const username =
+            memberDoc?.username || member.username || "UnknownPlayer";
+
+          // Ensure latencyMap values are integers
+          const cleanLatencyMap: Record<string, number> = {};
+          if (latencyMap && typeof latencyMap === "object") {
+            for (const [region, latency] of Object.entries(latencyMap)) {
+              const val = Number(latency);
+              if (!isNaN(val)) {
+                cleanLatencyMap[region] = Math.round(val);
+              }
+            }
+          }
+
           playersToMatch.push(
-            createPlayerObject(member.uid, member.username, rank, latencyMap)
+            createPlayerObject(member.uid, username, rank, cleanLatencyMap)
           );
         });
       }
     } else {
       // Solo Queue
+      const cleanLatencyMap: Record<string, number> = {};
+      if (latencyMap && typeof latencyMap === "object") {
+        for (const [region, latency] of Object.entries(latencyMap)) {
+          const val = Number(latency);
+          if (!isNaN(val)) {
+            cleanLatencyMap[region] = Math.round(val);
+          }
+        }
+      }
       playersToMatch.push(
-        createPlayerObject(uid, user.username, user.rank || 100, latencyMap)
+        createPlayerObject(
+          uid,
+          user.username || "UnknownPlayer",
+          Number(user.rank || 100),
+          cleanLatencyMap
+        )
       );
     }
 

@@ -56,9 +56,9 @@ export default async function handler(
       // Unset ticket AND unready all members to prevent auto-requeue loops
       await db.collection("parties").updateOne(
         { _id: new ObjectId(user.partyId) },
-        { 
+        {
           $unset: { matchmakingTicketId: "" },
-          $set: { "members.$[].isReady": false }
+          $set: { "members.$[].isReady": false },
         }
       );
     }

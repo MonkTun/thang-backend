@@ -4,6 +4,7 @@ import {
   DescribeMatchmakingCommand,
 } from "@aws-sdk/client-gamelift";
 import admin from "@/lib/firebaseAdmin";
+import clientPromise from "@/lib/mongodb";
 
 const client = new GameLiftClient({
   region: process.env.AWS_REGION || "us-east-1",
@@ -52,6 +53,22 @@ export default async function handler(
     }
 
     const ticket = response.TicketList[0];
+
+    // If the ticket is in a terminal state, clear it from the database
+    // so that the user isn't stuck in "Matchmaking" state on refresh.
+    if (
+      ticket.Status &&
+      ["COMPLETED", "FAILED", "TIMED_OUT", "CANCELLED"].includes(ticket.Status)
+    ) {
+      const mongoClient = await clientPromise;
+      const db = mongoClient.db(process.env.NEXT_PUBLIC_DB_NAME || "game");
+      await db
+        .collection("parties")
+        .updateOne(
+          { matchmakingTicketId: ticketId },
+          { $unset: { matchmakingTicketId: "" } }
+        );
+    }
 
     // 3. Return Status
     // Statuses: QUEUED, PLACING, COMPLETED, FAILED, TIMED_OUT, REQUIRES_ACCEPTANCE

@@ -39,10 +39,11 @@ export function createPlayerObject(
   skill: number,
   latencyMap: Record<string, number>
 ): Player {
+  // Ensure skill is a number for GameLift AttributeValue
   return {
     PlayerId: playerId,
     PlayerAttributes: {
-      skill: { N: skill.toString() },
+      skill: { N: skill },
       username: { S: username },
     },
     LatencyInMs: latencyMap,

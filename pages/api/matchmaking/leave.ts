@@ -53,12 +53,14 @@ export default async function handler(
     const user = await db.collection("users").findOne({ _id: uid });
 
     if (user && user.partyId) {
-      await db
-        .collection("parties")
-        .updateOne(
-          { _id: new ObjectId(user.partyId) },
-          { $unset: { matchmakingTicketId: "" } }
-        );
+      // Unset ticket AND unready all members to prevent auto-requeue loops
+      await db.collection("parties").updateOne(
+        { _id: new ObjectId(user.partyId) },
+        { 
+          $unset: { matchmakingTicketId: "" },
+          $set: { "members.$[].isReady": false }
+        }
+      );
     }
 
     return res.status(200).json({ message: "Matchmaking cancelled" });

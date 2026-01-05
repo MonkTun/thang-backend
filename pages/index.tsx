@@ -43,14 +43,10 @@ export default function IndexPage() {
 
           <div style={styles.heroContentOverlay}>
             <p style={styles.kicker}>
-              Action RPG • Multiplayer • Cross-platform
+              Multiplayer Action • Freeze-Tag Survival
             </p>
-            <h1 style={styles.title}>Forge your legend in Thang</h1>
-            <p style={styles.subtitle}>
-              Dive into fast-paced battles, craft rare gear, and carve your path
-              through a living world. Squad up with friends or conquer alone —
-              the choice is yours.
-            </p>
+            <h1 style={styles.title}>THANG!</h1>
+            <p style={styles.subtitle}>Stay Un-Frozen!</p>
             <div style={styles.ctaRow}>
               <Link
                 href="/download"
@@ -65,43 +61,41 @@ export default function IndexPage() {
                 Learn more
               </Link>
             </div>
-            <div style={styles.platforms}>
-              PC • Mac • Linux • Coming soon to Steam Deck
-            </div>
+            <div style={styles.platforms}>PC (Steam) & Console</div>
           </div>
         </section>
 
         <section style={styles.infoSection}>
           <div style={styles.infoHeader}>
-            <p style={styles.kicker}>Why play</p>
-            <h2 style={styles.infoTitle}>Built for squads, tuned for skill</h2>
+            <p style={styles.kicker}>Core Gameplay</p>
+            <h2 style={styles.infoTitle}>If you stop moving, you freeze.</h2>
             <p style={styles.infoSubtitle}>
-              Movement-cancel combos, reactive AI, and loot that respects your
-              time. Thang rewards sharp play and keeps your squad synced across
-              every platform.
+              Players in THANG compete in a 5 vs 5 team-based match where the
+              goal is to freeze the entire opposing team. If you play alone, you
+              lose.
             </p>
           </div>
 
           <div style={styles.infoGrid}>
             <div style={styles.infoCard}>
-              <h3 style={styles.infoCardTitle}>Combat depth</h3>
+              <h3 style={styles.infoCardTitle}>Freeze Bar</h3>
               <p style={styles.infoText}>
-                Parries, i-frame dodges, weapon stances, and ultimates that
-                chain into co-op finishers.
+                Your body temperature drops when standing still or getting hit.
+                Keep moving to stay warm! Reaching zero means you are Frozen.
               </p>
             </div>
             <div style={styles.infoCard}>
-              <h3 style={styles.infoCardTitle}>Progression that lasts</h3>
+              <h3 style={styles.infoCardTitle}>Teamplay & Revival</h3>
               <p style={styles.infoText}>
-                Seasonal ladders without wipes on your core collection;
-                cosmetics and builds travel with you.
+                Tagged teammates can be melted instantly. Deep frozen ones must
+                be carried to the central Oven to be revived.
               </p>
             </div>
             <div style={styles.infoCard}>
-              <h3 style={styles.infoCardTitle}>Live world</h3>
+              <h3 style={styles.infoCardTitle}>Gunplay</h3>
               <p style={styles.infoText}>
-                Rotating events, faction wars, and dungeons that remix layouts
-                each week.
+                No reloading, no ammo. Guns melt after use. Hitscan freeze guns
+                do not deal damage—they only reduce the Freeze Bar.
               </p>
             </div>
           </div>
@@ -109,24 +103,24 @@ export default function IndexPage() {
 
         <section style={styles.features}>
           <div style={styles.featureCard}>
-            <h3 style={styles.featureTitle}>Skill-first combat</h3>
+            <h3 style={styles.featureTitle}>Ice Arena</h3>
             <p style={styles.featureText}>
-              Tight, timing-based battles with dodge-rolls, parries, and
-              specials that reward mastery.
+              A medium-sized, symmetrical map with a central Oven as the primary
+              point of conflict. Designed for frequent team fights.
             </p>
           </div>
           <div style={styles.featureCard}>
-            <h3 style={styles.featureTitle}>Co-op ready</h3>
+            <h3 style={styles.featureTitle}>Roles & Perks</h3>
             <p style={styles.featureText}>
-              Jump in with friends, sync progress, and share loot via
-              cross-platform play.
+              No fixed classes. Choose Perks for mobility, support, pressure, or
+              control to define your playstyle.
             </p>
           </div>
           <div style={styles.featureCard}>
-            <h3 style={styles.featureTitle}>Evolving world</h3>
+            <h3 style={styles.featureTitle}>The Story</h3>
             <p style={styles.featureText}>
-              Seasonal events, rotating dungeons, and a living economy that
-              keeps the grind fresh.
+              Five polar bear best friends. One found mind-controlling glasses
+              and became The Hunter. The only way to stop them? Freeze them!
             </p>
           </div>
         </section>
@@ -138,33 +132,31 @@ export default function IndexPage() {
           </div>
           <div style={styles.faqGrid}>
             <div style={styles.faqItem}>
-              <h4 style={styles.faqQuestion}>Is Thang free-to-play?</h4>
+              <h4 style={styles.faqQuestion}>What is the goal?</h4>
               <p style={styles.faqAnswer}>
-                Yes. Cosmetics are optional and progression is skill-earned, not
-                paywalled.
+                It's a 5v5 freeze-tag match. The goal is to freeze the entire
+                opposing team. If you stop moving, you freeze!
               </p>
             </div>
             <div style={styles.faqItem}>
-              <h4 style={styles.faqQuestion}>Does it support cross-play?</h4>
+              <h4 style={styles.faqQuestion}>How do I revive teammates?</h4>
               <p style={styles.faqAnswer}>
-                PC, Mac, and Linux play together today. Steam Deck optimizations
-                are in flight.
+                Tag them if they are Frozen. If they are Deep Frozen, carry them
+                to the central Oven to warm them up.
               </p>
             </div>
             <div style={styles.faqItem}>
-              <h4 style={styles.faqQuestion}>
-                Will my seasonal progress reset?
-              </h4>
+              <h4 style={styles.faqQuestion}>Do guns deal damage?</h4>
               <p style={styles.faqAnswer}>
-                Seasonal ladders reset rankings, but your core gear, cosmetics,
-                and unlocks stay.
+                No. Guns only reduce the enemy's Freeze Bar. There is no health,
+                only body temperature.
               </p>
             </div>
             <div style={styles.faqItem}>
-              <h4 style={styles.faqQuestion}>Can I solo the endgame?</h4>
+              <h4 style={styles.faqQuestion}>Are there classes?</h4>
               <p style={styles.faqAnswer}>
-                Yes, but squads clear faster. Boss mechanics scale for solo and
-                co-op.
+                No fixed classes. You customize your playstyle using Perks
+                (Mobility, Support, Pressure, Control).
               </p>
             </div>
           </div>

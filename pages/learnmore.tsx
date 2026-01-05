@@ -27,51 +27,61 @@ export default function LearnMorePage() {
             <p style={styles.kicker}>Roadmap</p>
             <h2 style={styles.timelineTitle}>Road to launch</h2>
             <p style={styles.timelineSubtitle}>
-              How we are sequencing development milestones through 2025.
+              How we are sequencing development and major milestones
             </p>
           </div>
           <div style={styles.timelineList}>
             <div style={styles.timelineItem}>
               <div style={styles.timelineDot} />
               <div style={styles.timelineContent}>
-                <p style={styles.timelineLabel}>Q1 2025</p>
+                <p style={styles.timelineLabel}>Q4 2025</p>
                 <h3 style={styles.timelineStage}>Development begins</h3>
                 <p style={styles.timelineText}>
-                  Core combat, movement, and foundational systems come online.
-                  Team builds tooling and pipelines.
+                  Core combat, movement, and foundational systems are laid.
+                  Backend client integration established.
                 </p>
               </div>
             </div>
             <div style={styles.timelineItem}>
               <div style={styles.timelineDot} />
               <div style={styles.timelineContent}>
-                <p style={styles.timelineLabel}>Q2 2025</p>
+                <p style={styles.timelineLabel}>Q1 2026</p>
                 <h3 style={styles.timelineStage}>Vertical slice</h3>
                 <p style={styles.timelineText}>
-                  A polished demo showcasing combat, one dungeon, and core
-                  progression for feedback.
+                  A polished demo showcasing shooting, freezing, and basic AI in
+                  a small map
                 </p>
               </div>
             </div>
             <div style={styles.timelineItem}>
               <div style={styles.timelineDot} />
               <div style={styles.timelineContent}>
-                <p style={styles.timelineLabel}>Q3 2025</p>
+                <p style={styles.timelineLabel}>Q2 2026</p>
                 <h3 style={styles.timelineStage}>Alpha</h3>
                 <p style={styles.timelineText}>
-                  Wider content drop, co-op sessions, and economy balancing with
-                  early community testers.
+                  Wider content drop, and public alpha release with community
+                  testers.
                 </p>
               </div>
             </div>
             <div style={styles.timelineItem}>
               <div style={styles.timelineDot} />
               <div style={styles.timelineContent}>
-                <p style={styles.timelineLabel}>Q4 2025</p>
+                <p style={styles.timelineLabel}>Q3 2026</p>
                 <h3 style={styles.timelineStage}>Beta</h3>
                 <p style={styles.timelineText}>
-                  Performance tuning, live events rehearsal, and final polish
-                  ahead of launch.
+                  Performance tuning and final polish ahead of launch. Open beta
+                  for all players.
+                </p>
+              </div>
+            </div>
+            <div style={styles.timelineItem}>
+              <div style={styles.timelineDot} />
+              <div style={styles.timelineContent}>
+                <p style={styles.timelineLabel}>Q4 2026</p>
+                <h3 style={styles.timelineStage}>Launch</h3>
+                <p style={styles.timelineText}>
+                  Official launch of the game to the public.
                 </p>
               </div>
             </div>

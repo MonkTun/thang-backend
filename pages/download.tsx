@@ -47,8 +47,7 @@ export default function DownloadPage() {
           <p style={styles.kicker}>Downloads</p>
           <h1 style={styles.title}>Downloads are coming soon</h1>
           <p style={styles.subtitle}>
-            We are finalizing the builds for every platform. Check back shortly
-            for direct download links.
+            Downloads will be available here in the future.
           </p>
         </div>
 

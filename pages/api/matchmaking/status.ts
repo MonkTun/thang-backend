@@ -76,6 +76,9 @@ export default async function handler(
       status: ticket.Status,
       startTime: ticket.StartTime,
       estimatedWaitTime: ticket.EstimatedWaitTime,
+      statusReason: (ticket as any).StatusReason,
+      statusMessage: (ticket as any).StatusMessage,
+      gameSessionArn: (ticket as any).GameSessionArn,
     };
 
     // If match is found, return connection info

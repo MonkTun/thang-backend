@@ -34,6 +34,10 @@ export default async function handler(
 
     // 2. Parse Request Body
     // configName: The exact name of the Matchmaking Configuration in AWS (e.g. "Thang-Deathmatch-Config")
+    // MAP SELECTION: The `configName` determines which rule set and GameLift Queue is used.
+    // To support multiple maps (e.g. "Ice Arena", "Desert"), create separate Matchmaking Configurations in AWS
+    // backed by the same Fleet (or different Fleets) and pass the map path as a "Game Property" in the AWS Console.
+    // Then, the client simply requests the specific configName for the map they want.
     let { configName, latencyMap } = req.body;
 
     if (!configName) {

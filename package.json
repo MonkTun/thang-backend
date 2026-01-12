@@ -14,6 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "@aws-sdk/client-gamelift": "^3.958.0",
+    "@aws-sdk/client-sqs": "^3.966.0",
     "cookies-next": "^6.1.1",
     "dotenv": "^17.2.3",
     "firebase": "^12.7.0",

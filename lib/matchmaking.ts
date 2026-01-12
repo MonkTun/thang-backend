@@ -37,7 +37,8 @@ export function createPlayerObject(
   playerId: string,
   username: string,
   skill: number,
-  latencyMap: Record<string, number>
+  latencyMap: Record<string, number>,
+  team?: string
 ): Player {
   // --- FIX FOR GAMELIFT ANYWHERE ---
   // If the client reports latency to 'us-east-1', copy it to your Custom Location name.
@@ -51,7 +52,7 @@ export function createPlayerObject(
   // ---------------------------------
 
   // Ensure skill is a number for GameLift AttributeValue
-  return {
+  const player: Player = {
     PlayerId: playerId,
     PlayerAttributes: {
       skill: { N: skill },
@@ -59,4 +60,10 @@ export function createPlayerObject(
     },
     LatencyInMs: latencyMap,
   };
+
+  if (team) {
+    player.Team = team;
+  }
+
+  return player;
 }

@@ -14,6 +14,15 @@ interface UserDocument {
   partyId?: string;
 }
 
+// Map configuration names to specific Team Names.
+// For FFA modes like 'Thang-Deathmatch', we force 'AllPlayers' so GameLift doesn't generate 'AllPlayers1'.
+// For Team modes, we might leave it undefined to let GameLift or a randomizer handle it.
+const TEAM_CONFIG_MAP: Record<string, string | undefined> = {
+  "Thang-Deathmatch": "AllPlayers",
+  // Add other modes here, e.g.:
+  // "Thang-CaptureTheFlag": undefined, // Let GameLift decide or handle logic below
+};
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -43,6 +52,10 @@ export default async function handler(
     if (!configName) {
       return res.status(400).json({ error: "Missing configName" });
     }
+
+    // Determine the team name based on the config
+    // Default to "AllPlayers" if not specified in the map (handles unknown configs)
+    const teamName = TEAM_CONFIG_MAP[configName] || "AllPlayers";
 
     // --- AUTO-GENERATE LATENCY MAP (If Client didn't provide it) ---
     // Since the client cannot ping AWS directly, we estimate latency based on their Country.
@@ -104,7 +117,8 @@ export default async function handler(
             uid,
             user.username,
             user.rank || 100,
-            cleanLatencyMap
+            cleanLatencyMap,
+            teamName
           )
         );
       } else {
@@ -146,7 +160,13 @@ export default async function handler(
           }
 
           playersToMatch.push(
-            createPlayerObject(member.uid, username, rank, cleanLatencyMap)
+            createPlayerObject(
+              member.uid,
+              username,
+              rank,
+              cleanLatencyMap,
+              teamName
+            )
           );
         });
       }
@@ -166,7 +186,8 @@ export default async function handler(
           uid,
           user.username || "UnknownPlayer",
           Number(user.rank || 100),
-          cleanLatencyMap
+          cleanLatencyMap,
+          teamName
         )
       );
     }

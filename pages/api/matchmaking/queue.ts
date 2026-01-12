@@ -94,6 +94,7 @@ export default async function handler(
     }
 
     let playersToMatch: Player[] = [];
+    const latencyUpdates: Array<{ uid: string; latencyMap: Record<string, number> }> = [];
 
     // 4. Handle Party Logic
     if (user.partyId) {
@@ -112,6 +113,8 @@ export default async function handler(
             }
           }
         }
+
+        latencyUpdates.push({ uid, latencyMap: cleanLatencyMap });
         playersToMatch.push(
           createPlayerObject(
             uid,
@@ -159,6 +162,8 @@ export default async function handler(
             }
           }
 
+          latencyUpdates.push({ uid: member.uid, latencyMap: cleanLatencyMap });
+
           playersToMatch.push(
             createPlayerObject(
               member.uid,
@@ -181,6 +186,8 @@ export default async function handler(
           }
         }
       }
+
+      latencyUpdates.push({ uid, latencyMap: cleanLatencyMap });
       playersToMatch.push(
         createPlayerObject(
           uid,
@@ -190,6 +197,30 @@ export default async function handler(
           teamName
         )
       );
+    }
+
+    // Persist latest latency map(s) for later server-side use (e.g. backfill/lobbies)
+    if (latencyUpdates.length > 0) {
+      try {
+        const usersCol = db.collection("users");
+        const now = new Date();
+        await usersCol.bulkWrite(
+          latencyUpdates.map((u) => ({
+            updateOne: {
+              filter: { _id: u.uid },
+              update: {
+                $set: {
+                  latestLatencyMap: u.latencyMap,
+                  latestLatencyMapUpdatedAt: now,
+                },
+              },
+            },
+          })),
+          { ordered: false }
+        );
+      } catch (e) {
+        console.warn("[Matchmaking] Failed to persist latency map:", e);
+      }
     }
 
     // 5. Call GameLift StartMatchmaking

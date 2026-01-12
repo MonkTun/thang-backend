@@ -36,8 +36,8 @@ export default async function handler(
     const filter: any = uid
       ? { _id: uid }
       : username
-        ? { username }
-        : { inviteCode };
+      ? { username }
+      : { inviteCode };
 
     // Intentionally safe projection (no email, no tokens, no partyId, etc.)
     const user = await users.findOne(filter, {

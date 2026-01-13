@@ -19,11 +19,11 @@ function cleanLatencyMapForMatchmaking(
     }
   }
 
-  // Debug override: if a custom location key exists, force it to 0ms.
+  // Debug override: if a custom location key exists, force it to 10ms.
   if (
     Object.prototype.hasOwnProperty.call(cleanLatencyMap, "custom-home-office")
   ) {
-    cleanLatencyMap["custom-home-office"] = 0;
+    cleanLatencyMap["custom-home-office"] = 10;
   }
 
   return cleanLatencyMap;

@@ -17,7 +17,7 @@ function forceCustomHomeOfficeZero(latencyMap: any): any {
 
   return {
     ...latencyMap,
-    "custom-home-office": 0,
+    "custom-home-office": 10,
   };
 }
 

@@ -9,6 +9,18 @@ function asString(v: unknown): string | undefined {
   return trimmed.length > 0 ? trimmed : undefined;
 }
 
+function forceCustomHomeOfficeZero(latencyMap: any): any {
+  if (!latencyMap || typeof latencyMap !== "object") return latencyMap;
+  if (!Object.prototype.hasOwnProperty.call(latencyMap, "custom-home-office")) {
+    return latencyMap;
+  }
+
+  return {
+    ...latencyMap,
+    "custom-home-office": 0,
+  };
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -58,7 +70,12 @@ export default async function handler(
     }
 
     // Return fields at top-level to keep consumers simple (e.g. Unreal parsing latestLatencyMap)
-    return res.status(200).json(user);
+    const responseUser = {
+      ...user,
+      latestLatencyMap: forceCustomHomeOfficeZero(user.latestLatencyMap),
+    };
+
+    return res.status(200).json(responseUser);
   } catch (error) {
     console.error("[User Public] Internal Error:", error);
     return res.status(500).json({ error: "Internal Server Error" });

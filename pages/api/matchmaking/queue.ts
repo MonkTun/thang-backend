@@ -6,6 +6,29 @@ import { ObjectId } from "mongodb";
 import { COUNTRY_TO_REGION_MAP, DEFAULT_REGION } from "@/lib/regionUtils";
 import { startMatchmaking, createPlayerObject } from "@/lib/matchmaking";
 
+function cleanLatencyMapForMatchmaking(
+  latencyMap: any
+): Record<string, number> {
+  const cleanLatencyMap: Record<string, number> = {};
+  if (latencyMap && typeof latencyMap === "object") {
+    for (const [region, latency] of Object.entries(latencyMap)) {
+      const val = Number(latency);
+      if (!isNaN(val)) {
+        cleanLatencyMap[region] = Math.round(val);
+      }
+    }
+  }
+
+  // Debug override: if a custom location key exists, force it to 0ms.
+  if (
+    Object.prototype.hasOwnProperty.call(cleanLatencyMap, "custom-home-office")
+  ) {
+    cleanLatencyMap["custom-home-office"] = 0;
+  }
+
+  return cleanLatencyMap;
+}
+
 // Define the shape of your User document
 interface UserDocument {
   _id: string; // Firebase UID
@@ -94,7 +117,10 @@ export default async function handler(
     }
 
     let playersToMatch: Player[] = [];
-    const latencyUpdates: Array<{ uid: string; latencyMap: Record<string, number> }> = [];
+    const latencyUpdates: Array<{
+      uid: string;
+      latencyMap: Record<string, number>;
+    }> = [];
 
     // 4. Handle Party Logic
     if (user.partyId) {
@@ -104,15 +130,7 @@ export default async function handler(
 
       if (!party) {
         // Inconsistent state, treat as solo
-        const cleanLatencyMap: Record<string, number> = {};
-        if (latencyMap && typeof latencyMap === "object") {
-          for (const [region, latency] of Object.entries(latencyMap)) {
-            const val = Number(latency);
-            if (!isNaN(val)) {
-              cleanLatencyMap[region] = Math.round(val);
-            }
-          }
-        }
+        const cleanLatencyMap = cleanLatencyMapForMatchmaking(latencyMap);
 
         latencyUpdates.push({ uid, latencyMap: cleanLatencyMap });
         playersToMatch.push(
@@ -151,16 +169,7 @@ export default async function handler(
           const username =
             memberDoc?.username || member.username || "UnknownPlayer";
 
-          // Ensure latencyMap values are integers
-          const cleanLatencyMap: Record<string, number> = {};
-          if (latencyMap && typeof latencyMap === "object") {
-            for (const [region, latency] of Object.entries(latencyMap)) {
-              const val = Number(latency);
-              if (!isNaN(val)) {
-                cleanLatencyMap[region] = Math.round(val);
-              }
-            }
-          }
+          const cleanLatencyMap = cleanLatencyMapForMatchmaking(latencyMap);
 
           latencyUpdates.push({ uid: member.uid, latencyMap: cleanLatencyMap });
 
@@ -177,15 +186,7 @@ export default async function handler(
       }
     } else {
       // Solo Queue
-      const cleanLatencyMap: Record<string, number> = {};
-      if (latencyMap && typeof latencyMap === "object") {
-        for (const [region, latency] of Object.entries(latencyMap)) {
-          const val = Number(latency);
-          if (!isNaN(val)) {
-            cleanLatencyMap[region] = Math.round(val);
-          }
-        }
-      }
+      const cleanLatencyMap = cleanLatencyMapForMatchmaking(latencyMap);
 
       latencyUpdates.push({ uid, latencyMap: cleanLatencyMap });
       playersToMatch.push(

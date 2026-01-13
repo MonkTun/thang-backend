@@ -29,6 +29,11 @@ function cleanLatencyMapForMatchmaking(
   return cleanLatencyMap;
 }
 
+function toSkill(value: any): number {
+  const num = Number(value);
+  return Number.isFinite(num) ? num : 0;
+}
+
 // Define the shape of your User document
 interface UserDocument {
   _id: string; // Firebase UID
@@ -137,7 +142,7 @@ export default async function handler(
           createPlayerObject(
             uid,
             user.username,
-            user.rank || 100,
+            toSkill(user.rank),
             cleanLatencyMap,
             teamName
           )
@@ -165,7 +170,7 @@ export default async function handler(
         // Add all members
         party.members.forEach((member: any) => {
           const memberDoc = memberMap.get(member.uid);
-          const rank = Number(memberDoc?.rank || 100);
+          const rank = toSkill(memberDoc?.rank);
           const username =
             memberDoc?.username || member.username || "UnknownPlayer";
 
@@ -193,7 +198,7 @@ export default async function handler(
         createPlayerObject(
           uid,
           user.username || "UnknownPlayer",
-          Number(user.rank || 100),
+          toSkill(user.rank),
           cleanLatencyMap,
           teamName
         )

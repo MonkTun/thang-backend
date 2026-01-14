@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Head from "next/head";
 import FooterNav from "../../components/FooterNav";
 import NavBar from "../../components/NavBar";
@@ -42,6 +42,33 @@ interface MatchEvent {
   raw?: any;
 }
 
+type TicketEventHistoryItem = {
+  messageId: string;
+  timestamp: string;
+  type: string;
+  raw?: any;
+};
+
+type TicketGroup = {
+  ticketId: string;
+  firstSeen: string;
+  lastSeen: string;
+  configName?: string;
+  ruleSetName?: string;
+  ruleSetBody?: string;
+  config?: MatchEvent["config"];
+  latestTicket?: MatchEvent["tickets"][number];
+  history: TicketEventHistoryItem[];
+};
+
+function maxIso(a: string, b: string) {
+  return new Date(a).getTime() >= new Date(b).getTime() ? a : b;
+}
+
+function minIso(a: string, b: string) {
+  return new Date(a).getTime() <= new Date(b).getTime() ? a : b;
+}
+
 export default function MatchmakingAdmin() {
   const [events, setEvents] = useState<MatchEvent[]>([]);
   const [isPolling, setIsPolling] = useState(false);
@@ -50,6 +77,130 @@ export default function MatchmakingAdmin() {
   const [expandedTicketKey, setExpandedTicketKey] = useState<string | null>(
     null
   );
+  const [showFullJson, setShowFullJson] = useState(false);
+  const [copyState, setCopyState] = useState<string | null>(null);
+
+  const fullDumpJson = useMemo(() => {
+    return JSON.stringify({ logs, events }, null, 2);
+  }, [logs, events]);
+
+  const copyFullJson = async () => {
+    try {
+      const text = fullDumpJson;
+      if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        // Fallback: temporary textarea
+        const el = document.createElement("textarea");
+        el.value = text;
+        el.style.position = "fixed";
+        el.style.left = "-9999px";
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand("copy");
+        document.body.removeChild(el);
+      }
+      setCopyState("Copied!");
+      setTimeout(() => setCopyState(null), 1200);
+    } catch (e) {
+      setCopyState("Copy failed");
+      setTimeout(() => setCopyState(null), 1600);
+    }
+  };
+
+  const groupedTickets = useMemo(() => {
+    // ticketId -> group
+    const map = new Map<string, TicketGroup>();
+    const seenPerTicket = new Map<string, Set<string>>();
+
+    for (const evt of events) {
+      const ticketIds: string[] =
+        evt.tickets?.map((t) => t.ticketId).filter(Boolean) ||
+        evt.ticketIds?.filter(Boolean) ||
+        [];
+
+      if (ticketIds.length === 0) continue;
+
+      for (const ticketId of ticketIds) {
+        if (!ticketId) continue;
+
+        let group = map.get(ticketId);
+        if (!group) {
+          group = {
+            ticketId,
+            firstSeen: evt.timestamp,
+            lastSeen: evt.timestamp,
+            configName: evt.configName,
+            ruleSetName: evt.ruleSetName,
+            ruleSetBody: evt.ruleSetBody,
+            config: evt.config,
+            latestTicket: undefined,
+            history: [],
+          };
+          map.set(ticketId, group);
+          seenPerTicket.set(ticketId, new Set());
+        }
+
+        group.firstSeen = minIso(group.firstSeen, evt.timestamp);
+        group.lastSeen = maxIso(group.lastSeen, evt.timestamp);
+
+        // Keep metadata from the most recent event.
+        if (
+          new Date(evt.timestamp).getTime() >=
+          new Date(group.lastSeen).getTime()
+        ) {
+          group.configName = evt.configName || group.configName;
+          group.ruleSetName = evt.ruleSetName || group.ruleSetName;
+          group.ruleSetBody = evt.ruleSetBody || group.ruleSetBody;
+          group.config = evt.config || group.config;
+        }
+
+        const dedupeKey = `${evt.messageId}`;
+        const seen = seenPerTicket.get(ticketId)!;
+        if (!seen.has(dedupeKey)) {
+          seen.add(dedupeKey);
+          group.history.push({
+            messageId: evt.messageId,
+            timestamp: evt.timestamp,
+            type: evt.type,
+            raw: evt.raw,
+          });
+        }
+
+        // If this event has an enriched ticket snapshot, treat the most recent one as "current".
+        const enriched = evt.tickets?.find((t) => t.ticketId === ticketId);
+        if (enriched) {
+          const currentTs = new Date(group.lastSeen).getTime();
+          const evtTs = new Date(evt.timestamp).getTime();
+          const latestTicketTs = group.latestTicket ? evtTs : -Infinity;
+          // We want the ticket snapshot from the newest event we have for this ticket.
+          if (
+            !group.latestTicket ||
+            evtTs >= currentTs ||
+            evtTs >= latestTicketTs
+          ) {
+            group.latestTicket = enriched;
+          }
+        }
+      }
+    }
+
+    const arr = Array.from(map.values());
+    // Sort by most recent activity
+    arr.sort(
+      (a, b) => new Date(b.lastSeen).getTime() - new Date(a.lastSeen).getTime()
+    );
+
+    // Sort each ticket's history by time ascending for readability
+    for (const g of arr) {
+      g.history.sort(
+        (x, y) =>
+          new Date(x.timestamp).getTime() - new Date(y.timestamp).getTime()
+      );
+    }
+
+    return arr;
+  }, [events]);
 
   const addLog = (msg: string) => {
     setLogs((prev) => [
@@ -99,12 +250,23 @@ export default function MatchmakingAdmin() {
       <main style={styles.main}>
         <div style={styles.header}>
           <h1 style={styles.title}>AWS Matchmaking Monitor</h1>
-          <button
-            onClick={() => setIsPolling(!isPolling)}
-            style={isPolling ? styles.stopBtn : styles.startBtn}
-          >
-            {isPolling ? "Stop Polling" : "Start Live Monitor"}
-          </button>
+          <div style={styles.headerButtons}>
+            <button
+              onClick={() => setShowFullJson((v) => !v)}
+              style={styles.detailBtn}
+            >
+              {showFullJson ? "Hide Full JSON" : "View Full JSON"}
+            </button>
+            <button onClick={copyFullJson} style={styles.detailBtn}>
+              {copyState ? copyState : "Copy JSON"}
+            </button>
+            <button
+              onClick={() => setIsPolling(!isPolling)}
+              style={isPolling ? styles.stopBtn : styles.startBtn}
+            >
+              {isPolling ? "Stop Polling" : "Start Live Monitor"}
+            </button>
+          </div>
         </div>
 
         <div style={styles.layout}>
@@ -119,237 +281,246 @@ export default function MatchmakingAdmin() {
 
           {/* RIGHT: Match Events */}
           <div style={styles.eventsBox}>
-            {events.length === 0 ? (
+            {showFullJson && (
+              <div style={styles.eventCard}>
+                <div style={styles.eventHeader}>
+                  <span>Export</span>
+                  <span style={styles.eventType}>FULL JSON</span>
+                </div>
+                <pre style={{ ...styles.jsonBlock, maxHeight: 520 }}>
+                  {fullDumpJson}
+                </pre>
+              </div>
+            )}
+            {groupedTickets.length === 0 ? (
               <div style={styles.emptyState}>Waiting for matches...</div>
             ) : (
-              events.map((evt) => (
-                <div key={evt.messageId} style={styles.eventCard}>
-                  <div style={styles.eventHeader}>
-                    <span>{new Date(evt.timestamp).toLocaleString()}</span>
-                    <span style={styles.eventType}>{evt.type}</span>
-                  </div>
+              groupedTickets.map((g) => {
+                const t = g.latestTicket;
+                const playersCount =
+                  (t?.raw as any)?.Players?.length ??
+                  t?.latencySummary?.length ??
+                  0;
 
-                  {(evt.configName || evt.ruleSetName) && (
+                return (
+                  <div key={g.ticketId} style={styles.eventCard}>
+                    <div style={styles.eventHeader}>
+                      <span>{new Date(g.lastSeen).toLocaleString()}</span>
+                      <span style={styles.eventType}>TICKET</span>
+                    </div>
+
                     <div style={styles.row}>
-                      <span style={styles.label}>CONFIG / RULE SET</span>
-                      <div style={styles.metaGrid}>
-                        {evt.configName && (
-                          <div>
-                            <span style={styles.metaKey}>Config</span>
-                            <code style={styles.metaValue}>
-                              {evt.configName}
-                            </code>
-                          </div>
-                        )}
-                        {evt.ruleSetName && (
-                          <div>
-                            <span style={styles.metaKey}>RuleSet</span>
-                            <code style={styles.metaValue}>
-                              {evt.ruleSetName}
-                            </code>
-                          </div>
-                        )}
-                        {evt.config?.requestTimeoutSeconds !== undefined && (
-                          <div>
-                            <span style={styles.metaKey}>RequestTimeout</span>
-                            <span style={styles.metaText}>
-                              {evt.config.requestTimeoutSeconds}s
-                            </span>
-                          </div>
-                        )}
-                        {evt.config?.acceptanceRequired !== undefined && (
-                          <div>
-                            <span style={styles.metaKey}>
-                              AcceptanceRequired
-                            </span>
-                            <span style={styles.metaText}>
-                              {String(evt.config.acceptanceRequired)}
-                            </span>
-                          </div>
-                        )}
-                        {evt.config?.acceptanceTimeoutSeconds !== undefined && (
-                          <div>
-                            <span style={styles.metaKey}>
-                              AcceptanceTimeout
-                            </span>
-                            <span style={styles.metaText}>
-                              {evt.config.acceptanceTimeoutSeconds}s
-                            </span>
+                      <span style={styles.label}>TICKET ID</span>
+                      <code style={styles.codeBlock}>{g.ticketId}</code>
+                    </div>
+
+                    {(g.configName || g.ruleSetName) && (
+                      <div style={styles.row}>
+                        <span style={styles.label}>CONFIG / RULE SET</span>
+                        <div style={styles.metaGrid}>
+                          {g.configName && (
+                            <div>
+                              <span style={styles.metaKey}>Config</span>
+                              <code style={styles.metaValue}>
+                                {g.configName}
+                              </code>
+                            </div>
+                          )}
+                          {g.ruleSetName && (
+                            <div>
+                              <span style={styles.metaKey}>RuleSet</span>
+                              <code style={styles.metaValue}>
+                                {g.ruleSetName}
+                              </code>
+                            </div>
+                          )}
+                          {g.config?.requestTimeoutSeconds !== undefined && (
+                            <div>
+                              <span style={styles.metaKey}>RequestTimeout</span>
+                              <span style={styles.metaText}>
+                                {g.config.requestTimeoutSeconds}s
+                              </span>
+                            </div>
+                          )}
+                          {g.config?.acceptanceRequired !== undefined && (
+                            <div>
+                              <span style={styles.metaKey}>
+                                AcceptanceRequired
+                              </span>
+                              <span style={styles.metaText}>
+                                {String(g.config.acceptanceRequired)}
+                              </span>
+                            </div>
+                          )}
+                          {g.config?.acceptanceTimeoutSeconds !== undefined && (
+                            <div>
+                              <span style={styles.metaKey}>
+                                AcceptanceTimeout
+                              </span>
+                              <span style={styles.metaText}>
+                                {g.config.acceptanceTimeoutSeconds}s
+                              </span>
+                            </div>
+                          )}
+                        </div>
+
+                        {g.ruleSetBody && (
+                          <div style={{ marginTop: 8 }}>
+                            <button
+                              onClick={() =>
+                                setExpandedId(
+                                  expandedId === `${g.ticketId}::rules`
+                                    ? null
+                                    : `${g.ticketId}::rules`
+                                )
+                              }
+                              style={styles.detailBtn}
+                            >
+                              {expandedId === `${g.ticketId}::rules`
+                                ? "Hide Rule Set"
+                                : "View Rule Set"}
+                            </button>
+                            {expandedId === `${g.ticketId}::rules` && (
+                              <pre style={styles.jsonBlock}>
+                                {g.ruleSetBody}
+                              </pre>
+                            )}
                           </div>
                         )}
                       </div>
+                    )}
 
-                      {evt.ruleSetBody && (
-                        <div style={{ marginTop: 8 }}>
-                          <button
-                            onClick={() =>
-                              setExpandedId(
-                                expandedId === `${evt.messageId}::rules`
-                                  ? null
-                                  : `${evt.messageId}::rules`
-                              )
-                            }
-                            style={styles.detailBtn}
-                          >
-                            {expandedId === `${evt.messageId}::rules`
-                              ? "Hide Rule Set"
-                              : "View Rule Set"}
-                          </button>
-                          {expandedId === `${evt.messageId}::rules` && (
-                            <pre style={styles.jsonBlock}>
-                              {evt.ruleSetBody}
-                            </pre>
-                          )}
+                    <div style={styles.row}>
+                      <span style={styles.label}>STATUS</span>
+                      <div style={styles.ticketTopRow}>
+                        <span style={styles.ticketStatus}>
+                          {t?.status || "UNKNOWN"}
+                        </span>
+                        <span style={{ color: "#6b7280", fontSize: 12 }}>
+                          firstSeen:{" "}
+                          {new Date(g.firstSeen).toLocaleTimeString()} ·
+                          lastSeen: {new Date(g.lastSeen).toLocaleTimeString()}
+                        </span>
+                      </div>
+
+                      {t?.gameSessionArn && (
+                        <div style={styles.ticketMeta}>
+                          <span style={styles.ticketMetaLabel}>
+                            GameSessionArn:
+                          </span>
+                          <code style={styles.ticketMetaValue}>
+                            {t.gameSessionArn}
+                          </code>
+                        </div>
+                      )}
+
+                      {(t?.statusReason || t?.statusMessage) && (
+                        <div style={styles.ticketMeta}>
+                          <span style={styles.ticketMetaLabel}>Reason:</span>
+                          <span style={styles.ticketMetaText}>
+                            {t.statusReason || t.statusMessage}
+                          </span>
                         </div>
                       )}
                     </div>
-                  )}
-                  <div style={styles.row}>
-                    <span style={styles.label}>
-                      REFERENCE (SESSION ARN OR TICKET)
-                    </span>
-                    <code style={styles.codeBlock}>{evt.gameSessionArn}</code>
-                  </div>
 
-                  {evt.tickets && evt.tickets.length > 0 && (
+                    {t?.latencySummary && t.latencySummary.length > 0 && (
+                      <div style={styles.row}>
+                        <span style={styles.label}>LATENCY</span>
+                        <div style={styles.latencyBox}>
+                          {t.latencySummary.map((ls, i) => (
+                            <div key={i} style={styles.latencyRow}>
+                              <span style={styles.latencyPlayer}>
+                                {ls.playerId || "player"}
+                                {ls.team ? ` (${ls.team})` : ""}
+                              </span>
+                              <span style={styles.latencyValues}>
+                                {ls.summary?.top
+                                  ?.map((x) => `${x.region}:${x.ms}ms`)
+                                  .join(" | ") || "no latency"}
+                                {ls.summary?.customHomeOfficeMs !== undefined &&
+                                  ` | custom-home-office:${ls.summary.customHomeOfficeMs}ms`}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
                     <div style={styles.row}>
                       <span style={styles.label}>
-                        TICKETS ({evt.tickets.length})
+                        HISTORY ({g.history.length}) / PLAYERS ({playersCount})
                       </span>
-                      <div style={styles.ticketList}>
-                        {evt.tickets.map((t) => (
-                          <div key={t.ticketId} style={styles.ticketItem}>
-                            <div style={styles.ticketTopRow}>
-                              <code style={styles.ticketId}>{t.ticketId}</code>
-                              {t.status && (
-                                <span style={styles.ticketStatus}>
-                                  {t.status}
-                                </span>
-                              )}
-                            </div>
-
-                            {t.gameSessionArn && (
-                              <div style={styles.ticketMeta}>
-                                <span style={styles.ticketMetaLabel}>
-                                  GameSessionArn:
-                                </span>
-                                <code style={styles.ticketMetaValue}>
-                                  {t.gameSessionArn}
-                                </code>
-                              </div>
-                            )}
-
-                            {(t.statusReason || t.statusMessage) && (
-                              <div style={styles.ticketMeta}>
-                                <span style={styles.ticketMetaLabel}>
-                                  Reason:
-                                </span>
-                                <span style={styles.ticketMetaText}>
-                                  {t.statusReason || t.statusMessage}
-                                </span>
-                              </div>
-                            )}
-
-                            {t.latencySummary &&
-                              t.latencySummary.length > 0 && (
-                                <div style={styles.ticketMeta}>
-                                  <span style={styles.ticketMetaLabel}>
-                                    Latency:
-                                  </span>
-                                  <div style={styles.latencyBox}>
-                                    {t.latencySummary.map((ls, i) => (
-                                      <div key={i} style={styles.latencyRow}>
-                                        <span style={styles.latencyPlayer}>
-                                          {ls.playerId || "player"}
-                                          {ls.team ? ` (${ls.team})` : ""}
-                                        </span>
-                                        <span style={styles.latencyValues}>
-                                          {ls.summary?.top
-                                            ?.map(
-                                              (x) => `${x.region}:${x.ms}ms`
-                                            )
-                                            .join(" | ") || "no latency"}
-                                          {ls.summary?.customHomeOfficeMs !==
-                                            undefined &&
-                                            ` | custom-home-office:${ls.summary.customHomeOfficeMs}ms`}
-                                        </span>
-                                      </div>
-                                    ))}
-                                  </div>
-                                </div>
-                              )}
-
-                            {t.raw && (
-                              <div style={{ marginTop: 8 }}>
-                                <button
-                                  onClick={() =>
-                                    setExpandedTicketKey(
-                                      expandedTicketKey ===
-                                        `${evt.messageId}::${t.ticketId}`
-                                        ? null
-                                        : `${evt.messageId}::${t.ticketId}`
-                                    )
-                                  }
-                                  style={styles.detailBtn}
-                                >
-                                  {expandedTicketKey ===
-                                  `${evt.messageId}::${t.ticketId}`
-                                    ? "Hide Ticket JSON"
-                                    : "View Ticket JSON"}
-                                </button>
-                                {expandedTicketKey ===
-                                  `${evt.messageId}::${t.ticketId}` && (
-                                  <pre style={styles.jsonBlock}>
-                                    {JSON.stringify(t.raw, null, 2)}
-                                  </pre>
-                                )}
-                              </div>
-                            )}
+                      <div style={styles.historyBox}>
+                        {g.history.map((h) => (
+                          <div key={h.messageId} style={styles.historyRow}>
+                            <span style={styles.historyTime}>
+                              {new Date(h.timestamp).toLocaleTimeString()}
+                            </span>
+                            <span style={styles.historyType}>{h.type}</span>
                           </div>
                         ))}
                       </div>
                     </div>
-                  )}
 
-                  <div>
-                    <span style={styles.label}>
-                      PLAYERS ({evt.players.length})
-                    </span>
-                    <div style={styles.playerGrid}>
-                      {evt.players.map((p: any, idx: number) => (
-                        <div key={idx} style={styles.playerBadge}>
-                          <span style={{ color: "#fff" }}>{p.playerId}</span>
-                          {p.playerSessionId && (
-                            <span style={styles.sessionId}>
-                              {p.playerSessionId}
-                            </span>
-                          )}
-                        </div>
-                      ))}
+                    {/* DETAIL TOGGLES */}
+                    <div style={{ marginTop: 12, display: "flex", gap: 8 }}>
+                      {t?.raw && (
+                        <button
+                          onClick={() =>
+                            setExpandedTicketKey(
+                              expandedTicketKey === `${g.ticketId}::ticket`
+                                ? null
+                                : `${g.ticketId}::ticket`
+                            )
+                          }
+                          style={styles.detailBtn}
+                        >
+                          {expandedTicketKey === `${g.ticketId}::ticket`
+                            ? "Hide Ticket JSON"
+                            : "View Ticket JSON"}
+                        </button>
+                      )}
+                      <button
+                        onClick={() =>
+                          setExpandedId(
+                            expandedId === `${g.ticketId}::events`
+                              ? null
+                              : `${g.ticketId}::events`
+                          )
+                        }
+                        style={styles.detailBtn}
+                      >
+                        {expandedId === `${g.ticketId}::events`
+                          ? "Hide Event JSON"
+                          : "View Event JSON"}
+                      </button>
                     </div>
-                  </div>
-                  {/* DETAIL TOGGLE */}
-                  <div style={{ marginTop: 12 }}>
-                    <button
-                      onClick={() =>
-                        setExpandedId(
-                          expandedId === evt.messageId ? null : evt.messageId
-                        )
-                      }
-                      style={styles.detailBtn}
-                    >
-                      {expandedId === evt.messageId
-                        ? "Hide JSON"
-                        : "View Raw JSON"}
-                    </button>
-                    {expandedId === evt.messageId && (
+
+                    {expandedTicketKey === `${g.ticketId}::ticket` &&
+                      t?.raw && (
+                        <pre style={styles.jsonBlock}>
+                          {JSON.stringify(t.raw, null, 2)}
+                        </pre>
+                      )}
+
+                    {expandedId === `${g.ticketId}::events` && (
                       <pre style={styles.jsonBlock}>
-                        {JSON.stringify(evt.raw, null, 2)}
+                        {JSON.stringify(
+                          g.history.map((h) => ({
+                            messageId: h.messageId,
+                            timestamp: h.timestamp,
+                            type: h.type,
+                            raw: h.raw,
+                          })),
+                          null,
+                          2
+                        )}
                       </pre>
                     )}
                   </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
         </div>
@@ -379,6 +550,13 @@ const styles: Record<string, React.CSSProperties> = {
     marginBottom: "32px",
     borderBottom: "1px solid #166534",
     paddingBottom: "16px",
+  },
+  headerButtons: {
+    display: "flex",
+    gap: "10px",
+    alignItems: "center",
+    flexWrap: "wrap",
+    justifyContent: "flex-end",
   },
   title: {
     fontSize: "24px",
@@ -522,6 +700,31 @@ const styles: Record<string, React.CSSProperties> = {
     border: "1px solid #374151",
     padding: "8px",
     borderRadius: "4px",
+  },
+  historyBox: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "4px",
+    backgroundColor: "#000",
+    border: "1px solid #374151",
+    borderRadius: "4px",
+    padding: "8px",
+  },
+  historyRow: {
+    display: "flex",
+    gap: "10px",
+    alignItems: "center",
+    fontSize: "11px",
+    color: "#d1d5db",
+  },
+  historyTime: {
+    color: "#6b7280",
+    width: "86px",
+    flexShrink: 0,
+  },
+  historyType: {
+    color: "#86efac",
+    fontWeight: 700,
   },
   ticketTopRow: {
     display: "flex",

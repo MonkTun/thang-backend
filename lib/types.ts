@@ -140,7 +140,7 @@ export interface HydratedFriend {
   isOnline: boolean;
   party: FriendPartyInfo | null;
   isPartyLeader: boolean;
-  currentGame: JoinableGameInfo | null; // Only if friend is hosting
+  currentGame: GameSessionInfo | null; // Only if friend is hosting
   addedAt: Date;
 }
 
@@ -151,10 +151,11 @@ export interface FriendPartyInfo {
   isFull: boolean;
 }
 
-/** Joinable game info (for "Join Friend's Game" feature) */
-export interface JoinableGameInfo {
+/** Game session info (used for party auto-join and "Join Friend's Game") */
+export interface GameSessionInfo {
   sessionId: string;
   type: GameType;
+  startedAt?: Date; // Present when from party leader
 }
 
 /** Hydrated friend request info */
@@ -182,7 +183,7 @@ export interface Party {
   gameMode?: string | null;
   matchmakingTicketId?: string;
   joinRequests?: PartyJoinRequest[];
-  leaderGame?: LeaderGameInfo; // Set when leader hosts a game
+  leaderGame?: GameSessionInfo; // Set when leader hosts a game
   createdAt: Date;
   updatedAt?: Date;
 }
@@ -211,13 +212,6 @@ export interface PartyInvite {
   leaderUid: string;
   leaderUsername: string;
   invitedAt: Date;
-}
-
-/** Leader's game info for party auto-join */
-export interface LeaderGameInfo {
-  sessionId: string;
-  type: GameType;
-  startedAt: Date;
 }
 
 // =============================================================================
@@ -292,7 +286,7 @@ export interface PartyStatusResponse {
   partyId: string;
   partyInvites: PartyInvite[];
   party: Party;
-  leaderGame?: LeaderGameInfo; // If leader is hosting a joinable game
+  leaderGame?: GameSessionInfo; // If leader is hosting a joinable game
 }
 
 /** GET /api/matchmaking/status response */

@@ -2,6 +2,14 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import admin from "@/lib/firebaseAdmin";
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
+import type {
+  FriendsListResponse,
+  HydratedFriend,
+  HydratedFriendRequest,
+  FriendPartyInfo,
+  JoinableGameInfo,
+  ErrorResponse,
+} from "@/lib/types";
 
 const DB_NAME = process.env.NEXT_PUBLIC_DB_NAME || "game";
 
@@ -88,6 +96,7 @@ export default async function handler(
               avatarId: 1,
               equippedTitle: 1,
               bannerId: 1,
+              currentGame: 1, // Include game session info for "Join Game"
             },
           }
         )
@@ -192,6 +201,13 @@ export default async function handler(
           isOnline,
           party: partyInfo,
           isPartyLeader,
+          // Include game info if friend is in a joinable game (custom game as host)
+          currentGame: u?.currentGame?.isHost
+            ? {
+                sessionId: u.currentGame.sessionId,
+                type: u.currentGame.type,
+              }
+            : null,
         };
       });
     }

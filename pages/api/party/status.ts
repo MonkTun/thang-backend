@@ -3,6 +3,14 @@ import admin from "@/lib/firebaseAdmin";
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 import { detectRegion } from "@/lib/regionUtils";
+import type {
+  PartyStatusResponse,
+  Party,
+  PartyMember,
+  PartyInvite,
+  LeaderGameInfo,
+  ErrorResponse,
+} from "@/lib/types";
 
 const DB_NAME = process.env.NEXT_PUBLIC_DB_NAME || "game";
 
@@ -191,6 +199,12 @@ export default async function handler(
     }
 
     response.party = party;
+
+    // 7. Include Leader's Game Info (for party auto-join)
+    // If the party leader is hosting a game, members can use this to join
+    if (party.leaderGame) {
+      response.leaderGame = party.leaderGame;
+    }
 
     return res.status(200).json(response);
   } catch (error: any) {

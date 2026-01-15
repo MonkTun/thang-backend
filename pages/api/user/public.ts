@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import clientPromise from "@/lib/mongodb";
+import type { PublicUserResponse, ErrorResponse } from "@/lib/types";
 
 const DB_NAME = process.env.NEXT_PUBLIC_DB_NAME || "game";
 

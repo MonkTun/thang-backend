@@ -1,22 +1,11 @@
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
+import type { User } from "@/lib/types";
+
+// Re-export User type for convenience
+export type { User } from "@/lib/types";
 
 const DB_NAME = process.env.NEXT_PUBLIC_DB_NAME || "game";
-
-export interface User {
-  _id: string;
-  email: string;
-  username?: string | null;
-  inviteCode?: string; // Unique code for invite links
-  rank: number;
-  coins: number;
-  avatarId: string;
-  bannerId: string;
-  equippedTitle: string;
-  partyId?: string; // Added partyId to interface
-  created_at: Date;
-  updated_at: Date;
-}
 
 /**
  * Generates a random alphanumeric invite code

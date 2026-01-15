@@ -1,6 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import admin from "@/lib/firebaseAdmin";
 import clientPromise from "@/lib/mongodb";
+import type {
+  ProfileResponse,
+  ProfileUpdateRequest,
+  ErrorResponse,
+} from "@/lib/types";
 
 const DB_NAME = process.env.NEXT_PUBLIC_DB_NAME || "game";
 

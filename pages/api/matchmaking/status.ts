@@ -5,6 +5,12 @@ import {
 } from "@aws-sdk/client-gamelift";
 import admin from "@/lib/firebaseAdmin";
 import clientPromise from "@/lib/mongodb";
+import type {
+  MatchmakingStatusResponse,
+  MatchConnectionInfo,
+  MatchedPlayerSession,
+  ErrorResponse,
+} from "@/lib/types";
 
 const client = new GameLiftClient({
   region: process.env.AWS_REGION || "us-east-1",

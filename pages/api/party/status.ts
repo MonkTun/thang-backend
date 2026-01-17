@@ -8,7 +8,6 @@ import type {
   Party,
   PartyMember,
   PartyInvite,
-  LeaderGameInfo,
   ErrorResponse,
 } from "@/lib/types";
 
@@ -16,7 +15,7 @@ const DB_NAME = process.env.NEXT_PUBLIC_DB_NAME || "game";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   if (req.method !== "GET") {
     return res.status(405).json({ error: "Method not allowed" });
@@ -89,7 +88,7 @@ export default async function handler(
       if (invitesChanged) {
         await users.updateOne(
           { _id: uid },
-          { $set: { partyInvites: validInvites } }
+          { $set: { partyInvites: validInvites } },
         );
         partyInvites = validInvites;
       }
@@ -119,7 +118,7 @@ export default async function handler(
     // If not valid, create a new solo party
     if (!isValidParty) {
       console.log(
-        `[Party Status] User ${uid} not in valid party. Creating solo party.`
+        `[Party Status] User ${uid} not in valid party. Creating solo party.`,
       );
 
       const detectedRegion = detectRegion(req);
@@ -155,7 +154,7 @@ export default async function handler(
     const membersData = await users
       .find(
         { _id: { $in: memberUids } },
-        { projection: { avatarId: 1, bannerId: 1 } }
+        { projection: { avatarId: 1, bannerId: 1 } },
       )
       .toArray();
 
@@ -188,7 +187,7 @@ export default async function handler(
       if (requestsChanged) {
         await parties.updateOne(
           { _id: party._id },
-          { $set: { joinRequests: validRequests } }
+          { $set: { joinRequests: validRequests } },
         );
         joinRequests = validRequests;
       }

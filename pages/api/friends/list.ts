@@ -7,7 +7,6 @@ import type {
   HydratedFriend,
   HydratedFriendRequest,
   FriendPartyInfo,
-  JoinableGameInfo,
   ErrorResponse,
 } from "@/lib/types";
 
@@ -15,7 +14,7 @@ const DB_NAME = process.env.NEXT_PUBLIC_DB_NAME || "game";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   if (req.method !== "GET") {
     return res.status(405).json({ error: "Method not allowed" });
@@ -39,7 +38,7 @@ export default async function handler(
     // 3. Fetch User Data to get Friend UIDs
     const currentUser = await users.findOne(
       { _id: uid },
-      { projection: { friends: 1, friendRequests: 1, blocked: 1 } }
+      { projection: { friends: 1, friendRequests: 1, blocked: 1 } },
     );
 
     if (!currentUser) {
@@ -62,7 +61,7 @@ export default async function handler(
             friends: { uid: uid },
             friendRequests: { uid: uid },
           } as any,
-        }
+        },
       );
       // Filter locally for this request
       if (selfInFriends) {
@@ -98,7 +97,7 @@ export default async function handler(
               bannerId: 1,
               currentGame: 1, // Include game session info for "Join Game"
             },
-          }
+          },
         )
         .toArray();
 
@@ -124,7 +123,7 @@ export default async function handler(
                 leaderUid: 1,
                 matchmakingTicketId: 1,
               },
-            }
+            },
           )
           .toArray();
         partiesMap = new Map(partiesData.map((p) => [p._id.toString(), p]));
@@ -227,7 +226,7 @@ export default async function handler(
               equippedTitle: 1,
               bannerId: 1,
             },
-          }
+          },
         )
         .toArray();
 

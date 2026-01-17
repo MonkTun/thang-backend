@@ -7,7 +7,6 @@ import type {
   HeartbeatResponse,
   ErrorResponse,
   CurrentGameInfo,
-  LeaderGameInfo,
 } from "@/lib/types";
 
 const DB_NAME = process.env.NEXT_PUBLIC_DB_NAME || "game";
@@ -32,7 +31,7 @@ const DB_NAME = process.env.NEXT_PUBLIC_DB_NAME || "game";
  */
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
@@ -127,7 +126,7 @@ export default async function handler(
         const partyOid = new ObjectId(userBefore.partyId);
         const party = await parties.findOne(
           { _id: partyOid },
-          { projection: { leaderUid: 1 } }
+          { projection: { leaderUid: 1 } },
         );
 
         // Only update party if this user is the leader
@@ -144,13 +143,13 @@ export default async function handler(
                     startedAt: now,
                   },
                 },
-              }
+              },
             );
           } else if (gameSessionId === null && userBefore.currentGame?.isHost) {
             // Leader left a game they were hosting - clear party's game info
             await parties.updateOne(
               { _id: partyOid },
-              { $unset: { leaderGame: "" } }
+              { $unset: { leaderGame: "" } },
             );
           }
         }

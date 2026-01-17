@@ -22,14 +22,13 @@ async function clearLocalMatchmakingState(uid: string, ticketId: string) {
   const user = await db.collection("users").findOne({ _id: uid });
 
   if (user && user.partyId) {
-    // Unset ticket AND unready all members to prevent auto-requeue loops
-    await db.collection("parties").updateOne(
-      { _id: new ObjectId(user.partyId) },
-      {
-        $unset: { matchmakingTicketId: "" },
-        $set: { "members.$[].isReady": false },
-      }
-    );
+    // Unset ticket to clear matchmaking state
+    await db
+      .collection("parties")
+      .updateOne(
+        { _id: new ObjectId(user.partyId) },
+        { $unset: { matchmakingTicketId: "" } },
+      );
   }
 
   // Also clear by ticketId directly (in case user left party but ticket still exists)
@@ -37,13 +36,13 @@ async function clearLocalMatchmakingState(uid: string, ticketId: string) {
     .collection("parties")
     .updateOne(
       { matchmakingTicketId: ticketId },
-      { $unset: { matchmakingTicketId: "" } }
+      { $unset: { matchmakingTicketId: "" } },
     );
 }
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });

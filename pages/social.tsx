@@ -86,8 +86,13 @@ const ContextMenuItem = ({
 
 import { measureLatency, getBestRegion } from "@/lib/latencyUtils";
 
-export default function SocialPage() {
+type SocialPageProps = {
+  adminMode?: boolean;
+};
+
+export function SocialPage({ adminMode = false }: SocialPageProps) {
   const router = useRouter();
+  const partyEnabled = adminMode;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -112,7 +117,7 @@ export default function SocialPage() {
   const [latencyMap, setLatencyMap] = useState<Record<string, number>>({});
   const [bannerId, setBannerId] = useState<string | null>(null);
   const [activeMenuFriendId, setActiveMenuFriendId] = useState<string | null>(
-    null
+    null,
   );
   const [currentUsername, setCurrentUsername] = useState<string | null>(null);
   const [inviteCode, setInviteCode] = useState<string | null>(null);
@@ -125,7 +130,7 @@ export default function SocialPage() {
   const [selectedConfig, setSelectedConfig] = useState<string>("");
   const [availableConfigs, setAvailableConfigs] = useState<any[]>([]);
   const [estimatedWaitTime, setEstimatedWaitTime] = useState<number | null>(
-    null
+    null,
   );
   const [matchResult, setMatchResult] = useState<any>(null);
   const [configsLoading, setConfigsLoading] = useState(false);
@@ -152,9 +157,11 @@ export default function SocialPage() {
         // Fetch initial data with fresh token
         fetchUserProfile();
         fetchFriends();
-        fetchPartyStatus();
-        fetchRegion();
-        fetchMatchmakingConfigs();
+        if (partyEnabled) {
+          fetchPartyStatus();
+          fetchRegion();
+          fetchMatchmakingConfigs();
+        }
       } catch (e) {
         console.error("Auth refresh failed", e);
         router.push("/login");
@@ -162,7 +169,7 @@ export default function SocialPage() {
     });
 
     return () => unsubscribe();
-  }, [router]);
+  }, [router, partyEnabled]);
 
   const fetchUserProfile = async () => {
     try {
@@ -231,50 +238,80 @@ export default function SocialPage() {
     }
   };
 
-  // Matchmaking Polling
+  // Matchmaking Polling - pauses when tab is hidden but resumes immediately on focus
   useEffect(() => {
-    let pollInterval: NodeJS.Timeout;
+    if (!partyEnabled) return;
+    let pollInterval: NodeJS.Timeout | null = null;
 
-    if (
+    const shouldPoll =
       (matchmakingStatus === "QUEUED" || matchmakingStatus === "PLACING") &&
-      ticketId
-    ) {
-      pollInterval = setInterval(async () => {
-        try {
-          const idToken = localStorage.getItem("idToken");
-          const res = await fetch(
-            `/api/matchmaking/status?ticketId=${ticketId}`,
-            {
-              headers: { Authorization: `Bearer ${idToken}` },
-            }
-          );
-          const data = await res.json();
+      ticketId;
 
-          if (data.status === "COMPLETED") {
-            setMatchmakingStatus("COMPLETED");
-            setMatchResult(data);
-            clearInterval(pollInterval);
-          } else if (data.status === "PLACING") {
-            setMatchmakingStatus("PLACING");
-          } else if (data.status === "FAILED" || data.status === "TIMED_OUT") {
-            handleMatchmakingFailure(`Matchmaking failed: ${data.status}`);
-            clearInterval(pollInterval);
-          } else {
-            // Still queuing
-            if (data.estimatedWaitTime) {
-              setEstimatedWaitTime(data.estimatedWaitTime);
-            }
+    const pollMatchmaking = async () => {
+      try {
+        const idToken = localStorage.getItem("idToken");
+        const res = await fetch(
+          `/api/matchmaking/status?ticketId=${ticketId}`,
+          {
+            headers: { Authorization: `Bearer ${idToken}` },
+          },
+        );
+        const data = await res.json();
+
+        if (data.status === "COMPLETED") {
+          setMatchmakingStatus("COMPLETED");
+          setMatchResult(data);
+          stopPolling();
+        } else if (data.status === "PLACING") {
+          setMatchmakingStatus("PLACING");
+        } else if (data.status === "FAILED" || data.status === "TIMED_OUT") {
+          handleMatchmakingFailure(`Matchmaking failed: ${data.status}`);
+          stopPolling();
+        } else {
+          // Still queuing
+          if (data.estimatedWaitTime) {
+            setEstimatedWaitTime(data.estimatedWaitTime);
           }
-        } catch (err) {
-          console.error("Polling error:", err);
         }
-      }, 2000); // Poll every 2 seconds
+      } catch (err) {
+        console.error("Polling error:", err);
+      }
+    };
+
+    const startPolling = () => {
+      if (!pollInterval && shouldPoll) {
+        pollMatchmaking(); // Immediate poll when starting/resuming
+        pollInterval = setInterval(pollMatchmaking, 2000);
+      }
+    };
+
+    const stopPolling = () => {
+      if (pollInterval) {
+        clearInterval(pollInterval);
+        pollInterval = null;
+      }
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        stopPolling();
+      } else if (shouldPoll) {
+        startPolling();
+      }
+    };
+
+    // Start polling only if page is visible and we should poll
+    if (!document.hidden && shouldPoll) {
+      startPolling();
     }
 
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
     return () => {
-      if (pollInterval) clearInterval(pollInterval);
+      stopPolling();
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [matchmakingStatus, ticketId]);
+  }, [matchmakingStatus, ticketId, partyEnabled]);
 
   // handleStartMatchmaking removed - logic moved to backend
 
@@ -322,10 +359,12 @@ export default function SocialPage() {
     }
   };
 
-  // 2. Heartbeat Loop (Every 30s)
+  // 2. Heartbeat Loop (Every 30s) - pauses when tab is hidden
   useEffect(() => {
     const idToken = localStorage.getItem("idToken");
     if (!idToken) return;
+
+    let heartbeatInterval: NodeJS.Timeout | null = null;
 
     const sendHeartbeat = async () => {
       try {
@@ -342,27 +381,93 @@ export default function SocialPage() {
       }
     };
 
-    sendHeartbeat();
-    const interval = setInterval(sendHeartbeat, 30000);
-    return () => clearInterval(interval);
+    const startHeartbeat = () => {
+      if (!heartbeatInterval) {
+        sendHeartbeat();
+        heartbeatInterval = setInterval(sendHeartbeat, 30000);
+      }
+    };
+
+    const stopHeartbeat = () => {
+      if (heartbeatInterval) {
+        clearInterval(heartbeatInterval);
+        heartbeatInterval = null;
+      }
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        stopHeartbeat();
+      } else {
+        startHeartbeat();
+      }
+    };
+
+    // Start only if page is visible
+    if (!document.hidden) {
+      startHeartbeat();
+    }
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      stopHeartbeat();
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   }, []);
 
-  // 3. Polling (Every 5s for faster updates)
+  // 3. Polling (Every 5s for faster updates) - pauses when tab is hidden
   useEffect(() => {
     const idToken = localStorage.getItem("idToken");
     if (!idToken) return;
 
+    let pollInterval: NodeJS.Timeout | null = null;
+
     const poll = () => {
       fetchFriends();
-      fetchPartyStatus();
+      if (partyEnabled) {
+        fetchPartyStatus();
+      }
     };
 
-    const interval = setInterval(poll, 5000);
-    return () => clearInterval(interval);
-  }, []);
+    const startPolling = () => {
+      if (!pollInterval) {
+        poll(); // Immediate poll when tab becomes visible
+        pollInterval = setInterval(poll, 5000);
+      }
+    };
+
+    const stopPolling = () => {
+      if (pollInterval) {
+        clearInterval(pollInterval);
+        pollInterval = null;
+      }
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        stopPolling();
+      } else {
+        startPolling();
+      }
+    };
+
+    // Start polling only if page is visible
+    if (!document.hidden) {
+      startPolling();
+    }
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      stopPolling();
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [partyEnabled]);
 
   // 4. Measure Latency & Auto-Update Party Region
   useEffect(() => {
+    if (!partyEnabled) return;
     if (availableRegions.length === 0) return;
 
     const runLatencyCheck = async () => {
@@ -382,7 +487,7 @@ export default function SocialPage() {
         if (best) {
           setBestRegion(best);
           console.log(
-            `[Social] Best region detected: ${best} (${map[best]}ms)`
+            `[Social] Best region detected: ${best} (${map[best]}ms)`,
           );
         }
       } catch (e) {
@@ -391,10 +496,11 @@ export default function SocialPage() {
     };
 
     runLatencyCheck();
-  }, [availableRegions]);
+  }, [availableRegions, partyEnabled]);
 
   // Sync Best Region to Party (Leader Only)
   useEffect(() => {
+    if (!partyEnabled) return;
     if (!party || !bestRegion || !currentUserUid) return;
 
     // Only leader can update region
@@ -403,17 +509,18 @@ export default function SocialPage() {
     // If current party region is different from best region, update it
     if (party.region !== bestRegion) {
       console.log(
-        `[Social] Updating party region from ${party.region} to ${bestRegion}`
+        `[Social] Updating party region from ${party.region} to ${bestRegion}`,
       );
       handlePartySettings({ region: bestRegion });
     }
-  }, [party, bestRegion, currentUserUid]);
+  }, [party, bestRegion, currentUserUid, partyEnabled]);
 
   // Sync Matchmaking Ticket from Party
   useEffect(() => {
+    if (!partyEnabled) return;
     if (party?.matchmakingTicketId && party.matchmakingTicketId !== ticketId) {
       console.log(
-        `[Social] Syncing ticket from party: ${party.matchmakingTicketId}`
+        `[Social] Syncing ticket from party: ${party.matchmakingTicketId}`,
       );
       setTicketId(party.matchmakingTicketId);
       setMatchmakingStatus("QUEUED");
@@ -425,10 +532,11 @@ export default function SocialPage() {
         setMatchmakingStatus("IDLE");
       }
     }
-  }, [party?.matchmakingTicketId]);
+  }, [party?.matchmakingTicketId, partyEnabled]);
 
   // Reset FAILED state when party becomes not ready
   useEffect(() => {
+    if (!partyEnabled) return;
     if (!party) return;
     const allReady =
       party.members.length > 0 && party.members.every((m) => m.isReady);
@@ -436,7 +544,7 @@ export default function SocialPage() {
       setMatchmakingStatus("IDLE");
       setMatchmakingError(null);
     }
-  }, [party, matchmakingStatus]);
+  }, [party, matchmakingStatus, partyEnabled]);
 
   // --- API CALLS ---
 
@@ -985,541 +1093,572 @@ export default function SocialPage() {
         }}
       >
         <div style={styles.card}>
-          <h1 style={styles.title}>Social Hub</h1>
+          <h1 style={styles.title}>
+            {adminMode ? "Admin Party & Matchmaking" : "Social Hub"}
+          </h1>
 
-          {/* --- PARTY SECTION --- */}
-          <h2 style={styles.sectionTitle}>Party</h2>
+          {partyEnabled && (
+            <>
+              {/* --- PARTY SECTION --- */}
+              <h2 style={styles.sectionTitle}>Party</h2>
 
-          {party ? (
-            <div style={styles.partyBox}>
-              <div style={styles.partyHeader}>
-                <div
-                  style={{ display: "flex", alignItems: "center", gap: "10px" }}
-                >
-                  <span style={{ color: "#10b981", fontWeight: "bold" }}>
-                    {party.members.length > 1 ? "In Party" : "Solo Party"}
-                  </span>
-                  {selectedRegion && (
-                    <span
+              {party ? (
+                <div style={styles.partyBox}>
+                  <div style={styles.partyHeader}>
+                    <div
                       style={{
-                        fontSize: "12px",
-                        color: "#9ca3af",
-                        backgroundColor: "#1f2937",
-                        padding: "2px 6px",
-                        borderRadius: "4px",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "10px",
                       }}
                     >
-                      {selectedRegion}
-                    </span>
-                  )}
-                </div>
-                {/* Only show Leave button if there are other members, effectively "Reset to Solo" */}
-                {party.members.length > 1 && (
-                  <button
-                    onClick={handleLeaveParty}
-                    style={styles.dangerButton}
-                  >
-                    Leave
-                  </button>
-                )}
-              </div>
-
-              {party.leaderUid === currentUserUid && (
-                <div style={{ marginBottom: "16px" }}>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      marginBottom: "8px",
-                    }}
-                  >
-                    <span
-                      style={{
-                        fontSize: "14px",
-                        color: "#9ca3af",
-                        marginRight: "8px",
-                      }}
-                    >
-                      Privacy: <b>{party.privacy || "private"}</b>
-                    </span>
-                    <button
-                      onClick={() =>
-                        handlePartySettings({
-                          privacy:
-                            party.privacy === "public" ? "private" : "public",
-                        })
-                      }
-                      style={{ ...styles.smallButton, width: "auto" }}
-                    >
-                      Switch to{" "}
-                      {party.privacy === "public" ? "Private" : "Public"}
-                    </button>
+                      <span style={{ color: "#10b981", fontWeight: "bold" }}>
+                        {party.members.length > 1 ? "In Party" : "Solo Party"}
+                      </span>
+                      {selectedRegion && (
+                        <span
+                          style={{
+                            fontSize: "12px",
+                            color: "#9ca3af",
+                            backgroundColor: "#1f2937",
+                            padding: "2px 6px",
+                            borderRadius: "4px",
+                          }}
+                        >
+                          {selectedRegion}
+                        </span>
+                      )}
+                    </div>
+                    {/* Only show Leave button if there are other members, effectively "Reset to Solo" */}
+                    {party.members.length > 1 && (
+                      <button
+                        onClick={handleLeaveParty}
+                        style={styles.dangerButton}
+                      >
+                        Leave
+                      </button>
+                    )}
                   </div>
 
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                    }}
-                  >
-                    <span
+                  {party.leaderUid === currentUserUid && (
+                    <div style={{ marginBottom: "16px" }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          marginBottom: "8px",
+                        }}
+                      >
+                        <span
+                          style={{
+                            fontSize: "14px",
+                            color: "#9ca3af",
+                            marginRight: "8px",
+                          }}
+                        >
+                          Privacy: <b>{party.privacy || "private"}</b>
+                        </span>
+                        <button
+                          onClick={() =>
+                            handlePartySettings({
+                              privacy:
+                                party.privacy === "public"
+                                  ? "private"
+                                  : "public",
+                            })
+                          }
+                          style={{ ...styles.smallButton, width: "auto" }}
+                        >
+                          Switch to{" "}
+                          {party.privacy === "public" ? "Private" : "Public"}
+                        </button>
+                      </div>
+
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
+                        <span
+                          style={{
+                            fontSize: "14px",
+                            color: "#9ca3af",
+                            marginRight: "8px",
+                          }}
+                        >
+                          Region:
+                        </span>
+                        <select
+                          value={selectedRegion || ""}
+                          onChange={() => {}} // Read-only but interactable
+                          style={{
+                            backgroundColor: "#1f2937",
+                            color: "#9ca3af",
+                            border: "1px solid #374151",
+                            borderRadius: "4px",
+                            padding: "4px 8px",
+                            fontSize: "12px",
+                            outline: "none",
+                            cursor: "default",
+                          }}
+                        >
+                          {(sortedRegions.length > 0
+                            ? sortedRegions
+                            : availableRegions
+                          ).map((r) => (
+                            <option key={r} value={r}>
+                              {r}{" "}
+                              {latencyMap[r] != null
+                                ? `(${latencyMap[r]}ms)`
+                                : "(N/A)"}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  )}
+
+                  <h3 style={styles.subTitle}>Members</h3>
+                  <div style={styles.list}>
+                    {party.members.map((m) => (
+                      <div key={m.uid} style={styles.listItem}>
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            width: "100%",
+                          }}
+                        >
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "10px",
+                            }}
+                          >
+                            <img
+                              src={`/ProfilePicture/${m.avatarId || "Alpha"}.png`}
+                              alt="Avatar"
+                              style={{
+                                width: "32px",
+                                height: "32px",
+                                borderRadius: "4px",
+                                objectFit: "cover",
+                                backgroundColor: "#1f2937",
+                              }}
+                            />
+                            <span>
+                              {m.username || "Loading..."}{" "}
+                              {m.uid === party.leaderUid && "👑"}
+                            </span>
+                          </div>
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "10px",
+                            }}
+                          >
+                            {/* Ready Status Removed */}
+
+                            {party.leaderUid === currentUserUid &&
+                              m.uid !== currentUserUid && (
+                                <div style={{ display: "flex", gap: "4px" }}>
+                                  <button
+                                    onClick={() =>
+                                      handleTransferLeadership(m.uid)
+                                    }
+                                    style={styles.promoteButton}
+                                  >
+                                    Promote
+                                  </button>
+                                  <button
+                                    onClick={() => handleKickMember(m.uid)}
+                                    style={styles.dangerButton}
+                                  >
+                                    Kick
+                                  </button>
+                                </div>
+                              )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {party.leaderUid === currentUserUid &&
+                    party.joinRequests &&
+                    party.joinRequests.length > 0 && (
+                      <>
+                        <div style={styles.divider} />
+                        <h3 style={styles.subTitle}>Join Requests</h3>
+                        <div style={styles.list}>
+                          {party.joinRequests.map((req) => (
+                            <div key={req.uid} style={styles.listItem}>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                  alignItems: "center",
+                                  width: "100%",
+                                }}
+                              >
+                                <span>{req.username}</span>
+                                <div style={{ display: "flex", gap: "4px" }}>
+                                  <button
+                                    onClick={() =>
+                                      handleAcceptJoinRequest(req.uid)
+                                    }
+                                    style={styles.acceptButton}
+                                  >
+                                    Accept
+                                  </button>
+                                  <button
+                                    onClick={() =>
+                                      handleRejectJoinRequest(req.uid)
+                                    }
+                                    style={styles.dangerButton}
+                                  >
+                                    Reject
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </>
+                    )}
+
+                  <div style={styles.divider} />
+
+                  {/* --- GAME MODE & PLAY --- */}
+                  <div style={{ marginBottom: "16px" }}>
+                    <label
                       style={{
-                        fontSize: "14px",
+                        display: "block",
+                        marginBottom: "8px",
                         color: "#9ca3af",
-                        marginRight: "8px",
+                        fontSize: "14px",
                       }}
                     >
-                      Region:
-                    </span>
+                      Game Mode
+                    </label>
                     <select
-                      value={selectedRegion || ""}
-                      onChange={() => {}} // Read-only but interactable
+                      value={selectedConfig}
+                      onChange={(e) => {
+                        const newMode = e.target.value;
+                        setSelectedConfig(newMode);
+                        if (party.leaderUid === currentUserUid) {
+                          handlePartySettings({ gameMode: newMode });
+                        }
+                      }}
+                      disabled={
+                        matchmakingStatus === "QUEUED" ||
+                        party.leaderUid !== currentUserUid
+                      }
                       style={{
+                        width: "100%",
                         backgroundColor: "#1f2937",
-                        color: "#9ca3af",
+                        color: "#e5e7eb",
                         border: "1px solid #374151",
                         borderRadius: "4px",
-                        padding: "4px 8px",
-                        fontSize: "12px",
-                        outline: "none",
-                        cursor: "default",
+                        padding: "8px",
+                        cursor:
+                          party.leaderUid === currentUserUid
+                            ? "pointer"
+                            : "not-allowed",
+                        opacity: party.leaderUid === currentUserUid ? 1 : 0.7,
                       }}
                     >
-                      {(sortedRegions.length > 0
-                        ? sortedRegions
-                        : availableRegions
-                      ).map((r) => (
-                        <option key={r} value={r}>
-                          {r}{" "}
-                          {latencyMap[r] != null
-                            ? `(${latencyMap[r]}ms)`
-                            : "(N/A)"}
+                      {configsLoading && <option>Loading...</option>}
+                      {!configsLoading && availableConfigs.length === 0 && (
+                        <option>No Game Modes Available</option>
+                      )}
+                      {availableConfigs.map((conf) => (
+                        <option key={conf.name} value={conf.name}>
+                          {conf.name}
                         </option>
                       ))}
                     </select>
                   </div>
-                </div>
-              )}
 
-              <h3 style={styles.subTitle}>Members</h3>
-              <div style={styles.list}>
-                {party.members.map((m) => (
-                  <div key={m.uid} style={styles.listItem}>
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        width: "100%",
-                      }}
-                    >
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "10px",
-                        }}
-                      >
-                        <img
-                          src={`/ProfilePicture/${m.avatarId || "Alpha"}.png`}
-                          alt="Avatar"
-                          style={{
-                            width: "32px",
-                            height: "32px",
-                            borderRadius: "4px",
-                            objectFit: "cover",
-                            backgroundColor: "#1f2937",
-                          }}
-                        />
-                        <span>
-                          {m.username || "Loading..."}{" "}
-                          {m.uid === party.leaderUid && "👑"}
-                        </span>
-                      </div>
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "10px",
-                        }}
-                      >
-                        {/* Ready Status Removed */}
+                  {matchmakingError && (
+                    <p style={{ ...styles.errorText, marginBottom: "12px" }}>
+                      {matchmakingError}
+                    </p>
+                  )}
 
-                        {party.leaderUid === currentUserUid &&
-                          m.uid !== currentUserUid && (
-                            <div style={{ display: "flex", gap: "4px" }}>
-                              <button
-                                onClick={() => handleTransferLeadership(m.uid)}
-                                style={styles.promoteButton}
-                              >
-                                Promote
-                              </button>
-                              <button
-                                onClick={() => handleKickMember(m.uid)}
-                                style={styles.dangerButton}
-                              >
-                                Kick
-                              </button>
-                            </div>
-                          )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {party.leaderUid === currentUserUid &&
-                party.joinRequests &&
-                party.joinRequests.length > 0 && (
-                  <>
-                    <div style={styles.divider} />
-                    <h3 style={styles.subTitle}>Join Requests</h3>
-                    <div style={styles.list}>
-                      {party.joinRequests.map((req) => (
-                        <div key={req.uid} style={styles.listItem}>
-                          <div
+                  {/* Matchmaking Controls */}
+                  <div style={{ marginBottom: "16px" }}>
+                    {matchmakingStatus === "IDLE" ||
+                    matchmakingStatus === "FAILED" ? (
+                      <div style={{ display: "flex", gap: "10px" }}>
+                        {party.leaderUid === currentUserUid ? (
+                          <button
+                            onClick={handleStartMatchmaking}
                             style={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                              alignItems: "center",
-                              width: "100%",
+                              ...styles.secondaryButton,
+                              flex: 1,
+                              backgroundColor: "#10b981", // Green
+                              color: "white",
                             }}
                           >
-                            <span>{req.username}</span>
-                            <div style={{ display: "flex", gap: "4px" }}>
-                              <button
-                                onClick={() => handleAcceptJoinRequest(req.uid)}
-                                style={styles.acceptButton}
-                              >
-                                Accept
-                              </button>
-                              <button
-                                onClick={() => handleRejectJoinRequest(req.uid)}
-                                style={styles.dangerButton}
-                              >
-                                Reject
-                              </button>
-                            </div>
+                            Find Match
+                          </button>
+                        ) : (
+                          <div
+                            style={{
+                              flex: 1,
+                              textAlign: "center",
+                              padding: "10px",
+                              backgroundColor: "#1f2937",
+                              borderRadius: "4px",
+                              color: "#9ca3af",
+                              fontSize: "14px",
+                            }}
+                          >
+                            Waiting for leader to start...
+                          </div>
+                        )}
+                      </div>
+                    ) : matchmakingStatus === "QUEUED" ||
+                      matchmakingStatus === "PLACING" ? (
+                      <div style={{ textAlign: "center" }}>
+                        <p style={{ color: "#fbbf24", fontWeight: "bold" }}>
+                          {matchmakingStatus === "PLACING"
+                            ? "Match Found! Allocating Server..."
+                            : "Searching for match..."}
+                        </p>
+                        {estimatedWaitTime &&
+                          matchmakingStatus === "QUEUED" && (
+                            <p style={{ fontSize: "12px", color: "#9ca3af" }}>
+                              Est. wait: {estimatedWaitTime}s
+                            </p>
+                          )}
+                        {/* Only leader can cancel */}
+                        {matchmakingStatus === "QUEUED" &&
+                          party.leaderUid === currentUserUid && (
+                            <button
+                              onClick={handleCancelMatchmaking}
+                              style={{
+                                ...styles.dangerButton,
+                                marginTop: "8px",
+                                width: "100%",
+                              }}
+                            >
+                              Cancel Search
+                            </button>
+                          )}
+                      </div>
+                    ) : (
+                      <div
+                        style={{
+                          textAlign: "center",
+                          backgroundColor: "#064e3b",
+                          padding: "16px",
+                          borderRadius: "8px",
+                        }}
+                      >
+                        <p
+                          style={{
+                            color: "#34d399",
+                            fontWeight: "bold",
+                            fontSize: "18px",
+                          }}
+                        >
+                          MATCH FOUND!
+                        </p>
+                        {matchResult?.connectionInfo && (
+                          <div
+                            style={{
+                              marginTop: "8px",
+                              textAlign: "left",
+                              fontSize: "14px",
+                            }}
+                          >
+                            <p>
+                              <b>IP:</b> {matchResult.connectionInfo.ipAddress}
+                            </p>
+                            <p>
+                              <b>Port:</b> {matchResult.connectionInfo.port}
+                            </p>
+                            <p>
+                              <b>Session ID:</b>{" "}
+                              {matchResult.connectionInfo.playerSessionId?.substring(
+                                0,
+                                10,
+                              )}
+                              ...
+                            </p>
+                          </div>
+                        )}
+                        <button
+                          onClick={() => setMatchmakingStatus("IDLE")}
+                          style={{
+                            ...styles.secondaryButton,
+                            marginTop: "12px",
+                            width: "100%",
+                          }}
+                        >
+                          Close
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  <div style={styles.divider} />
+
+                  <h3 style={styles.subTitle}>Invite Player</h3>
+                  <div style={{ display: "flex", gap: "8px" }}>
+                    <input
+                      type="text"
+                      placeholder="Username"
+                      value={partyTargetUsername}
+                      onChange={(e) => setPartyTargetUsername(e.target.value)}
+                      style={styles.input}
+                    />
+                    <button
+                      onClick={() => handleInviteToParty()}
+                      style={styles.smallButton}
+                    >
+                      Invite
+                    </button>
+                  </div>
+                  {partyError && <p style={styles.errorText}>{partyError}</p>}
+                  {partySuccess && (
+                    <p style={styles.successText}>{partySuccess}</p>
+                  )}
+
+                  {/* Show Invites even if in party (since we can switch parties) */}
+                  {partyInvites.length > 0 && (
+                    <div
+                      style={{
+                        marginTop: "20px",
+                        borderTop: "1px solid #374151",
+                        paddingTop: "16px",
+                      }}
+                    >
+                      <h3 style={styles.subTitle}>Party Invites</h3>
+                      {partyInvites.map((inv) => (
+                        <div key={inv.partyId} style={styles.inviteItem}>
+                          <span>
+                            Invited by <b>{inv.leaderUsername}</b>
+                          </span>
+                          <div style={{ display: "flex", gap: "8px" }}>
+                            <button
+                              onClick={() => handleJoinParty(inv.partyId)}
+                              style={styles.acceptButton}
+                            >
+                              Join
+                            </button>
+                            <button
+                              onClick={() =>
+                                handleDeclinePartyInvite(inv.partyId)
+                              }
+                              style={{
+                                ...styles.dangerButton,
+                                background: "#ef4444",
+                              }}
+                            >
+                              Decline
+                            </button>
                           </div>
                         </div>
                       ))}
                     </div>
-                  </>
-                )}
-
-              <div style={styles.divider} />
-
-              {/* --- GAME MODE & PLAY --- */}
-              <div style={{ marginBottom: "16px" }}>
-                <label
-                  style={{
-                    display: "block",
-                    marginBottom: "8px",
-                    color: "#9ca3af",
-                    fontSize: "14px",
-                  }}
-                >
-                  Game Mode
-                </label>
-                <select
-                  value={selectedConfig}
-                  onChange={(e) => {
-                    const newMode = e.target.value;
-                    setSelectedConfig(newMode);
-                    if (party.leaderUid === currentUserUid) {
-                      handlePartySettings({ gameMode: newMode });
-                    }
-                  }}
-                  disabled={
-                    matchmakingStatus === "QUEUED" ||
-                    party.leaderUid !== currentUserUid
-                  }
-                  style={{
-                    width: "100%",
-                    backgroundColor: "#1f2937",
-                    color: "#e5e7eb",
-                    border: "1px solid #374151",
-                    borderRadius: "4px",
-                    padding: "8px",
-                    cursor:
-                      party.leaderUid === currentUserUid
-                        ? "pointer"
-                        : "not-allowed",
-                    opacity: party.leaderUid === currentUserUid ? 1 : 0.7,
-                  }}
-                >
-                  {configsLoading && <option>Loading...</option>}
-                  {!configsLoading && availableConfigs.length === 0 && (
-                    <option>No Game Modes Available</option>
                   )}
-                  {availableConfigs.map((conf) => (
-                    <option key={conf.name} value={conf.name}>
-                      {conf.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {matchmakingError && (
-                <p style={{ ...styles.errorText, marginBottom: "12px" }}>
-                  {matchmakingError}
-                </p>
-              )}
-
-              {/* Matchmaking Controls */}
-              <div style={{ marginBottom: "16px" }}>
-                {matchmakingStatus === "IDLE" ||
-                matchmakingStatus === "FAILED" ? (
-                  <div style={{ display: "flex", gap: "10px" }}>
-                    {party.leaderUid === currentUserUid ? (
-                      <button
-                        onClick={handleStartMatchmaking}
-                        style={{
-                          ...styles.secondaryButton,
-                          flex: 1,
-                          backgroundColor: "#10b981", // Green
-                          color: "white",
-                        }}
-                      >
-                        Find Match
-                      </button>
-                    ) : (
-                      <div
-                        style={{
-                          flex: 1,
-                          textAlign: "center",
-                          padding: "10px",
-                          backgroundColor: "#1f2937",
-                          borderRadius: "4px",
-                          color: "#9ca3af",
-                          fontSize: "14px",
-                        }}
-                      >
-                        Waiting for leader to start...
-                      </div>
-                    )}
-                  </div>
-                ) : matchmakingStatus === "QUEUED" ||
-                  matchmakingStatus === "PLACING" ? (
-                  <div style={{ textAlign: "center" }}>
-                    <p style={{ color: "#fbbf24", fontWeight: "bold" }}>
-                      {matchmakingStatus === "PLACING"
-                        ? "Match Found! Allocating Server..."
-                        : "Searching for match..."}
-                    </p>
-                    {estimatedWaitTime && matchmakingStatus === "QUEUED" && (
-                      <p style={{ fontSize: "12px", color: "#9ca3af" }}>
-                        Est. wait: {estimatedWaitTime}s
-                      </p>
-                    )}
-                    {/* Only leader can cancel */}
-                    {matchmakingStatus === "QUEUED" &&
-                      party.leaderUid === currentUserUid && (
-                        <button
-                          onClick={handleCancelMatchmaking}
-                          style={{
-                            ...styles.dangerButton,
-                            marginTop: "8px",
-                            width: "100%",
-                          }}
-                        >
-                          Cancel Search
-                        </button>
-                      )}
-                  </div>
-                ) : (
-                  <div
-                    style={{
-                      textAlign: "center",
-                      backgroundColor: "#064e3b",
-                      padding: "16px",
-                      borderRadius: "8px",
-                    }}
-                  >
-                    <p
-                      style={{
-                        color: "#34d399",
-                        fontWeight: "bold",
-                        fontSize: "18px",
-                      }}
-                    >
-                      MATCH FOUND!
-                    </p>
-                    {matchResult?.connectionInfo && (
-                      <div
-                        style={{
-                          marginTop: "8px",
-                          textAlign: "left",
-                          fontSize: "14px",
-                        }}
-                      >
-                        <p>
-                          <b>IP:</b> {matchResult.connectionInfo.ipAddress}
-                        </p>
-                        <p>
-                          <b>Port:</b> {matchResult.connectionInfo.port}
-                        </p>
-                        <p>
-                          <b>Session ID:</b>{" "}
-                          {matchResult.connectionInfo.playerSessionId?.substring(
-                            0,
-                            10
-                          )}
-                          ...
-                        </p>
-                      </div>
-                    )}
-                    <button
-                      onClick={() => setMatchmakingStatus("IDLE")}
-                      style={{
-                        ...styles.secondaryButton,
-                        marginTop: "12px",
-                        width: "100%",
-                      }}
-                    >
-                      Close
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              <div style={styles.divider} />
-
-              <h3 style={styles.subTitle}>Invite Player</h3>
-              <div style={{ display: "flex", gap: "8px" }}>
-                <input
-                  type="text"
-                  placeholder="Username"
-                  value={partyTargetUsername}
-                  onChange={(e) => setPartyTargetUsername(e.target.value)}
-                  style={styles.input}
-                />
-                <button
-                  onClick={() => handleInviteToParty()}
-                  style={styles.smallButton}
-                >
-                  Invite
-                </button>
-              </div>
-              {partyError && <p style={styles.errorText}>{partyError}</p>}
-              {partySuccess && <p style={styles.successText}>{partySuccess}</p>}
-
-              {/* Show Invites even if in party (since we can switch parties) */}
-              {partyInvites.length > 0 && (
-                <div
-                  style={{
-                    marginTop: "20px",
-                    borderTop: "1px solid #374151",
-                    paddingTop: "16px",
-                  }}
-                >
-                  <h3 style={styles.subTitle}>Party Invites</h3>
-                  {partyInvites.map((inv) => (
-                    <div key={inv.partyId} style={styles.inviteItem}>
-                      <span>
-                        Invited by <b>{inv.leaderUsername}</b>
-                      </span>
-                      <div style={{ display: "flex", gap: "8px" }}>
-                        <button
-                          onClick={() => handleJoinParty(inv.partyId)}
-                          style={styles.acceptButton}
-                        >
-                          Join
-                        </button>
-                        <button
-                          onClick={() => handleDeclinePartyInvite(inv.partyId)}
-                          style={{
-                            ...styles.dangerButton,
-                            background: "#ef4444",
-                          }}
-                        >
-                          Decline
-                        </button>
-                      </div>
-                    </div>
-                  ))}
                 </div>
-              )}
-            </div>
-          ) : (
-            <div style={styles.partyBox}>
-              {/* If party is null but we are not loading, it means we are in a "Solo" state but the UI expects a party object. 
+              ) : (
+                <div style={styles.partyBox}>
+                  {/* If party is null but we are not loading, it means we are in a "Solo" state but the UI expects a party object. 
                   However, the backend now returns party: null if we are solo. 
                   We should render a "Solo Party" view or a "Create Party" view here. 
                   For now, let's assume if party is null, we are just not in a party. */}
-              <div style={styles.partyHeader}>
-                <div
-                  style={{ display: "flex", alignItems: "center", gap: "10px" }}
-                >
-                  <span style={{ color: "#9ca3af", fontWeight: "bold" }}>
-                    Not in a Party
-                  </span>
-                </div>
-              </div>
-
-              <div style={styles.divider} />
-
-              <h3 style={styles.subTitle}>Invite Player</h3>
-              <div style={{ display: "flex", gap: "8px" }}>
-                <input
-                  type="text"
-                  placeholder="Username"
-                  value={partyTargetUsername}
-                  onChange={(e) => setPartyTargetUsername(e.target.value)}
-                  style={styles.input}
-                />
-                <button
-                  onClick={() => handleInviteToParty()}
-                  style={styles.smallButton}
-                >
-                  Invite
-                </button>
-              </div>
-              {partyError && <p style={styles.errorText}>{partyError}</p>}
-              {partySuccess && <p style={styles.successText}>{partySuccess}</p>}
-
-              {/* Show Invites even if not in party */}
-              {partyInvites.length > 0 && (
-                <div
-                  style={{
-                    marginTop: "20px",
-                    borderTop: "1px solid #374151",
-                    paddingTop: "16px",
-                  }}
-                >
-                  <h3 style={styles.subTitle}>Party Invites</h3>
-                  {partyInvites.map((inv) => (
-                    <div key={inv.partyId} style={styles.inviteItem}>
-                      <span>
-                        Invited by <b>{inv.leaderUsername}</b>
+                  <div style={styles.partyHeader}>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "10px",
+                      }}
+                    >
+                      <span style={{ color: "#9ca3af", fontWeight: "bold" }}>
+                        Not in a Party
                       </span>
-                      <div style={{ display: "flex", gap: "8px" }}>
-                        <button
-                          onClick={() => handleJoinParty(inv.partyId)}
-                          style={styles.acceptButton}
-                        >
-                          Join
-                        </button>
-                        <button
-                          onClick={() => handleDeclinePartyInvite(inv.partyId)}
-                          style={{
-                            ...styles.dangerButton,
-                            background: "#ef4444",
-                          }}
-                        >
-                          Decline
-                        </button>
-                      </div>
                     </div>
-                  ))}
+                  </div>
+
+                  <div style={styles.divider} />
+
+                  <h3 style={styles.subTitle}>Invite Player</h3>
+                  <div style={{ display: "flex", gap: "8px" }}>
+                    <input
+                      type="text"
+                      placeholder="Username"
+                      value={partyTargetUsername}
+                      onChange={(e) => setPartyTargetUsername(e.target.value)}
+                      style={styles.input}
+                    />
+                    <button
+                      onClick={() => handleInviteToParty()}
+                      style={styles.smallButton}
+                    >
+                      Invite
+                    </button>
+                  </div>
+                  {partyError && <p style={styles.errorText}>{partyError}</p>}
+                  {partySuccess && (
+                    <p style={styles.successText}>{partySuccess}</p>
+                  )}
+
+                  {/* Show Invites even if not in party */}
+                  {partyInvites.length > 0 && (
+                    <div
+                      style={{
+                        marginTop: "20px",
+                        borderTop: "1px solid #374151",
+                        paddingTop: "16px",
+                      }}
+                    >
+                      <h3 style={styles.subTitle}>Party Invites</h3>
+                      {partyInvites.map((inv) => (
+                        <div key={inv.partyId} style={styles.inviteItem}>
+                          <span>
+                            Invited by <b>{inv.leaderUsername}</b>
+                          </span>
+                          <div style={{ display: "flex", gap: "8px" }}>
+                            <button
+                              onClick={() => handleJoinParty(inv.partyId)}
+                              style={styles.acceptButton}
+                            >
+                              Join
+                            </button>
+                            <button
+                              onClick={() =>
+                                handleDeclinePartyInvite(inv.partyId)
+                              }
+                              style={{
+                                ...styles.dangerButton,
+                                background: "#ef4444",
+                              }}
+                            >
+                              Decline
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
-            </div>
-          )}
 
-          <div style={styles.sectionDivider} />
+              <div style={styles.sectionDivider} />
+            </>
+          )}
 
           {/* --- FRIENDS SECTION --- */}
           <h2 style={styles.sectionTitle}>Friends</h2>
@@ -1542,7 +1681,7 @@ export default function SocialPage() {
                 <button
                   onClick={() => {
                     navigator.clipboard.writeText(
-                      `${window.location.origin}/invite?code=${inviteCode}`
+                      `${window.location.origin}/invite?code=${inviteCode}`,
                     );
                     setFriendSuccess("Link copied to clipboard!");
                   }}
@@ -1739,7 +1878,8 @@ export default function SocialPage() {
                           position: "relative",
                         }}
                       >
-                        {friend.party?.privacy === "public" &&
+                        {partyEnabled &&
+                          friend.party?.privacy === "public" &&
                           !friend.party.isFull &&
                           !party && (
                             <button
@@ -1757,7 +1897,7 @@ export default function SocialPage() {
                             setActiveMenuFriendId(
                               activeMenuFriendId === friend.uid
                                 ? null
-                                : friend.uid
+                                : friend.uid,
                             );
                           }}
                           style={{
@@ -1792,22 +1932,10 @@ export default function SocialPage() {
                               gap: "2px",
                             }}
                           >
-                            <ContextMenuItem
-                              onClick={() => {
-                                handleInviteToParty(friend.username);
-                                setActiveMenuFriendId(null);
-                              }}
-                              style={{
-                                ...styles.menuButton,
-                                color: "#e5e7eb",
-                              }}
-                            >
-                              Invite to Party
-                            </ContextMenuItem>
-                            {friend.party && friend.party.id !== party?._id && (
+                            {partyEnabled && (
                               <ContextMenuItem
                                 onClick={() => {
-                                  handleAskToJoinParty(friend.username);
+                                  handleInviteToParty(friend.username);
                                   setActiveMenuFriendId(null);
                                 }}
                                 style={{
@@ -1815,9 +1943,25 @@ export default function SocialPage() {
                                   color: "#e5e7eb",
                                 }}
                               >
-                                Ask to Join Party
+                                Invite to Party
                               </ContextMenuItem>
                             )}
+                            {partyEnabled &&
+                              friend.party &&
+                              friend.party.id !== party?._id && (
+                                <ContextMenuItem
+                                  onClick={() => {
+                                    handleAskToJoinParty(friend.username);
+                                    setActiveMenuFriendId(null);
+                                  }}
+                                  style={{
+                                    ...styles.menuButton,
+                                    color: "#e5e7eb",
+                                  }}
+                                >
+                                  Ask to Join Party
+                                </ContextMenuItem>
+                              )}
                             <ContextMenuItem
                               onClick={() => {
                                 handleRemoveFriend(friend.uid);
@@ -1895,6 +2039,10 @@ export default function SocialPage() {
       </div>
     </div>
   );
+}
+
+export default function SocialPageRoute() {
+  return <SocialPage />;
 }
 
 const styles = {

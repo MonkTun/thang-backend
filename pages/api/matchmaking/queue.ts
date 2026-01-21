@@ -7,7 +7,7 @@ import { COUNTRY_TO_REGION_MAP, DEFAULT_REGION } from "@/lib/regionUtils";
 import { startMatchmaking, createPlayerObject } from "@/lib/matchmaking";
 
 function cleanLatencyMapForMatchmaking(
-  latencyMap: any
+  latencyMap: any,
 ): Record<string, number> {
   const cleanLatencyMap: Record<string, number> = {};
   if (latencyMap && typeof latencyMap === "object") {
@@ -53,7 +53,7 @@ const TEAM_CONFIG_MAP: Record<string, string | undefined> = {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
@@ -82,8 +82,12 @@ export default async function handler(
     }
 
     // Determine the team name based on the config
-    // Default to "AllPlayers" if not specified in the map (handles unknown configs)
-    const teamName = TEAM_CONFIG_MAP[configName] || "AllPlayers";
+    // If "deathmatch" is in the name (FFA), force "AllPlayers".
+    // Otherwise, use undefined so GameLift handles assignment (Red/Blue).
+    let teamName: string | undefined;
+    if (configName.toLowerCase().includes("deathmatch")) {
+      teamName = "AllPlayers";
+    }
 
     // --- AUTO-GENERATE LATENCY MAP (If Client didn't provide it) ---
     // Since the client cannot ping AWS directly, we estimate latency based on their Country.
@@ -108,7 +112,7 @@ export default async function handler(
 
       console.log(
         `[Matchmaking] Auto-generated latency map for ${country}:`,
-        latencyMap
+        latencyMap,
       );
     }
 
@@ -144,8 +148,8 @@ export default async function handler(
             user.username,
             toSkill(user.rank),
             cleanLatencyMap,
-            teamName
-          )
+            teamName,
+          ),
         );
       } else {
         // Check if requester is leader
@@ -164,7 +168,7 @@ export default async function handler(
 
         // Create a strictly typed Map
         const memberMap = new Map<string, UserDocument>(
-          memberDocs.map((doc) => [doc._id, doc])
+          memberDocs.map((doc) => [doc._id, doc]),
         );
 
         // Add all members
@@ -184,8 +188,8 @@ export default async function handler(
               username,
               rank,
               cleanLatencyMap,
-              teamName
-            )
+              teamName,
+            ),
           );
         });
       }
@@ -200,8 +204,8 @@ export default async function handler(
           user.username || "UnknownPlayer",
           toSkill(user.rank),
           cleanLatencyMap,
-          teamName
-        )
+          teamName,
+        ),
       );
     }
 
@@ -222,7 +226,7 @@ export default async function handler(
               },
             },
           })),
-          { ordered: false }
+          { ordered: false },
         );
       } catch (e) {
         console.warn("[Matchmaking] Failed to persist latency map:", e);
@@ -232,7 +236,7 @@ export default async function handler(
     // 5. Call GameLift StartMatchmaking
     const { ticketId, estimatedWaitTime } = await startMatchmaking(
       configName,
-      playersToMatch
+      playersToMatch,
     );
 
     // 6. Update Party with Ticket ID (if in a party)
@@ -241,7 +245,7 @@ export default async function handler(
         .collection("parties")
         .updateOne(
           { _id: new ObjectId(user.partyId) },
-          { $set: { matchmakingTicketId: ticketId } }
+          { $set: { matchmakingTicketId: ticketId } },
         );
     }
 

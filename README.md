@@ -42,6 +42,8 @@ NEXT_PUBLIC_DB_NAME=game
 STEAM_WEB_API_KEY=...
 ```
 
+**PIE Dev Login:** When running in development (`npm run dev`), the `/api/auth/dev-login` endpoint is enabled for email/password auth. Used by Unreal PIE "Dev Login" button with pre-allocated dev accounts (`helloworld1@gmail.com`, `helloworld2@gmail.com`, etc., password: `12345678`). Create these accounts in Firebase Auth for local testing. Disabled automatically in production builds.
+
 ### 4. Run Development Server
 
 ```bash

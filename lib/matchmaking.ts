@@ -3,6 +3,8 @@ import {
   StartMatchmakingCommand,
   StopMatchmakingCommand,
   DescribeMatchmakingCommand,
+  DescribeGameSessionsCommand,
+  CreatePlayerSessionCommand,
   Player,
 } from "@aws-sdk/client-gamelift";
 
@@ -55,14 +57,67 @@ export async function isTicketActive(ticketId: string): Promise<boolean> {
   }
 }
 
+/** Extract GameSessionId from GameSessionArn (e.g. arn:aws:gamelift:region:account:gamesession/fleet-id/session-id) */
+export function gameSessionIdFromArn(arn: string | undefined): string | null {
+  if (!arn) return null;
+  const prefix = "gamesession/";
+  const idx = arn.indexOf(prefix);
+  if (idx === -1) return null;
+  return arn.slice(idx + prefix.length);
+}
+
+/** Create a new player session for rejoining an existing game session */
+export async function createRejoinPlayerSession(
+  gameSessionId: string,
+  playerId: string,
+): Promise<{
+  playerSessionId: string;
+  ipAddress?: string;
+  port?: number;
+  dnsName?: string;
+} | null> {
+  try {
+    const command = new CreatePlayerSessionCommand({
+      GameSessionId: gameSessionId,
+      PlayerId: playerId,
+    });
+    const response = await client.send(command);
+    const ps = response.PlayerSession;
+    if (!ps?.PlayerSessionId) return null;
+    return {
+      playerSessionId: ps.PlayerSessionId,
+      ipAddress: ps.IpAddress,
+      port: ps.Port,
+      dnsName: ps.DnsName,
+    };
+  } catch (e) {
+    console.error("[Matchmaking] CreateRejoinPlayerSession error:", e);
+    return null;
+  }
+}
+
+/** Verify a game session exists and is ACTIVE */
+export async function isGameSessionActive(
+  gameSessionId: string,
+): Promise<boolean> {
+  try {
+    const command = new DescribeGameSessionsCommand({
+      GameSessionId: gameSessionId,
+    });
+    const response = await client.send(command);
+    return response.GameSessions?.[0]?.Status === "ACTIVE";
+  } catch {
+    return false;
+  }
+}
+
 export function createPlayerObject(
   playerId: string,
   username: string,
   skill: number,
   latencyMap: Record<string, number>,
-  team?: string
+  team?: string,
 ): Player {
-  
   // If the client reports latency to 'us-east-1', copy it to your Custom Location name.
   // This tells FlexMatch: "My ping to 'custom-home-office' is the same as my ping to 'us-east-1'."
 

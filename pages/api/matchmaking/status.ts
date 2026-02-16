@@ -5,6 +5,7 @@ import {
 } from "@aws-sdk/client-gamelift";
 import admin from "@/lib/firebaseAdmin";
 import clientPromise from "@/lib/mongodb";
+import { gameSessionIdFromArn } from "@/lib/matchmaking";
 import type {
   MatchmakingStatusResponse,
   MatchConnectionInfo,
@@ -87,31 +88,44 @@ export default async function handler(
       gameSessionArn: (ticket as any).GameSessionArn,
     };
 
-    // If match is found, return connection info
+    // If match is found, return connection info and persist for rejoin
     if (ticket.Status === "COMPLETED" && ticket.GameSessionConnectionInfo) {
+      const connInfo = ticket.GameSessionConnectionInfo;
       result.connectionInfo = {
-        ipAddress: ticket.GameSessionConnectionInfo.IpAddress,
-        port: ticket.GameSessionConnectionInfo.Port,
-        dnsName: ticket.GameSessionConnectionInfo.DnsName,
-        // playerSessionId: ticket.GameSessionConnectionInfo.PlayerSessionId, // IMPORTANT: This is the player's unique session token
-        // Note: In a party, GameLift returns a list of PlayerSessionIds.
-        // The client needs to find THEIR specific PlayerSessionId from the list if GameLift provides it here,
-        // OR GameLift might provide just the one for the requester?
-        // Actually, GameLift returns `MatchedPlayerSessions` in the ticket.
+        ipAddress: connInfo.IpAddress,
+        port: connInfo.Port,
+        dnsName: connInfo.DnsName,
       };
 
       // Find the specific PlayerSessionId for the requesting user (if possible)
-      // or return all and let client filter.
-      if (ticket.GameSessionConnectionInfo.MatchedPlayerSessions) {
-        result.matchedPlayers =
-          ticket.GameSessionConnectionInfo.MatchedPlayerSessions;
+      if (connInfo.MatchedPlayerSessions) {
+        result.matchedPlayers = connInfo.MatchedPlayerSessions;
 
-        const mySession =
-          ticket.GameSessionConnectionInfo.MatchedPlayerSessions.find(
-            (ps) => ps.PlayerId === uid
-          );
+        const mySession = connInfo.MatchedPlayerSessions.find(
+          (ps) => ps.PlayerId === uid
+        );
         if (mySession) {
           result.connectionInfo.playerSessionId = mySession.PlayerSessionId;
+        }
+
+        // Persist game session for rejoin (all matched players can rejoin if disconnected)
+        const gameSessionId = gameSessionIdFromArn(connInfo.GameSessionArn);
+        if (gameSessionId) {
+          const mongoClient = await clientPromise;
+          const db = mongoClient.db(process.env.NEXT_PUBLIC_DB_NAME || "game");
+          const now = new Date();
+          const sessionDoc = {
+            gameSessionId,
+            ipAddress: connInfo.IpAddress,
+            port: connInfo.Port,
+            joinedAt: now,
+          };
+          await db.collection("users").updateMany(
+            {
+              _id: { $in: connInfo.MatchedPlayerSessions.map((p) => p.PlayerId) },
+            },
+            { $set: { activeMatchmakingSession: sessionDoc } }
+          );
         }
       }
     }

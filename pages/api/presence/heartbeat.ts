@@ -102,6 +102,7 @@ export default async function handler(
       } else if (gameSessionId === null) {
         // Explicitly clearing game state (player left game)
         unsetDoc.currentGame = "";
+        unsetDoc.activeMatchmakingSession = ""; // Also clear rejoin eligibility
       }
       // If gameSessionId is undefined, don't touch currentGame (normal heartbeat)
     } else {

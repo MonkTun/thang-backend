@@ -2,7 +2,6 @@
  * DEV-ONLY: Email/password login for PIE (Play In Editor) dev login.
  * Returns Firebase ID token for use with bootstrap.
  *
- * Enabled when NODE_ENV !== 'production'. Disabled in production builds.
  */
 import type { NextApiRequest, NextApiResponse } from "next";
 
@@ -21,12 +20,7 @@ export default async function handler(
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  // DEV-ONLY: Block in production
-  if (process.env.NODE_ENV === "production") {
-    return res.status(403).json({
-      error: "Dev login is disabled in production.",
-    });
-  }
+
 
   const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
   if (!apiKey) {

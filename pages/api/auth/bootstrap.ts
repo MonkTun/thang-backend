@@ -42,13 +42,14 @@ export default async function handler(
 
     const uid = decoded.uid;
     const email = decoded.email || "";
+    const displayName = decoded.name || decoded.displayName || null;
 
     if (!uid) {
       return res.status(401).json({ error: "Invalid token: missing uid" });
     }
 
     console.log("[Bootstrap] Getting or creating user:", uid);
-    const user = await getOrCreateUser(uid, email);
+    const user = await getOrCreateUser(uid, email, displayName);
     console.log("[Bootstrap] User retrieved successfully");
 
     // Return richer payload for both Web and Game clients

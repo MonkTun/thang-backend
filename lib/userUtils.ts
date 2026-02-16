@@ -27,7 +27,8 @@ function generateInviteCode(length = 8): string {
  */
 export async function getOrCreateUser(
   uid: string,
-  email: string
+  email: string,
+  displayName?: string | null
 ): Promise<User> {
   const client = await clientPromise;
   const db = client.db(DB_NAME);
@@ -55,7 +56,7 @@ export async function getOrCreateUser(
       members: [
         {
           uid: uid,
-          username: null, // Username not set yet
+          username: displayName?.trim() || null, // Username from displayName or set later
           joinedAt: new Date(),
           isReady: true,
         },
@@ -69,7 +70,7 @@ export async function getOrCreateUser(
     const newUser: User = {
       _id: uid,
       email,
-      username: null,
+      username: displayName?.trim() || null,
       inviteCode: generateInviteCode(),
       rank: 0,
       coins: 100,
@@ -146,6 +147,13 @@ export async function getOrCreateUser(
   // Backfill missing fields for existing users
   let needsUpdate = false;
   const updates: any = {};
+
+  // Backfill username from displayName if missing
+  if (!user.username && displayName?.trim()) {
+    updates.username = displayName.trim();
+    user.username = updates.username;
+    needsUpdate = true;
+  }
 
   // Backfill inviteCode
   if (!user.inviteCode) {

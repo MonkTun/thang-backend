@@ -54,7 +54,12 @@ export default async function handler(
 
     if (!resp.ok) {
       const msg = data?.error?.message || "Firebase auth failed";
-      return res.status(401).json({ error: msg });
+      const errStr = String(msg).toLowerCase();
+      const hint =
+        errStr.includes("invalid") && (errStr.includes("login") || errStr.includes("credential"))
+          ? " Run 'npm run create-dev-users' to create dev accounts. Enable Email/Password in Firebase Console."
+          : "";
+      return res.status(401).json({ error: msg + hint });
     }
 
     const idToken = data?.idToken;

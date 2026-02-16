@@ -53,11 +53,11 @@ export default function LoginPage() {
       displayName: user.displayName,
     });
 
-    // Step 2: Get Firebase ID token
+    //  Get Firebase ID token
     const idToken = await user.getIdToken();
     console.log("🔑 Got ID Token:", idToken.substring(0, 50) + "...");
 
-    // Step 3: Call bootstrap endpoint to create/fetch user in MongoDB
+    //  Call bootstrap endpoint to create/fetch user in MongoDB
     console.log("📡 Calling /api/auth/bootstrap...");
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 15000);
@@ -78,7 +78,7 @@ export default function LoginPage() {
       throw new Error(
         `Bootstrap failed: ${bootstrapResponse.status} - ${
           errorData.error || "Unknown error"
-        }`
+        }`,
       );
     }
 
@@ -88,7 +88,7 @@ export default function LoginPage() {
 
     console.log("Bootstrap successful, user data:", userData);
 
-    // Step 4: Store token in localStorage for profile page
+    //  Store token in localStorage for profile page
     localStorage.setItem("idToken", idToken);
     localStorage.setItem("uid", user.uid);
     if (userData.avatarId) {
@@ -99,7 +99,7 @@ export default function LoginPage() {
     // Dispatch event to update NavBar immediately
     window.dispatchEvent(new Event("auth-change"));
 
-    // Step 5: Require username if missing
+    // Require username if missing
     if (userData.username) {
       const returnUrl = router.query.returnUrl;
       const target = typeof returnUrl === "string" ? returnUrl : "/profile";
@@ -119,7 +119,7 @@ export default function LoginPage() {
     setUsernameError(null);
 
     try {
-      // Step 1: Sign in with Google via Firebase
+      // SIGN IN WITH GOOGLE FIREBASE
       console.log("🔐 Starting Google Sign-In...");
       const result = await signInWithPopup(auth, googleProvider);
       await handleAuthSuccess(result.user);
@@ -145,13 +145,13 @@ export default function LoginPage() {
         userCredential = await createUserWithEmailAndPassword(
           auth,
           email,
-          password
+          password,
         );
       } else {
         userCredential = await signInWithEmailAndPassword(
           auth,
           email,
-          password
+          password,
         );
       }
       await handleAuthSuccess(userCredential.user);
@@ -501,8 +501,8 @@ export default function LoginPage() {
                     {loading
                       ? "Processing..."
                       : isSignUp
-                      ? "Sign Up"
-                      : "Sign In"}
+                        ? "Sign Up"
+                        : "Sign In"}
                   </button>
                 </form>
 

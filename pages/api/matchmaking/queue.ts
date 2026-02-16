@@ -4,7 +4,11 @@ import admin from "@/lib/firebaseAdmin";
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 import { COUNTRY_TO_REGION_MAP, DEFAULT_REGION } from "@/lib/regionUtils";
-import { startMatchmaking, createPlayerObject } from "@/lib/matchmaking";
+import {
+  startMatchmaking,
+  createPlayerObject,
+  isTicketActive,
+} from "@/lib/matchmaking";
 
 function cleanLatencyMapForMatchmaking(
   latencyMap: any,
@@ -34,22 +38,13 @@ function toSkill(value: any): number {
   return Number.isFinite(num) ? num : 0;
 }
 
-// Define the shape of your User document
+// USER DEFINITION FOR TYPE SAFETY
 interface UserDocument {
   _id: string; // Firebase UID
   username: string;
   rank?: number;
   partyId?: string;
 }
-
-// Map configuration names to specific Team Names.
-// For FFA modes like 'Thang-Deathmatch', we force 'AllPlayers' so GameLift doesn't generate 'AllPlayers1'.
-// For Team modes, we might leave it undefined to let GameLift or a randomizer handle it.
-const TEAM_CONFIG_MAP: Record<string, string | undefined> = {
-  "Thang-Deathmatch": "AllPlayers",
-  // Add other modes here, e.g.:
-  // "Thang-CaptureTheFlag": undefined, // Let GameLift decide or handle logic below
-};
 
 export default async function handler(
   req: NextApiRequest,
@@ -60,7 +55,7 @@ export default async function handler(
   }
 
   try {
-    // 1. Authenticate User
+    // Authenticate User
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return res.status(401).json({ error: "Missing authorization header" });
@@ -69,45 +64,38 @@ export default async function handler(
     const decodedToken = await admin.auth().verifyIdToken(token);
     const uid = decodedToken.uid;
 
-    // 2. Parse Request Body
-    // configName: The exact name of the Matchmaking Configuration in AWS (e.g. "Thang-Deathmatch-Config")
-    // MAP SELECTION: The `configName` determines which rule set and GameLift Queue is used.
-    // To support multiple maps (e.g. "Ice Arena", "Desert"), create separate Matchmaking Configurations in AWS
-    // backed by the same Fleet (or different Fleets) and pass the map path as a "Game Property" in the AWS Console.
-    // Then, the client simply requests the specific configName for the map they want.
+    // PARSE REQUEST BODY
+    // configName e.g. "Thang-Deathmatch-Config"
     let { configName, latencyMap } = req.body;
 
     if (!configName) {
       return res.status(400).json({ error: "Missing configName" });
     }
 
-    // Determine the team name based on the config
-    // If "deathmatch" is in the name (FFA), force "AllPlayers".
+    // If "deathmatch" => force "AllPlayers".
     // Otherwise, use undefined so GameLift handles assignment (Red/Blue).
     let teamName: string | undefined;
     if (configName.toLowerCase().includes("deathmatch")) {
       teamName = "AllPlayers";
     }
 
-    // --- AUTO-GENERATE LATENCY MAP (If Client didn't provide it) ---
-    // Since the client cannot ping AWS directly, we estimate latency based on their Country.
+    // LATENCY MAP AUTO-GENERATION
     if (!latencyMap || Object.keys(latencyMap).length === 0) {
-      const country = (req.headers["x-vercel-ip-country"] as string) || "US"; // Default to US if unknown
+      const country = (req.headers["x-vercel-ip-country"] as string) || "US"; // Fallback to US
       latencyMap = {};
 
       const preferredRegions =
         COUNTRY_TO_REGION_MAP[country.toUpperCase()] ||
         COUNTRY_TO_REGION_MAP["US"];
 
-      // Assign artificial latency: 1st pref = 50ms, 2nd = 60ms, etc.
-      // This tells GameLift "This player is close to these regions".
+      // Assign fake latency 50ms, 60ms, etc.
       preferredRegions.forEach((region, index) => {
         latencyMap[region] = 50 + index * 10;
       });
 
-      // Ensure default region is always included as a fallback
+      // FALLBACK LATENCY FOR THE DEFAULT REGION
       if (!latencyMap[DEFAULT_REGION]) {
-        latencyMap[DEFAULT_REGION] = 150; // Higher latency for fallback
+        latencyMap[DEFAULT_REGION] = 150;
       }
 
       console.log(
@@ -116,7 +104,7 @@ export default async function handler(
       );
     }
 
-    // 3. Get User/Party Data from MongoDB
+    // GET User/Party Data from MongoDB
     const mongoClient = await clientPromise;
     const db = mongoClient.db(process.env.NEXT_PUBLIC_DB_NAME || "game");
     const user = await db.collection("users").findOne({ _id: uid });
@@ -131,14 +119,14 @@ export default async function handler(
       latencyMap: Record<string, number>;
     }> = [];
 
-    // 4. Handle Party Logic
+    // PARTY LOGIC GOES HERE
     if (user.partyId) {
       const party = await db
         .collection("parties")
         .findOne({ _id: new ObjectId(user.partyId) });
 
       if (!party) {
-        // Inconsistent state, treat as solo
+        // SHOULD BE IMPOSSIBLE unless data inconsistency
         const cleanLatencyMap = cleanLatencyMapForMatchmaking(latencyMap);
 
         latencyUpdates.push({ uid, latencyMap: cleanLatencyMap });
@@ -152,7 +140,7 @@ export default async function handler(
           ),
         );
       } else {
-        // Check if requester is leader
+        // ONLY the party leader can start matchmaking
         if (party.leaderUid !== uid) {
           return res
             .status(403)
@@ -233,13 +221,31 @@ export default async function handler(
       }
     }
 
-    // 5. Call GameLift StartMatchmaking
+    // PREVENT DUPLICATES: Check if party already has an active matchmaking ticket
+    const partyToCheck = user.partyId
+      ? await db
+          .collection("parties")
+          .findOne(
+            { _id: new ObjectId(user.partyId) },
+            { projection: { matchmakingTicketId: 1 } },
+          )
+      : null;
+
+    const existingTicketId = partyToCheck?.matchmakingTicketId;
+    if (existingTicketId && (await isTicketActive(existingTicketId))) {
+      return res.status(409).json({
+        error: "Matchmaking already in progress. Cancel the current search first.",
+        ticketId: existingTicketId,
+      });
+    }
+
+    // CALL GAMELIFT START MATCHMAKING
     const { ticketId, estimatedWaitTime } = await startMatchmaking(
       configName,
       playersToMatch,
     );
 
-    // 6. Update Party with Ticket ID (if in a party)
+    // UPDATE PARTY WITH TICKET ID
     if (user.partyId) {
       await db
         .collection("parties")
@@ -249,8 +255,8 @@ export default async function handler(
         );
     }
 
-    // 7. Return Ticket ID
-    // The client will use this ID to poll /api/matchmaking/status
+    // RETURN TICKET ID
+    // use this ID to poll /api/matchmaking/status
     return res.status(200).json({
       ticketId: ticketId,
       status: "QUEUED",

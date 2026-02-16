@@ -82,9 +82,22 @@ export default async function handler(
     console.warn("GameLift StopMatchmaking error:", error?.message || error);
   }
 
-  // 3. Always clear local state (even if GameLift call failed)
-  // This handles cases where ticket already completed/failed/timed-out/cancelled
-  // or when GameLift no longer knows about the ticket.
+  // Handle specific GameLift errors BEFORE clearing state
+  const errorMsg = gameLiftError?.message || "";
+  const errorName = gameLiftError?.name || "";
+
+  // "Cannot cancel in PLACING status" — AWS refuses; do NOT clear state
+  // User must wait for placement to complete (success or fail)
+  if (errorName === "InvalidRequestException" && errorMsg.includes("PLACING")) {
+    return res.status(409).json({
+      error: "Match is already being placed. Cannot cancel. Please wait.",
+      cleared: false,
+    });
+  }
+
+  // 3. Clear local state when safe to do so:
+  // - GameLift successfully cancelled, OR
+  // - Ticket already in terminal state / not found
   try {
     await clearLocalMatchmakingState(uid, ticketId);
   } catch (dbError) {
@@ -96,19 +109,7 @@ export default async function handler(
     return res.status(200).json({ message: "Matchmaking cancelled" });
   }
 
-  // Handle specific GameLift errors
-  const errorMsg = gameLiftError?.message || "";
-  const errorName = gameLiftError?.name || "";
-
-  // "Cannot cancel in PLACING status" — match is being placed, truly can't cancel
-  if (errorName === "InvalidRequestException" && errorMsg.includes("PLACING")) {
-    return res.status(409).json({
-      error: "Match is already being placed. Cannot cancel.",
-      cleared: true, // Local state was still cleared
-    });
-  }
-
-  // Ticket already in terminal state or not found — that's fine, we cleared local state
+  // Ticket already in terminal state or not found — we cleared local state
   if (
     errorMsg.includes("COMPLETED") ||
     errorMsg.includes("CANCELLED") ||
@@ -124,7 +125,7 @@ export default async function handler(
     });
   }
 
-  // Unknown error — still return success since local state was cleared
+  // Unknown error — we cleared local state as a fallback
   console.error("Matchmaking Leave Error (unhandled):", gameLiftError);
   return res.status(200).json({
     message: "Local matchmaking state cleared.",

@@ -13,15 +13,13 @@ export default function DownloadPage() {
       <div className="fx-layer">
         <PixelSnow
           color="#ffffff"
-          flakeSize={0.01}
-          minFlakeSize={1.25}
-          pixelResolution={200}
+          flakeSize={0.18}
           speed={1.25}
-          density={0.3}
+          density={0.2}
           direction={125}
           brightness={1}
-          variant="snowflake"
-          style={{ opacity: 0.34 }}
+          variant="round"
+          style={{ opacity: 0.17 }}
         />
       </div>
 

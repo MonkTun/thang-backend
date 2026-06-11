@@ -100,15 +100,13 @@ export default function IndexPage() {
       <div className="fx-layer">
         <PixelSnow
           color="#ffffff"
-          flakeSize={0.01}
-          minFlakeSize={1.25}
-          pixelResolution={200}
+          flakeSize={0.18}
           direction={125}
           brightness={1}
-          variant="snowflake"
-          style={{ opacity: 0.4 }}
+          variant="round"
+          style={{ opacity: 0.2 }}
           speed={1.25}
-          density={0.3}
+          density={0.2}
         />
       </div>
 
@@ -117,7 +115,28 @@ export default function IndexPage() {
         <div ref={parallaxRef} className="hero__media" />
         <div className="hero__scrim" />
         <div className="hero__inner">
-          <h1 className="hero__title reveal">THANG!</h1>
+          <h1 className="hero__title" aria-label="THANG!">
+            {"THANG!".split("").map((ch, i) => (
+              <span
+                key={i}
+                className="hero__letter"
+                style={{ "--i": i } as unknown as React.CSSProperties}
+                aria-hidden="true"
+              >
+                <span
+                  className="hero__letter-inner"
+                  onMouseEnter={(e) => e.currentTarget.classList.add("is-hop")}
+                  onAnimationEnd={(e) => {
+                    if (e.animationName === "letterHop") {
+                      e.currentTarget.classList.remove("is-hop");
+                    }
+                  }}
+                >
+                  {ch}
+                </span>
+              </span>
+            ))}
+          </h1>
         </div>
       </section>
 

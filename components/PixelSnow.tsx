@@ -17,188 +17,109 @@ void main() {
 }
 `;
 
+// Lightweight 2D layered snow. A handful of parallax layers, each sampling a
+// grid where some cells hold a soft, anti-aliased flake. No raymarching, no
+// per-pixel loops — round (smooth) flakes that are far cheaper than the old
+// volumetric raymarch shader.
 const fragmentShader = `
 precision mediump float;
 
 uniform float uTime;
 uniform vec2 uResolution;
-uniform float uFlakeSize;
-uniform float uMinFlakeSize;
-uniform float uPixelResolution;
-uniform float uSpeed;
-uniform float uDepthFade;
-uniform float uFarPlane;
 uniform vec3 uColor;
 uniform float uBrightness;
 uniform float uGamma;
-uniform float uDensity;
-uniform float uVariant;
-uniform float uDirection;
+uniform float uDensity;     // 0..1 fraction of cells that hold a flake
+uniform float uSpeed;       // fall speed
+uniform float uDirection;   // wind direction (radians)
+uniform float uFlakeSize;   // base flake radius (cell units)
+uniform float uVariant;     // 0 = square, 1 = round
 
-// Precomputed constants
-#define PI 3.14159265
-#define PI_OVER_6 0.5235988
-#define PI_OVER_3 1.0471976
-#define INV_SQRT3 0.57735027
-#define M1 1597334677U
-#define M2 3812015801U
-#define M3 3299493293U
-#define F0 2.3283064e-10
+const int LAYERS = 5;
 
-// Optimized hash - inline multiplication
-#define hash(n) (n * (n ^ (n >> 15)))
-#define coord3(p) (uvec3(p).x * M1 ^ uvec3(p).y * M2 ^ uvec3(p).z * M3)
-
-// Precomputed camera basis vectors (normalized vec3(1,1,1), vec3(1,0,-1))
-const vec3 camK = vec3(0.57735027, 0.57735027, 0.57735027);
-const vec3 camI = vec3(0.70710678, 0.0, -0.70710678);
-const vec3 camJ = vec3(-0.40824829, 0.81649658, -0.40824829);
-
-// Precomputed branch direction
-const vec2 b1d = vec2(0.574, 0.819);
-
-vec3 hash3(uint n) {
-  uvec3 hashed = hash(n) * uvec3(1U, 511U, 262143U);
-  return vec3(hashed) * F0;
-}
-
-float snowflakeDist(vec2 p) {
-  float r = length(p);
-  float a = atan(p.y, p.x);
-  a = abs(mod(a + PI_OVER_6, PI_OVER_3) - PI_OVER_6);
-  vec2 q = r * vec2(cos(a), sin(a));
-  float dMain = max(abs(q.y), max(-q.x, q.x - 1.0));
-  float b1t = clamp(dot(q - vec2(0.4, 0.0), b1d), 0.0, 0.4);
-  float dB1 = length(q - vec2(0.4, 0.0) - b1t * b1d);
-  float b2t = clamp(dot(q - vec2(0.7, 0.0), b1d), 0.0, 0.25);
-  float dB2 = length(q - vec2(0.7, 0.0) - b2t * b1d);
-  return min(dMain, min(dB1, dB2)) * 10.0;
+float hash21(vec2 p) {
+  p = fract(p * vec2(123.34, 345.45));
+  p += dot(p, p + 34.345);
+  return fract(p.x * p.y);
 }
 
 void main() {
-  // Precompute reciprocals to avoid division
-  float invPixelRes = 1.0 / uPixelResolution;
-  float pixelSize = max(1.0, floor(0.5 + uResolution.x * invPixelRes));
-  float invPixelSize = 1.0 / pixelSize;
-  
-  vec2 fragCoord = floor(gl_FragCoord.xy * invPixelSize);
-  vec2 res = uResolution * invPixelSize;
-  float invResX = 1.0 / res.x;
+  // Aspect-correct, square cells.
+  vec2 uv = gl_FragCoord.xy / uResolution.y;
 
-  vec3 ray = normalize(vec3((fragCoord - res * 0.5) * invResX, 1.0));
-  ray = ray.x * camI + ray.y * camJ + ray.z * camK;
+  float t = uTime * uSpeed;
+  float drift = cos(uDirection);
 
-  // Precompute time-based values
-  float timeSpeed = uTime * uSpeed;
-  float windX = cos(uDirection) * 0.4;
-  float windY = sin(uDirection) * 0.4;
-  vec3 camPos = (windX * camI + windY * camJ + 0.1 * camK) * timeSpeed;
-  vec3 pos = camPos;
+  float acc = 0.0;
+  for (int i = 0; i < LAYERS; i++) {
+    float fi = float(i);
+    float depth = (fi + 1.0) / float(LAYERS); // 0.2 (near) .. 1.0 (far)
 
-  // Precompute ray reciprocal for strides
-  vec3 absRay = max(abs(ray), vec3(0.001));
-  vec3 strides = 1.0 / absRay;
-  vec3 raySign = step(ray, vec3(0.0));
-  vec3 phase = fract(pos) * strides;
-  phase = mix(strides - phase, phase, raySign);
+    float scale = mix(8.0, 22.0, depth);      // far = more, smaller flakes
+    float fall  = mix(1.0, 0.45, depth);      // near falls faster (parallax)
+    float fade  = mix(1.0, 0.4, depth);       // far layers dimmer
 
-  // Precompute for intersection test
-  float rayDotCamK = dot(ray, camK);
-  float invRayDotCamK = 1.0 / rayDotCamK;
-  float invDepthFade = 1.0 / uDepthFade;
-  float halfInvResX = 0.5 * invResX;
-  vec3 timeAnim = timeSpeed * 0.1 * vec3(7.0, 8.0, 5.0);
+    // Falling + wind drift + gentle sway.
+    vec2 g = uv * scale;
+    g.y += t * fall;
+    g.x += drift * t * fall * 0.5;
+    g.x += sin(t * 0.6 + fi * 1.7) * 0.15;
 
-  float t = 0.0;
-  for (int i = 0; i < 128; i++) {
-    if (t >= uFarPlane) break;
-    
-    vec3 fpos = floor(pos);
-    uint cellCoord = coord3(fpos);
-    float cellHash = hash3(cellCoord).x;
+    vec2 id = floor(g);
+    vec2 f = fract(g) - 0.5;
 
-    if (cellHash < uDensity) {
-      vec3 h = hash3(cellCoord);
-      
-      // Optimized flake position calculation
-      vec3 sinArg1 = fpos.yzx * 0.073;
-      vec3 sinArg2 = fpos.zxy * 0.27;
-      vec3 flakePos = 0.5 - 0.5 * cos(4.0 * sin(sinArg1) + 4.0 * sin(sinArg2) + 2.0 * h + timeAnim);
-      flakePos = flakePos * 0.8 + 0.1 + fpos;
+    float rnd = hash21(id + fi * 19.3);
+    float present = step(rnd, uDensity);
 
-      float toIntersection = dot(flakePos - pos, camK) * invRayDotCamK;
-      
-      if (toIntersection > 0.0) {
-        vec3 testPos = pos + ray * toIntersection - flakePos;
-        float testX = dot(testPos, camI);
-        float testY = dot(testPos, camJ);
-        vec2 testUV = abs(vec2(testX, testY));
-        
-        float depth = dot(flakePos - camPos, camK);
-        float flakeSize = max(uFlakeSize, uMinFlakeSize * depth * halfInvResX);
-        
-        // Avoid branching with step functions where possible
-        float dist;
-        if (uVariant < 0.5) {
-          dist = max(testUV.x, testUV.y);
-        } else if (uVariant < 1.5) {
-          dist = length(testUV);
-        } else {
-          float invFlakeSize = 1.0 / flakeSize;
-          dist = snowflakeDist(vec2(testX, testY) * invFlakeSize) * flakeSize;
-        }
+    // Jitter the flake within its cell.
+    vec2 off = (vec2(hash21(id + 3.7), hash21(id + 8.1)) - 0.5) * 0.6;
+    vec2 d = f - off;
 
-        if (dist < flakeSize) {
-          float flakeSizeRatio = uFlakeSize / flakeSize;
-          float intensity = exp2(-(t + toIntersection) * invDepthFade) *
-                           min(1.0, flakeSizeRatio * flakeSizeRatio) * uBrightness;
-          gl_FragColor = vec4(uColor * pow(vec3(intensity), vec3(uGamma)), 1.0);
-          return;
-        }
-      }
-    }
+    float r = uFlakeSize * (0.5 + rnd); // per-flake size variation
+    float dist = uVariant < 0.5 ? max(abs(d.x), abs(d.y)) : length(d);
 
-    float nextStep = min(min(phase.x, phase.y), phase.z);
-    vec3 sel = step(phase, vec3(nextStep));
-    phase = phase - nextStep + strides * sel;
-    t += nextStep;
-    pos = mix(pos + ray * nextStep, floor(pos + ray * nextStep + 0.5), sel);
+    // Resolution-aware anti-aliasing (no derivative extension needed).
+    float aa = 1.5 * scale / uResolution.y;
+    float flake = smoothstep(r, r - aa, dist);
+
+    float twinkle = 0.75 + 0.25 * sin(t * 0.5 + rnd * 6.2831853);
+
+    acc += flake * present * fade * twinkle;
   }
 
-  gl_FragColor = vec4(0.0);
+  float a = pow(clamp(acc * uBrightness, 0.0, 1.0), uGamma);
+  gl_FragColor = vec4(uColor, a);
 }
 `;
 
 interface PixelSnowProps {
   color?: string;
+  /** Base flake radius in cell units. */
   flakeSize?: number;
-  minFlakeSize?: number;
-  pixelResolution?: number;
+  /** Fall speed. */
   speed?: number;
-  depthFade?: number;
-  farPlane?: number;
-  brightness?: number;
-  gamma?: number;
+  /** Fraction of grid cells that hold a flake (0..1). */
   density?: number;
-  variant?: "square" | "round" | "snowflake";
+  /** Wind direction in degrees. */
   direction?: number;
+  /** Overall opacity multiplier. */
+  brightness?: number;
+  /** Alpha falloff (1 = linear). */
+  gamma?: number;
+  variant?: "square" | "round";
   className?: string;
   style?: React.CSSProperties;
 }
 
 export default function PixelSnow({
   color = "#ffffff",
-  flakeSize = 0.01,
-  minFlakeSize = 1.25,
-  pixelResolution = 200,
-  speed = 1.25,
-  depthFade = 8,
-  farPlane = 20,
-  brightness = 1,
-  gamma = 0.4545,
-  density = 0.3,
-  variant = "square",
+  flakeSize = 0.18,
+  speed = 1,
+  density = 0.4,
   direction = 125,
+  brightness = 1,
+  gamma = 1,
+  variant = "round",
   className = "",
   style = {},
 }: PixelSnowProps) {
@@ -215,7 +136,7 @@ export default function PixelSnow({
       : undefined;
 
   const variantValue = useMemo(() => {
-    return variant === "round" ? 1.0 : variant === "snowflake" ? 2.0 : 0.0;
+    return variant === "round" ? 1.0 : 0.0;
   }, [variant]);
 
   const colorVector = useMemo(() => {
@@ -294,18 +215,14 @@ export default function PixelSnow({
         uResolution: {
           value: new Vector2(container.offsetWidth, container.offsetHeight),
         },
-        uFlakeSize: { value: flakeSize },
-        uMinFlakeSize: { value: minFlakeSize },
-        uPixelResolution: { value: pixelResolution },
-        uSpeed: { value: speed },
-        uDepthFade: { value: depthFade },
-        uFarPlane: { value: farPlane },
         uColor: { value: colorVector.clone() },
         uBrightness: { value: brightness },
         uGamma: { value: gamma },
         uDensity: { value: density },
-        uVariant: { value: variantValue },
+        uSpeed: { value: speed },
         uDirection: { value: (direction * Math.PI) / 180 },
+        uFlakeSize: { value: flakeSize },
+        uVariant: { value: variantValue },
       },
       transparent: true,
     });
@@ -352,13 +269,11 @@ export default function PixelSnow({
   }, [
     brightness,
     colorVector,
-    depthFade,
+    density,
     direction,
-    farPlane,
     flakeSize,
+    gamma,
     handleResize,
-    minFlakeSize,
-    pixelResolution,
     speed,
     variantValue,
   ]);
@@ -367,30 +282,22 @@ export default function PixelSnow({
     const material = materialRef.current;
     if (!material) return;
 
-    material.uniforms.uFlakeSize.value = flakeSize;
-    material.uniforms.uMinFlakeSize.value = minFlakeSize;
-    material.uniforms.uPixelResolution.value = pixelResolution;
-    material.uniforms.uSpeed.value = speed;
-    material.uniforms.uDepthFade.value = depthFade;
-    material.uniforms.uFarPlane.value = farPlane;
     material.uniforms.uBrightness.value = brightness;
     material.uniforms.uGamma.value = gamma;
     material.uniforms.uDensity.value = density;
-    material.uniforms.uVariant.value = variantValue;
+    material.uniforms.uSpeed.value = speed;
     material.uniforms.uDirection.value = (direction * Math.PI) / 180;
+    material.uniforms.uFlakeSize.value = flakeSize;
+    material.uniforms.uVariant.value = variantValue;
     material.uniforms.uColor.value.copy(colorVector);
   }, [
-    flakeSize,
-    minFlakeSize,
-    pixelResolution,
-    speed,
-    depthFade,
-    farPlane,
     brightness,
     gamma,
     density,
-    variantValue,
+    speed,
     direction,
+    flakeSize,
+    variantValue,
     colorVector,
   ]);
 

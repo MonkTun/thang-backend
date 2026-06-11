@@ -1,0 +1,163 @@
+/* =====================================================================
+   THANG — Brand page (/brand): just fonts + colors.
+   Colors/type come from the global tokens in globals.css so this guide
+   always mirrors the real product.
+   ===================================================================== */
+
+/* ---------------------------------------------------------------- type */
+.typeGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  margin-bottom: 40px;
+}
+.typePanel {
+  padding: 28px;
+  border-radius: var(--r-lg);
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, var(--glass-strong), var(--glass));
+  box-shadow: var(--shadow);
+}
+.typeHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.typeName {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 30px;
+  color: var(--frost);
+}
+.typeRole {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ice);
+}
+.typeSample {
+  margin: 16px 0 22px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(28px, 4vw, 40px);
+  line-height: 1.04;
+  letter-spacing: -0.01em;
+  color: var(--frost);
+}
+.bodySample {
+  margin: 16px 0 22px;
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--ink-dim);
+}
+.ladderItem {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  padding: 8px 0;
+  border-top: 1px solid var(--line);
+}
+.ladderItem span:first-child {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ladderLabel {
+  margin-left: auto;
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  font-size: 12.5px;
+  color: var(--ink-faint);
+}
+
+/* ---------------------------------------------------------------- color */
+.colorWrap { margin-top: 8px; }
+.group { margin-bottom: 30px; }
+.groupTitle {
+  margin: 0 0 14px;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 18px;
+  color: var(--frost);
+}
+.swatchGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(196px, 1fr));
+  gap: 16px;
+}
+.swatch {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  overflow: hidden;
+  border-radius: var(--r);
+  border: 1px solid var(--line);
+  background: var(--bg-elev);
+  transition: transform 0.2s var(--ease), border-color 0.2s var(--ease),
+    box-shadow 0.25s var(--ease);
+}
+.swatch:hover {
+  transform: translateY(-3px);
+  border-color: var(--line-strong);
+  box-shadow: var(--glow-ice);
+}
+.chip {
+  position: relative;
+  height: 96px;
+  width: 100%;
+}
+.chipAlpha {
+  background-color: #0d1422;
+  background-image:
+    linear-gradient(45deg, #1b2536 25%, transparent 25%),
+    linear-gradient(-45deg, #1b2536 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #1b2536 75%),
+    linear-gradient(-45deg, transparent 75%, #1b2536 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+}
+.chipFill {
+  position: absolute;
+  inset: 0;
+}
+.swatchMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 13px 15px 15px;
+}
+.swName {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--frost);
+}
+.swVar,
+.swVal {
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  font-size: 12.5px;
+}
+.swVar { color: var(--ice); }
+.swVal {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--ink-dim);
+}
+.copiedTag {
+  color: var(--ember-soft);
+  font-weight: 700;
+  font-family: var(--font-body);
+}
+
+/* ---------------------------------------------------------------- responsive */
+@media (max-width: 880px) {
+  .typeGrid { grid-template-columns: 1fr; }
+}

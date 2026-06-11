@@ -22,30 +22,7 @@ export default function NavBar() {
 
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [isAuthed, setIsAuthed] = useState<boolean | null>(null);
-  const [avatarId, setAvatarId] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    // Check auth status on client only
-    const checkAuth = () => {
-      const win = getWindow();
-      const token = win?.localStorage?.getItem("idToken") || null;
-      const storedAvatar = win?.localStorage?.getItem("avatarId") || "Alpha";
-      setIsAuthed(Boolean(token));
-      setAvatarId(storedAvatar);
-    };
-
-    checkAuth();
-    window.addEventListener("storage", checkAuth); // Listen for cross-tab changes
-    // Custom event for same-tab updates
-    window.addEventListener("auth-change", checkAuth);
-
-    return () => {
-      window.removeEventListener("storage", checkAuth);
-      window.removeEventListener("auth-change", checkAuth);
-    };
-  }, [router.pathname]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -111,29 +88,6 @@ export default function NavBar() {
         </nav>
 
         <div style={styles.actions}>
-          {isAuthed === null ? (
-            <div style={styles.placeholder} />
-          ) : isAuthed ? (
-            <Link href="/profile" style={styles.avatarLink}>
-              <img
-                src={`/ProfilePicture/${avatarId}.png`}
-                alt="Profile"
-                style={{
-                  width: "36px",
-                  height: "36px",
-                  borderRadius: "50%",
-                  border: "2px solid #1f2a3a",
-                  backgroundColor: "#11141a",
-                  objectFit: "cover",
-                }}
-              />
-            </Link>
-          ) : (
-            <Link href="/login" style={styles.secondaryButton}>
-              Log in
-            </Link>
-          )}
-
           <button
             aria-label="Toggle menu"
             style={{

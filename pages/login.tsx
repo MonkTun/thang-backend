@@ -518,7 +518,7 @@ export default function LoginPage() {
                   </a>{" "}
                   and{" "}
                   <a
-                    href="/privacy"
+                    href="/privacy-policy"
                     style={{ color: "#3b82f6", textDecoration: "none" }}
                   >
                     Privacy Policy

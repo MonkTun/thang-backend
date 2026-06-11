@@ -13,7 +13,7 @@ export default function PrivacyPolicy() {
       </Head>
       <div style={styles.card}>
         <h1 style={styles.title}>Privacy Policy</h1>
-        <p style={styles.date}>Last Updated: June 10, 2026</p>
+        <p style={styles.date}>Last Updated: June 11, 2026</p>
 
         <section style={styles.section}>
           <h2 style={styles.heading}>1. Introduction</h2>
@@ -77,11 +77,15 @@ export default function PrivacyPolicy() {
         </section>
 
         <section style={styles.section}>
-          <h2 style={styles.heading}>5. Data Retention</h2>
+          <h2 style={styles.heading}>5. Data Retention and Your Rights</h2>
           <p style={styles.text}>
-            We retain basic player data for as long as it is needed to provide
-            the game and its features. You may request deletion of the data
-            associated with your account by contacting us.
+            We retain basic player data only for as long as it is needed to
+            provide the game and its features, or as required by applicable law.
+            Subject to applicable privacy laws, you may request access to, or
+            deletion of, the data associated with your account at any time. To
+            make such a request, contact us using the details in the "Contact
+            Us" section below, and we will respond within the timeframe required
+            by applicable law.
           </p>
         </section>
 
@@ -105,8 +109,27 @@ export default function PrivacyPolicy() {
         <section style={styles.section}>
           <h2 style={styles.heading}>8. Contact Us</h2>
           <p style={styles.text}>
-            If you have any questions about this Privacy Policy, please contact
-            us.
+            Thang is developed and operated by Overdawn Studio, which is the
+            party responsible for the personal data described in this Privacy
+            Policy. If you have any questions about this Privacy Policy, wish to
+            exercise your privacy rights, or have any data protection inquiries
+            &mdash; including requests to access or delete the data associated
+            with your account &mdash; you can reach us at:
+          </p>
+          <ul style={styles.list}>
+            <li>
+              <strong>Email:</strong>{" "}
+              <a href="mailto:playoverdawn@gmail.com" style={styles.link}>
+                playoverdawn@gmail.com
+              </a>
+            </li>
+            <li>
+              <strong>Phone:</strong> +1 (213) 458-1024
+            </li>
+          </ul>
+          <p style={styles.text}>
+            We handle all data protection inquiries and deletion requests in
+            accordance with applicable privacy laws.
           </p>
         </section>
 

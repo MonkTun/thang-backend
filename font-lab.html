@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>THANG · Type & Brand Lab</title>
+
+<!-- All fonts below are Google Fonts (OFL / Apache 2.0) — commercial use OK, no attribution required. -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Bebas+Neue&family=Bricolage+Grotesque:wght@400;700;800&family=Chakra+Petch:wght@400;500;600;700&family=Chivo:wght@400;600;800;900&family=DM+Sans:wght@400;500;700&family=Exo+2:wght@400;600;800;900&family=Fredoka:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800;900&family=Lilita+One&family=Manrope:wght@400;500;700;800&family=Orbitron:wght@500;700;900&family=Oswald:wght@400;500;600;700&family=Outfit:wght@400;500;700;800&family=Plus+Jakarta+Sans:wght@400;500;700;800&family=Rajdhani:wght@500;600;700&family=Russo+One&family=Sora:wght@400;600;800&family=Space+Grotesk:wght@400;500;700&family=Teko:wght@400;500;600;700&family=Unbounded:wght@400;700;900&family=Baloo+2:wght@400;500;600;700;800&family=Figtree:wght@400;500;600;700&family=Grandstander:wght@400;600;700;800&family=Lexend:wght@400;500;600;700&family=M+PLUS+Rounded+1c:wght@400;500;700;800&family=Mulish:wght@400;500;700;800&family=Nunito:wght@400;500;700;800&family=Nunito+Sans:wght@400;600;700;800&family=Paytone+One&family=Poppins:wght@400;500;600;700;800&family=Quicksand:wght@400;500;600;700&family=Rubik:wght@400;500;700;800;900&family=Varela+Round&display=swap" rel="stylesheet" />
+
+<style>
+  /* ============ THANG tokens (mirrored from styles/globals.css) ============ */
+  :root{
+    --bg:#05070e; --bg-elev:#0a0f1b;
+    --glass:rgba(255,255,255,.035); --glass-strong:rgba(255,255,255,.06);
+    --line:rgba(126,188,255,.12); --line-strong:rgba(126,188,255,.26);
+    --ink:#eaf1fb; --ink-dim:#a3b4cc; --ink-faint:#6c7d95;
+    --ice:#84dcff; --ice-strong:#36b4ff; --ice-deep:#1f7fff; --frost:#e2f3ff;
+    --ember:#ff9344; --ember-soft:#ffb672; --ember-deep:#ff6a2c;
+    --r-sm:10px; --r:16px; --r-lg:22px; --r-pill:999px;
+    --shadow:0 22px 60px -28px rgba(0,0,0,.85);
+    --glow-ice:0 0 0 1px rgba(132,220,255,.28),0 24px 70px -30px rgba(54,180,255,.55);
+    --glow-ember:0 12px 36px -10px rgba(255,106,44,.5);
+    --ease:cubic-bezier(.22,.61,.36,1);
+
+    /* live-swapped by the lab */
+    --display:"Inter"; --display-weight:900; --display-track:-0.04em;
+    --body:"Inter";
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  html,body{margin:0;min-height:100%}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:var(--body),system-ui,-apple-system,"Segoe UI",sans-serif;
+    -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility; line-height:1.55;
+  }
+  body::before{
+    content:""; position:fixed; inset:-20% -10% 0; z-index:0; pointer-events:none;
+    background:
+      radial-gradient(40% 50% at 18% 8%, rgba(54,180,255,.16), transparent 70%),
+      radial-gradient(42% 48% at 85% 0%, rgba(120,86,220,.14), transparent 72%),
+      radial-gradient(50% 50% at 80% 100%, rgba(255,106,44,.08), transparent 75%);
+  }
+
+  /* ============ control rail ============ */
+  .lab{position:relative; z-index:2}
+  .bar{
+    position:sticky; top:0; z-index:40;
+    background:rgba(7,10,18,.82); backdrop-filter:blur(16px) saturate(140%);
+    border-bottom:1px solid var(--line); padding:14px 22px;
+  }
+  .bar__row{display:flex; align-items:center; gap:14px; flex-wrap:wrap; max-width:1180px; margin:0 auto}
+  .bar__title{font-weight:800; letter-spacing:.04em; color:var(--frost); font-size:14px; white-space:nowrap}
+  .bar__title b{color:var(--ice)}
+  .spacer{flex:1 1 auto}
+  .lic{font-size:11.5px; color:var(--ink-faint); letter-spacing:.02em}
+  .lic b{color:var(--ink-dim); font-weight:600}
+
+  .presets{display:flex; gap:8px; flex-wrap:wrap; max-width:1180px; margin:12px auto 0}
+  .chip{
+    cursor:pointer; border:1px solid var(--line-strong); background:var(--glass);
+    color:var(--ink-dim); border-radius:var(--r-pill); padding:7px 13px;
+    font-size:12.5px; font-weight:600; letter-spacing:.01em; transition:.18s var(--ease);
+    display:inline-flex; gap:7px; align-items:center;
+  }
+  .chip:hover{color:var(--frost); border-color:var(--ice); background:var(--glass-strong)}
+  .chip.is-on{color:#06121c; background:linear-gradient(135deg,var(--ice),var(--ice-strong)); border-color:transparent; box-shadow:var(--glow-ice)}
+  .chip small{opacity:.7; font-weight:500}
+  .chip.is-on small{opacity:.85; color:#06121c}
+  .chip.is-soft{border-color:rgba(255,147,68,.4)}
+  .chip.is-soft:hover{border-color:var(--ember-soft)}
+  .chip.is-soft.is-on{background:linear-gradient(135deg,var(--ember-soft),var(--ember)); box-shadow:var(--glow-ember)}
+  .preset-label{font-size:11px; letter-spacing:.14em; text-transform:uppercase; font-weight:700;
+    color:var(--ember-soft); align-self:center; padding-left:6px; border-left:2px solid rgba(255,147,68,.4); margin-left:4px}
+  .licNote{font-size:12px; font-weight:600; align-self:center; padding:5px 11px; border-radius:var(--r-pill); border:1px solid var(--line)}
+  .licNote.ok{color:#bdf3d6; background:rgba(60,200,140,.10); border-color:rgba(60,200,140,.32)}
+  .licNote.warn{color:var(--ember-soft); background:rgba(255,147,68,.10); border-color:rgba(255,147,68,.34)}
+
+  .mixer{display:flex; gap:14px; flex-wrap:wrap; max-width:1180px; margin:12px auto 0; align-items:flex-end}
+  .field{display:flex; flex-direction:column; gap:5px}
+  .field label{font-size:11px; letter-spacing:.14em; text-transform:uppercase; font-weight:700; color:var(--ice)}
+  select{
+    appearance:none; background:var(--bg-elev) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2384dcff' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 12px center;
+    color:var(--frost); border:1px solid var(--line-strong); border-radius:10px;
+    padding:10px 34px 10px 12px; font:inherit; font-size:14px; font-weight:600; min-width:230px; cursor:pointer;
+  }
+  select:focus-visible{outline:2px solid var(--ice-strong); outline-offset:2px}
+  .ghost-btn{
+    cursor:pointer; background:var(--glass); color:var(--frost); border:1px solid var(--line-strong);
+    border-radius:10px; padding:10px 14px; font:inherit; font-size:13px; font-weight:700; transition:.18s var(--ease);
+  }
+  .ghost-btn:hover{border-color:var(--ice); background:var(--glass-strong)}
+  .readout{font-size:12.5px; color:var(--ink-dim); align-self:center}
+  .readout b{color:var(--frost)}
+  .readout .sep{color:var(--ink-faint); margin:0 8px}
+
+  /* ============ preview "site" ============ */
+  .wrap{max-width:1180px; margin:0 auto; padding:0 22px}
+
+  .pv-nav{display:flex; align-items:center; justify-content:space-between; padding:18px 0 10px; gap:16px}
+  .pv-brand{display:flex; align-items:center; gap:11px; color:var(--frost)}
+  .pv-logo{width:34px; height:34px; border-radius:10px; display:grid; place-items:center;
+    background:var(--bg-elev); border:1px solid var(--line-strong); box-shadow:inset 0 0 18px -6px rgba(54,180,255,.5); color:var(--ice); font-size:18px}
+  .pv-brand span{font-family:var(--display),sans-serif; font-weight:800; letter-spacing:.14em; text-transform:uppercase; font-size:16px}
+  .pv-navlinks{display:flex; gap:6px}
+  .pv-navlinks a{padding:9px 14px; border-radius:var(--r-pill); font-size:14px; font-weight:600; color:var(--ink-dim); text-decoration:none}
+  .pv-navlinks a.on{color:var(--frost); background:var(--glass-strong)}
+
+  .hero{
+    position:relative; border-radius:var(--r-lg); overflow:hidden; isolation:isolate;
+    margin-top:10px; padding:84px 24px 70px; text-align:center;
+    border:1px solid var(--line);
+    background:
+      radial-gradient(80% 70% at 50% 18%, rgba(31,127,255,.18), transparent 70%),
+      radial-gradient(60% 60% at 80% 100%, rgba(255,106,44,.10), transparent 70%),
+      linear-gradient(180deg, #070b15, #05070e);
+  }
+  .hero__badge{display:inline-flex; align-items:center; gap:8px; padding:7px 14px; border-radius:var(--r-pill);
+    background:var(--glass); border:1px solid var(--line-strong); font-size:12px; font-weight:600; color:var(--frost); letter-spacing:.04em}
+  .hero__badge .dot{width:8px; height:8px; border-radius:50%; background:var(--ice); box-shadow:0 0 0 4px rgba(132,220,255,.18)}
+  .wordmark{
+    margin:18px 0 6px; line-height:.9;
+    font-family:var(--display),sans-serif;
+    font-weight:var(--display-weight); letter-spacing:var(--display-track);
+    font-size:clamp(72px,14vw,180px);
+    background:linear-gradient(180deg,#fff 10%,#bfe6ff 55%,#6cc6ff 100%);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+    filter:drop-shadow(0 14px 40px rgba(54,180,255,.45));
+  }
+  .hero__tag{font-family:var(--display),sans-serif; font-weight:600; color:var(--frost);
+    font-size:clamp(18px,2.6vw,26px); letter-spacing:.01em; margin:0 auto 8px; max-width:680px}
+  .hero__sub{color:var(--ink-dim); font-size:16px; line-height:1.65; max-width:560px; margin:0 auto 22px}
+  .cta{display:flex; gap:14px; justify-content:center; flex-wrap:wrap}
+  .btn{display:inline-flex; align-items:center; gap:9px; padding:14px 24px; border-radius:var(--r-pill);
+    font-size:15px; font-weight:700; text-decoration:none; border:1px solid transparent; cursor:pointer}
+  .btn-primary{background:linear-gradient(135deg,var(--ember-soft),var(--ember-deep)); color:#20110a; box-shadow:var(--glow-ember)}
+  .btn-ghost{background:var(--glass); color:var(--frost); border-color:var(--line-strong); backdrop-filter:blur(8px)}
+
+  .section{padding:64px 0 8px}
+  .head{max-width:720px; margin:0 auto 38px; text-align:center; display:flex; flex-direction:column; gap:13px; align-items:center}
+  .kicker{display:inline-flex; align-items:center; gap:9px; font-size:12px; font-weight:700; letter-spacing:.18em;
+    text-transform:uppercase; color:var(--ice); font-family:var(--display),sans-serif}
+  .kicker::before{content:""; width:22px; height:1px; background:linear-gradient(90deg,transparent,var(--ice))}
+  .h2{margin:0; font-family:var(--display),sans-serif; font-weight:800; letter-spacing:-.02em; line-height:1.08;
+    font-size:clamp(28px,4vw,42px); color:var(--frost)}
+  .lead{margin:0; font-size:17px; line-height:1.65; color:var(--ink-dim)}
+
+  .grid{display:grid; gap:20px; grid-template-columns:repeat(3,minmax(0,1fr))}
+  .card{position:relative; padding:24px; border-radius:var(--r); overflow:hidden;
+    background:linear-gradient(180deg,var(--glass-strong),var(--glass)); border:1px solid var(--line); box-shadow:var(--shadow)}
+  .card::before{content:""; position:absolute; inset:0 0 auto 0; height:1px;
+    background:linear-gradient(90deg,transparent,rgba(132,220,255,.5),transparent); opacity:.6}
+  .card__idx{font-family:var(--display),sans-serif; font-size:13px; font-weight:800; letter-spacing:.1em; color:var(--ice)}
+  .card__title{margin:8px 0 8px; font-family:var(--display),sans-serif; font-size:20px; font-weight:700; color:var(--frost)}
+  .card__text{margin:0; font-size:15px; line-height:1.6; color:var(--ink-dim)}
+
+  /* ============ specimen ============ */
+  .spec{margin-top:54px; border:1px solid var(--line); border-radius:var(--r-lg);
+    background:linear-gradient(180deg,rgba(255,255,255,.025),transparent); padding:30px; display:grid; gap:26px}
+  .spec__grid{display:grid; grid-template-columns:1fr 1fr; gap:30px}
+  .spec h4{margin:0 0 12px; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--ice); font-weight:700}
+  .glyphs{font-family:var(--display),sans-serif; font-weight:var(--display-weight); color:var(--frost); line-height:1.25; word-break:break-word}
+  .glyphs .big{font-size:34px; letter-spacing:var(--display-track)}
+  .glyphs .num{font-size:26px; color:var(--ink); margin-top:8px; letter-spacing:.02em}
+  .weights{display:flex; flex-direction:column; gap:6px; font-family:var(--display),sans-serif; color:var(--frost)}
+  .weights span{font-size:24px; line-height:1.2}
+  .bodyspec p{margin:0 0 12px; font-family:var(--body),sans-serif}
+  .bodyspec .p-lg{font-size:18px; color:var(--ink)}
+  .bodyspec .p-md{font-size:15px; color:var(--ink-dim); line-height:1.7}
+  .bodyspec .p-sm{font-size:13px; color:var(--ink-faint); letter-spacing:.01em}
+  .uiset{display:flex; gap:8px; flex-wrap:wrap; margin-top:6px}
+  .pill{padding:6px 12px; border-radius:var(--r-pill); font-size:12.5px; font-weight:600;
+    background:var(--glass); border:1px solid var(--line); color:var(--ink-dim)}
+
+  .footer-note{padding:46px 0 60px; text-align:center; color:var(--ink-faint); font-size:13px; line-height:1.7}
+  .footer-note code{color:var(--ice); background:var(--glass); padding:2px 7px; border-radius:6px; font-size:12.5px}
+
+  @media (max-width:820px){
+    .grid{grid-template-columns:1fr}
+    .spec__grid{grid-template-columns:1fr}
+    .pv-navlinks{display:none}
+    select{min-width:0; flex:1}
+  }
+</style>
+</head>
+<body>
+<div class="lab">
+
+  <!-- ===== controls ===== -->
+  <div class="bar">
+    <div class="bar__row">
+      <div class="bar__title"><b>THANG</b> · Type &amp; Brand Lab</div>
+      <div class="spacer"></div>
+      <div class="lic"><b>Google Fonts</b> · OFL / Apache 2.0 — commercial OK · <span style="color:var(--ember-soft)">Segoe UI = Windows-only, not web-licensed</span></div>
+    </div>
+
+    <div class="presets" id="presets"></div>
+
+    <div class="mixer">
+      <div class="field">
+        <label for="selDisplay">Display / wordmark</label>
+        <select id="selDisplay"></select>
+      </div>
+      <div class="field">
+        <label for="selBody">Body / UI text</label>
+        <select id="selBody"></select>
+      </div>
+      <button class="ghost-btn" id="swap" title="Use the display font for body too">Display → Body</button>
+      <button class="ghost-btn" id="reset">Reset to Inter</button>
+      <div class="readout" id="readout"></div>
+      <div class="licNote" id="licNote"></div>
+    </div>
+  </div>
+
+  <!-- ===== preview ===== -->
+  <div class="wrap">
+    <div class="pv-nav">
+      <div class="pv-brand">
+        <span class="pv-logo">❄</span>
+        <span>Thang</span>
+      </div>
+      <nav class="pv-navlinks">
+        <a class="on" href="#">Home</a>
+        <a href="#">Download</a>
+        <a href="#">Roadmap</a>
+      </nav>
+    </div>
+
+    <section class="hero">
+      <span class="hero__badge"><span class="dot"></span> 5v5 · Freeze or be frozen</span>
+      <div class="wordmark">THANG!</div>
+      <p class="hero__tag">If you stop moving, you freeze.</p>
+      <p class="hero__sub">A 5v5 team battle on the ice. Keep warm, melt your teammates, and freeze the whole enemy squad to win.</p>
+      <div class="cta">
+        <a class="btn btn-primary" href="#">Download — Soon ❄</a>
+        <a class="btn btn-ghost" href="#">Watch the trailer</a>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="head">
+        <span class="kicker">Core Gameplay</span>
+        <h2 class="h2">Survival is a team sport</h2>
+        <p class="lead">No health bars — only body temperature. Move to stay warm, carry frozen friends to the Oven, and never fight alone.</p>
+      </div>
+      <div class="grid">
+        <article class="card"><span class="card__idx">01</span><h3 class="card__title">Freeze Bar</h3><p class="card__text">Stand still or take a hit and your temperature drops. Hit zero and you're Frozen solid.</p></article>
+        <article class="card"><span class="card__idx">02</span><h3 class="card__title">Teamplay &amp; Revival</h3><p class="card__text">Tag teammates to melt them. Deep-frozen players must be carried back to the central Oven.</p></article>
+        <article class="card"><span class="card__idx">03</span><h3 class="card__title">Gunplay</h3><p class="card__text">No ammo, no reloading. Freeze guns deal no damage — they only drain the enemy Freeze Bar.</p></article>
+      </div>
+    </section>
+
+    <!-- ===== specimen ===== -->
+    <section class="spec">
+      <div class="spec__grid">
+        <div>
+          <h4>Display specimen — <span id="dName"></span></h4>
+          <div class="glyphs">
+            <div class="big">THANG! Stay Un-Frozen</div>
+            <div class="num">0 1 2 3 4 5 6 7 8 9 &amp; ❄ → %</div>
+          </div>
+          <div style="height:18px"></div>
+          <h4>Weights</h4>
+          <div class="weights" id="weights"></div>
+        </div>
+        <div>
+          <h4>Body specimen — <span id="bName"></span></h4>
+          <div class="bodyspec">
+            <p class="p-lg">Five polar-bear best friends. One found mind-controlling glasses and became The Hunter.</p>
+            <p class="p-md">The only way to stop them is to freeze them. THANG is a fast, friendly-but-vicious arena brawl where standing still is a death sentence and your team is your only lifeline. Pick perks for mobility, support, pressure, or control and shape exactly how you play.</p>
+            <p class="p-sm">© 2026 Thang · Stay un-frozen · Windows · macOS · Linux · the quick brown fox jumps over 13 lazy dogs.</p>
+          </div>
+          <h4 style="margin-top:18px">UI text</h4>
+          <div class="uiset">
+            <span class="pill">Play now</span>
+            <span class="pill">Matchmaking…</span>
+            <span class="pill">Ping 24ms</span>
+            <span class="pill">Round 3 / 5</span>
+            <span class="pill">Q2 2026 · Alpha</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <p class="footer-note">
+      Pick a direction above, or mix display + body yourself. When you've chosen, tell me the pairing and I'll wire it into
+      <code>styles/globals.css</code> + a Next.js font loader — no more guessing.
+    </p>
+  </div>
+</div>
+
+<script>
+  // ---- per-font display config: heavy weight + ideal wordmark tracking ----
+  const DISPLAY = [
+    {f:"Anton",               note:"Condensed black, poster impact", w:400, track:"0em",      wlist:[400]},
+    {f:"Archivo Black",       note:"Heavy neutral grotesque",        w:400, track:"-0.02em",  wlist:[400]},
+    {f:"Bebas Neue",          note:"Tall sporty caps",               w:400, track:"0.02em",   wlist:[400]},
+    {f:"Oswald",              note:"Condensed grotesque, sturdy",    w:700, track:"0em",      wlist:[400,500,600,700]},
+    {f:"Space Grotesk",       note:"Quirky geometric, indie-cool",   w:700, track:"-0.03em",  wlist:[400,500,700]},
+    {f:"Sora",                note:"Clean geometric, techy",         w:800, track:"-0.03em",  wlist:[400,600,800]},
+    {f:"Chakra Petch",        note:"Squared sci-fi HUD",             w:700, track:"0em",      wlist:[400,500,600,700]},
+    {f:"Rajdhani",            note:"Squared HUD, condensed",         w:700, track:"0.01em",   wlist:[500,600,700]},
+    {f:"Orbitron",            note:"Futuristic techno",              w:900, track:"0.02em",   wlist:[500,700,900]},
+    {f:"Exo 2",               note:"Rounded futuristic",             w:800, track:"-0.01em",  wlist:[400,600,800,900]},
+    {f:"Russo One",           note:"Industrial, gamey",              w:400, track:"0em",      wlist:[400]},
+    {f:"Unbounded",           note:"Loud display personality",       w:900, track:"-0.02em",  wlist:[400,700,900]},
+    {f:"Bricolage Grotesque", note:"Trendy, characterful",           w:800, track:"-0.02em",  wlist:[400,700,800]},
+    {f:"Teko",                note:"Tall, light, techy",             w:700, track:"0.01em",   wlist:[400,500,600,700]},
+    {f:"Chivo",               note:"Sturdy grotesque, all-rounder",  w:900, track:"-0.02em",  wlist:[400,600,800,900]},
+    {f:"Fredoka",             note:"Round & playful (softest)",      w:700, track:"-0.01em",  wlist:[400,500,600,700]},
+    {f:"Baloo 2",             note:"Chunky-cute, more defined",      w:800, track:"-0.01em",  wlist:[400,500,600,700,800]},
+    {f:"Rubik",               note:"Rounded corners, sharper ★",     w:800, track:"-0.02em",  wlist:[400,500,700,800,900]},
+    {f:"Quicksand",           note:"Geometric round, clean",         w:700, track:"0em",      wlist:[400,500,600,700]},
+    {f:"Poppins",             note:"Geometric, round bowls, crisp",  w:800, track:"-0.02em",  wlist:[400,500,600,700,800]},
+    {f:"Grandstander",        note:"Bouncy, wonky, playful",         w:800, track:"-0.01em",  wlist:[400,600,700,800]},
+    {f:"M PLUS Rounded 1c",   note:"Clean rounded, structured",      w:800, track:"-0.01em",  wlist:[400,500,700,800]},
+    {f:"Paytone One",         note:"Sturdy rounded, heavy",          w:400, track:"-0.01em",  wlist:[400]},
+    {f:"Varela Round",        note:"Friendly round, single weight",  w:400, track:"0em",      wlist:[400]},
+    {f:"Lilita One",          note:"Chunky round, casual",           w:400, track:"0em",      wlist:[400]},
+    {f:"Segoe UI",            note:"Bold · Windows system (not web-licensed)", w:700, track:"-0.02em", wlist:[400,600,700], sys:true},
+  ];
+  const BODY = [
+    {f:"Inter",             note:"Neutral workhorse (current)"},
+    {f:"Manrope",           note:"Warm geometric"},
+    {f:"DM Sans",           note:"Friendly geometric"},
+    {f:"Plus Jakarta Sans", note:"Modern & friendly"},
+    {f:"IBM Plex Sans",     note:"Techy neutral"},
+    {f:"Outfit",            note:"Clean geometric"},
+    {f:"Hanken Grotesk",    note:"Modern grotesque"},
+    {f:"Chivo",             note:"Sturdy grotesque"},
+    {f:"Nunito",            note:"Soft rounded, friendly body"},
+    {f:"Nunito Sans",       note:"Clean, gently rounded"},
+    {f:"Mulish",            note:"Minimal, friendly, crisp"},
+    {f:"Figtree",           note:"Modern, slightly soft"},
+    {f:"Lexend",            note:"Highly readable, friendly"},
+    {f:"Quicksand",         note:"Rounded geometric (doubles as body)"},
+    {f:"Poppins",           note:"Geometric (doubles as body)"},
+    {f:"Space Grotesk",     note:"Characterful (doubles as body)"},
+    {f:"Sora",              note:"Geometric (doubles as body)"},
+    {f:"Segoe UI",          note:"Windows system (not web-licensed)"},
+  ];
+  // ---- curated directions ----
+  const PRESETS = [
+    {name:"Esports Poster",  d:"Anton",        b:"Inter",             why:"Max impact wordmark"},
+    {name:"Arena HUD",       d:"Chakra Petch", b:"IBM Plex Sans",     why:"In-game HUD feel"},
+    {name:"Cold Tech",       d:"Space Grotesk",b:"Inter",             why:"Indie-cool, modern"},
+    {name:"Frost Future",    d:"Orbitron",     b:"Exo 2",             why:"Full sci-fi"},
+    {name:"Industrial Sport",d:"Oswald",       b:"Manrope",           why:"Sporty & sturdy"},
+    {name:"Squared Ops",     d:"Rajdhani",     b:"Chivo",             why:"Tactical HUD"},
+    {name:"Modern Indie",    d:"Sora",         b:"Plus Jakarta Sans", why:"Clean & premium"},
+    {name:"Loud Display",    d:"Unbounded",    b:"Outfit",            why:"Bold & characterful"},
+    {name:"Windows System",  d:"Segoe UI",     b:"Segoe UI",          why:"Segoe UI Bold (system only)"},
+    // ---- playful, soft → sharper ----
+    {name:"Playful Chill",   d:"Fredoka",      b:"DM Sans",           why:"Softest / bubbliest", soft:true},
+    {name:"Soft Pop",        d:"Baloo 2",      b:"Nunito",            why:"Chunky-cute, defined", soft:true},
+    {name:"Crisp Cute ★",    d:"Rubik",        b:"Mulish",            why:"Sharper, rounded corners", soft:true},
+    {name:"Rounded Geo",     d:"Quicksand",    b:"Nunito Sans",       why:"Clean & airy", soft:true},
+    {name:"Friendly Geo",    d:"Poppins",      b:"DM Sans",           why:"Geometric, crisp joins", soft:true},
+    {name:"Bouncy",          d:"Grandstander", b:"Nunito",            why:"Characterful & wonky", soft:true},
+    {name:"Sturdy Cute",     d:"Paytone One",  b:"Figtree",           why:"Heavy & friendly", soft:true},
+  ];
+
+  const root = document.documentElement;
+  const $ = id => document.getElementById(id);
+  const cfg = f => DISPLAY.find(d => d.f === f);
+
+  // build selects
+  const selD = $("selDisplay"), selB = $("selBody");
+  DISPLAY.forEach(d => selD.add(new Option(`${d.f} — ${d.note}`, d.f)));
+  BODY.forEach(b => selB.add(new Option(`${b.f} — ${b.note}`, b.f)));
+
+  // build preset chips
+  const presetsEl = $("presets");
+  let softLabelShown = false;
+  PRESETS.forEach(p => {
+    if (p.soft && !softLabelShown){
+      const lab = document.createElement("span");
+      lab.className = "preset-label"; lab.textContent = "Cute · soft → sharper";
+      presetsEl.appendChild(lab); softLabelShown = true;
+    }
+    const b = document.createElement("button");
+    b.className = "chip" + (p.soft ? " is-soft" : ""); b.dataset.d = p.d; b.dataset.b = p.b;
+    b.innerHTML = `${p.name} <small>${p.d} + ${p.b}</small>`;
+    b.onclick = () => apply(p.d, p.b);
+    presetsEl.appendChild(b);
+  });
+
+  function apply(display, body){
+    const c = cfg(display) || {w:800, track:"-0.03em", wlist:[400,700], note:""};
+    root.style.setProperty("--display", `"${display}"`);
+    root.style.setProperty("--display-weight", c.w);
+    root.style.setProperty("--display-track", c.track);
+    root.style.setProperty("--body", `"${body}"`);
+    selD.value = display; selB.value = body;
+
+    // readout
+    $("readout").innerHTML = `<b>${display}</b><span class="sep">·</span><b>${body}</b>`;
+    $("dName").textContent = display;
+    $("bName").textContent = body;
+
+    // cross-brand / UE5 licensing badge (judged on the display font)
+    const note = $("licNote");
+    const bodySys = (BODY.find(x => x.f === body) || {}).f === "Segoe UI";
+    if (c.sys || bodySys){
+      note.className = "licNote warn";
+      note.textContent = "⚠ Segoe UI is Windows-only — can't ship in UE5, web or merch";
+    } else if ((c.wlist||[]).length <= 1){
+      note.className = "licNote ok";
+      note.textContent = "✓ OFL — ships in UE5 / web / merch · single weight (needs a body font)";
+    } else {
+      note.className = "licNote ok";
+      note.textContent = "✓ OFL — free across UE5, web & merch · full weight range";
+    }
+
+    // weights ladder
+    const labels = {300:"Light",400:"Regular",500:"Medium",600:"SemiBold",700:"Bold",800:"ExtraBold",900:"Black"};
+    $("weights").innerHTML = (c.wlist||[400,700]).map(w =>
+      `<span style="font-weight:${w}">${w} · ${labels[w]||w} — Freeze Bar</span>`).join("");
+
+    // active chip
+    document.querySelectorAll(".chip").forEach(ch =>
+      ch.classList.toggle("is-on", ch.dataset.d === display && ch.dataset.b === body));
+  }
+
+  selD.onchange = () => apply(selD.value, selB.value);
+  selB.onchange = () => apply(selD.value, selB.value);
+  $("swap").onclick  = () => apply(selD.value, selD.value);
+  $("reset").onclick = () => apply("Inter","Inter");
+
+  // Inter isn't in the DISPLAY list (it's the baseline) — register a config for it
+  DISPLAY.push({f:"Inter", note:"current baseline", w:900, track:"-0.04em", wlist:[400,600,700,800,900]});
+  selD.add(new Option("Inter — current baseline", "Inter"));
+
+  apply("Rubik","Mulish"); // open in the cute-but-sharper zone
+</script>
+</body>
+</html>

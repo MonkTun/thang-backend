@@ -1,49 +1,34 @@
 import type { AppProps } from "next/app";
 import Head from "next/head";
-import NavBar from "@/components/NavBar";
+import { Grandstander, Nunito } from "next/font/google";
+import "@/styles/globals.css";
+
+// Brand type — used across the site (and the matching static .ttf weights ship
+// with the UE5 client + merch). Both are OFL-licensed, so they're free to embed.
+const grandstander = Grandstander({
+  subsets: ["latin"],
+  weight: ["400", "600", "700", "800", "900"],
+  variable: "--font-grandstander",
+  display: "swap",
+});
+
+const nunito = Nunito({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-nunito",
+  display: "swap",
+});
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
         <link rel="icon" href="/ThangLogo.png" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="theme-color" content="#05070e" />
         <title>Thang</title>
       </Head>
-      <style jsx global>{`
-        *,
-        *::before,
-        *::after {
-          box-sizing: border-box;
-        }
-
-        html,
-        body,
-        #__next {
-          min-height: 100%;
-          margin: 0;
-          background: #0b0d10;
-          color: #e7e9ed;
-        }
-
-        body {
-          font-family: Inter, system-ui, -apple-system, sans-serif;
-        }
-
-        :focus-visible {
-          outline: none;
-          box-shadow: none;
-        }
-
-        button:focus-visible,
-        input:focus-visible,
-        textarea:focus-visible,
-        select:focus-visible {
-          outline: none;
-          box-shadow: 0 0 0 1px #1e232d;
-        }
-      `}</style>
-      <NavBar />
-      <main style={{ paddingTop: "72px" }}>
+      <main className={`app-main ${grandstander.variable} ${nunito.variable}`}>
         <Component {...pageProps} />
       </main>
     </>

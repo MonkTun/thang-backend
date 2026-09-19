@@ -1,0 +1,722 @@
+{
+  "page": {
+    "meta": {
+      "title": "Privacy Policy",
+      "description": "Privacy Policy for Thang, describing what player data we collect and how it is used.",
+      "date": "",
+      "author": "",
+      "cover": "",
+      "coverAlt": "",
+      "tags": [],
+      "published": true,
+      "snow": false
+    },
+    "sections": [
+      {
+        "id": "sec_624f079c",
+        "background": {
+          "type": "transparent"
+        },
+        "padding": "sm",
+        "minHeight": "auto",
+        "align": "top",
+        "blocks": [
+          {
+            "type": "text",
+            "props": {
+              "content": "Privacy Policy",
+              "variant": "h1",
+              "align": "left",
+              "color": "foreground",
+              "transform": "none",
+              "fontSize": 44,
+              "lineHeight": 1.08,
+              "letterSpacing": -0.01
+            },
+            "id": "blk_2514258f",
+            "layout": {
+              "col": 3,
+              "colSpan": 8,
+              "row": 1,
+              "rowSpan": 4
+            },
+            "mobile": {
+              "layout": {
+                "col": 1,
+                "colSpan": 12
+              },
+              "props": {
+                "fontSize": 32
+              }
+            }
+          },
+          {
+            "type": "text",
+            "props": {
+              "content": "Last Updated: June 11, 2026",
+              "variant": "caption",
+              "align": "left",
+              "color": "muted",
+              "transform": "none"
+            },
+            "id": "blk_2f59f125",
+            "layout": {
+              "col": 3,
+              "colSpan": 8,
+              "row": 5,
+              "rowSpan": 2
+            },
+            "mobile": {
+              "layout": {
+                "col": 1,
+                "colSpan": 12
+              }
+            }
+          },
+          {
+            "type": "text",
+            "props": {
+              "content": "1. Introduction",
+              "variant": "h2",
+              "align": "left",
+              "color": "foreground",
+              "transform": "none",
+              "fontSize": 24,
+              "lineHeight": 1.2,
+              "letterSpacing": 0
+            },
+            "id": "blk_0d5d29ce",
+            "layout": {
+              "col": 3,
+              "colSpan": 8,
+              "row": 9,
+              "rowSpan": 3
+            },
+            "mobile": {
+              "layout": {
+                "col": 1,
+                "colSpan": 12
+              },
+              "props": {
+                "fontSize": 21
+              }
+            }
+          },
+          {
+            "type": "text",
+            "props": {
+              "content": "This Privacy Policy explains how Thang (\"we,\" \"our,\" or \"us\") collects, uses, and protects your information when you play our game. We are committed to keeping the amount of personal data we handle to a minimum.",
+              "variant": "body",
+              "align": "left",
+              "color": "muted",
+              "transform": "none",
+              "lineHeight": 1.6
+            },
+            "id": "blk_7a5e831e",
+            "layout": {
+              "col": 3,
+              "colSpan": 8,
+              "row": 12,
+              "rowSpan": 7
+            },
+            "mobile": {
+              "layout": {
+                "col": 1,
+                "colSpan": 12,
+                "rowSpan": 8
+              }
+            }
+          },
+          {
+            "type": "text",
+            "props": {
+              "content": "2. Information We Collect",
+              "variant": "h2",
+              "align": "left",
+              "color": "foreground",
+              "transform": "none",
+              "fontSize": 24,
+              "lineHeight": 1.2,
+              "letterSpacing": 0
+            },
+            "id": "blk_dc6511d9",
+            "layout": {
+              "col": 3,
+              "colSpan": 8,
+              "row": 21,
+              "rowSpan": 3
+            },
+            "mobile": {
+              "layout": {
+                "col": 1,
+                "colSpan": 12,
+                "row": 22
+              },
+              "props": {
+                "fontSize": 21
+              }
+            }
+          },
+          {
+            "type": "text",
+            "props": {
+              "content": "We rely on Epic Online Services (EOS) for account login and to store basic player data. We do not operate our own account system or collect passwords. The information associated with your gameplay may include:",
+              "variant": "body",
+              "align": "left",
+              "color": "muted",
+              "transform": "none",
+              "lineHeight": 1.6
+            },
+            "id": "blk_15a62eed",
+            "layout": {
+              "col": 3,
+              "colSpan": 8,
+              "row": 24,
+              "rowSpan": 7
+            },
+            "mobile": {
+              "layout": {
+                "col": 1,
+                "colSpan": 12,
+                "row": 25,
+                "rowSpan": 8
+              }
+            }
+          },
+          {
+            "type": "text",
+            "props": {
+              "content": "• An Epic Online Services account identifier.<br>• A display name or username.<br>• Basic player data such as game progress, settings, and in-game status.",
+              "variant": "body",
+              "align": "left",
+              "color": "muted",
+              "transform": "none",
+              "lineHeight": 1.6
+            },
+            "id": "blk_e3f6f4dd",
+            "layout": {
+              "col": 3,
+              "colSpan": 8,
+              "row": 31,
+              "rowSpan": 7
+            },
+            "mobile": {
+              "layout": {
+                "col": 1,
+                "colSpan": 12,
+                "row": 33
+              }
+            }
+          },
+          {
+            "type": "text",
+            "props": {
+              "content": "3. How We Use Your Information",
+              "variant": "h2",
+              "align": "left",
+              "color": "foreground",
+              "transform": "none",
+              "fontSize": 24,
+              "lineHeight": 1.2,
+              "letterSpacing": 0
+            },
+            "id": "blk_34c1207e",
+            "layout": {
+              "col": 3,
+              "colSpan": 8,
+              "row": 40,
+              "rowSpan": 3
+            },
+            "mobile": {
+              "layout": {
+                "col": 1,
+                "colSpan": 12,
+                "row": 42
+              },
+              "props": {
+                "fontSize": 21
+              }
+            }
+          },
+          {
+            "type": "text",
+            "props": {
+              "content": "We use this information to:",
+              "variant": "body",
+              "align": "left",
+              "color": "muted",
+              "transform": "none",
+              "lineHeight": 1.6
+            },
+            "id": "blk_a664b996",
+            "layout": {
+              "col": 3,
+              "colSpan": 8,
+              "row": 43,
+              "rowSpan": 3
+            },
+            "mobile": {
+              "layout": {
+                "col": 1,
+                "colSpan": 12,
+                "row": 45
+              }
+            }
+          },
+          {
+            "type": "text",
+            "props": {
+              "content": "• Authenticate you and let you log in to the game.<br>• Save and restore your in-game progress and settings.<br>• Enable core multiplayer and social features.<br>• Maintain, troubleshoot, and improve the game.",
+              "variant": "body",
+              "align": "left",
+              "color": "muted",
+              "transform": "none",
+              "lineHeight": 1.6
+            },
+            "id": "blk_33b13a10",
+            "layout": {
+              "col": 3,
+              "colSpan": 8,
+              "row": 46,
+              "rowSpan": 8
+            },
+            "mobile": {
+              "layout": {
+                "col": 1,
+                "colSpan": 12,
+                "row": 48,
+                "rowSpan": 10
+              }
+            }
+          },
+          {
+            "type": "text",
+            "props": {
+              "content": "4. Third-Party Services",
+              "variant": "h2",
+              "align": "left",
+              "color": "foreground",
+              "transform": "none",
+              "fontSize": 24,
+              "lineHeight": 1.2,
+              "letterSpacing": 0
+            },
+            "id": "blk_e2e86b37",
+            "layout": {
+              "col": 3,
+              "colSpan": 8,
+              "row": 56,
+              "rowSpan": 3
+            },
+            "mobile": {
+              "layout": {
+                "col": 1,
+                "colSpan": 12,
+                "row": 60
+              },
+              "props": {
+                "fontSize": 21
+              }
+            }
+          },
+          {
+            "type": "text",
+            "props": {
+              "content": "We use Epic Online Services for authentication and basic player data. Your use of these features is also subject to Epic's own policies. Please review Epic Games' Privacy Policy for details on how they handle your information:",
+              "variant": "body",
+              "align": "left",
+              "color": "muted",
+              "transform": "none",
+              "lineHeight": 1.6
+            },
+            "id": "blk_9f1bf685",
+            "layout": {
+              "col": 3,
+              "colSpan": 8,
+              "row": 59,
+              "rowSpan": 7
+            },
+            "mobile": {
+              "layout": {
+                "col": 1,
+                "colSpan": 12,
+                "row": 63,
+                "rowSpan": 8
+              }
+            }
+          },
+          {
+            "type": "button",
+            "props": {
+              "label": "Epic Games Privacy Policy ↗",
+              "href": "https://www.epicgames.com/site/en-US/privacypolicy",
+              "variant": "ghost",
+              "align": "center",
+              "newTab": true
+            },
+            "id": "blk_43c0864a",
+            "layout": {
+              "col": 3,
+              "colSpan": 4,
+              "row": 66,
+              "rowSpan": 3
+            },
+            "mobile": {
+              "layout": {
+                "col": 1,
+                "colSpan": 12,
+                "row": 71
+              }
+            }
+          },
+          {
+            "type": "text",
+            "props": {
+              "content": "5. Data Retention and Your Rights",
+              "variant": "h2",
+              "align": "left",
+              "color": "foreground",
+              "transform": "none",
+              "fontSize": 24,
+              "lineHeight": 1.2,
+              "letterSpacing": 0
+            },
+            "id": "blk_c559d9bf",
+            "layout": {
+              "col": 3,
+              "colSpan": 8,
+              "row": 72,
+              "rowSpan": 3
+            },
+            "mobile": {
+              "layout": {
+                "col": 1,
+                "colSpan": 12,
+                "row": 77,
+                "rowSpan": 4
+              },
+              "props": {
+                "fontSize": 21
+              }
+            }
+          },
+          {
+            "type": "text",
+            "props": {
+              "content": "We retain basic player data only for as long as it is needed to provide the game and its features, or as required by applicable law. Subject to applicable privacy laws, you may request access to, or deletion of, the data associated with your account at any time. To make such a request, contact us using the details in the \"Contact Us\" section below, and we will respond within the timeframe required by applicable law.",
+              "variant": "body",
+              "align": "left",
+              "color": "muted",
+              "transform": "none",
+              "lineHeight": 1.6
+            },
+            "id": "blk_d4fe97ce",
+            "layout": {
+              "col": 3,
+              "colSpan": 8,
+              "row": 75,
+              "rowSpan": 10
+            },
+            "mobile": {
+              "layout": {
+                "col": 1,
+                "colSpan": 12,
+                "row": 81,
+                "rowSpan": 15
+              }
+            }
+          },
+          {
+            "type": "text",
+            "props": {
+              "content": "6. Children's Privacy",
+              "variant": "h2",
+              "align": "left",
+              "color": "foreground",
+              "transform": "none",
+              "fontSize": 24,
+              "lineHeight": 1.2,
+              "letterSpacing": 0
+            },
+            "id": "blk_96ba7c1b",
+            "layout": {
+              "col": 3,
+              "colSpan": 8,
+              "row": 87,
+              "rowSpan": 3
+            },
+            "mobile": {
+              "layout": {
+                "col": 1,
+                "colSpan": 12,
+                "row": 98
+              },
+              "props": {
+                "fontSize": 21
+              }
+            }
+          },
+          {
+            "type": "text",
+            "props": {
+              "content": "Our game is not directed to children under the age required by applicable law, and we do not knowingly collect personal information from them.",
+              "variant": "body",
+              "align": "left",
+              "color": "muted",
+              "transform": "none",
+              "lineHeight": 1.6
+            },
+            "id": "blk_76601f83",
+            "layout": {
+              "col": 3,
+              "colSpan": 8,
+              "row": 90,
+              "rowSpan": 5
+            },
+            "mobile": {
+              "layout": {
+                "col": 1,
+                "colSpan": 12,
+                "row": 101,
+                "rowSpan": 7
+              }
+            }
+          },
+          {
+            "type": "text",
+            "props": {
+              "content": "7. Changes to This Policy",
+              "variant": "h2",
+              "align": "left",
+              "color": "foreground",
+              "transform": "none",
+              "fontSize": 24,
+              "lineHeight": 1.2,
+              "letterSpacing": 0
+            },
+            "id": "blk_ca29d5be",
+            "layout": {
+              "col": 3,
+              "colSpan": 8,
+              "row": 97,
+              "rowSpan": 3
+            },
+            "mobile": {
+              "layout": {
+                "col": 1,
+                "colSpan": 12,
+                "row": 110
+              },
+              "props": {
+                "fontSize": 21
+              }
+            }
+          },
+          {
+            "type": "text",
+            "props": {
+              "content": "We may update this Privacy Policy from time to time. Any changes will be reflected by the \"Last Updated\" date above.",
+              "variant": "body",
+              "align": "left",
+              "color": "muted",
+              "transform": "none",
+              "lineHeight": 1.6
+            },
+            "id": "blk_bf2b1c3d",
+            "layout": {
+              "col": 3,
+              "colSpan": 8,
+              "row": 100,
+              "rowSpan": 5
+            },
+            "mobile": {
+              "layout": {
+                "col": 1,
+                "colSpan": 12,
+                "row": 113
+              }
+            }
+          },
+          {
+            "type": "text",
+            "props": {
+              "content": "8. Contact Us",
+              "variant": "h2",
+              "align": "left",
+              "color": "foreground",
+              "transform": "none",
+              "fontSize": 24,
+              "lineHeight": 1.2,
+              "letterSpacing": 0
+            },
+            "id": "blk_bd9968cd",
+            "layout": {
+              "col": 3,
+              "colSpan": 8,
+              "row": 107,
+              "rowSpan": 3
+            },
+            "mobile": {
+              "layout": {
+                "col": 1,
+                "colSpan": 12,
+                "row": 120
+              },
+              "props": {
+                "fontSize": 21
+              }
+            }
+          },
+          {
+            "type": "text",
+            "props": {
+              "content": "Thang is developed and operated by Overdawn Studio, which is the party responsible for the personal data described in this Privacy Policy. If you have any questions about this Privacy Policy, wish to exercise your privacy rights, or have any data protection inquiries — including requests to access or delete the data associated with your account — you can reach us at:",
+              "variant": "body",
+              "align": "left",
+              "color": "muted",
+              "transform": "none",
+              "lineHeight": 1.6
+            },
+            "id": "blk_a1852c17",
+            "layout": {
+              "col": 3,
+              "colSpan": 8,
+              "row": 110,
+              "rowSpan": 8
+            },
+            "mobile": {
+              "layout": {
+                "col": 1,
+                "colSpan": 12,
+                "row": 123,
+                "rowSpan": 13
+              }
+            }
+          },
+          {
+            "type": "text",
+            "props": {
+              "content": "• <strong>Email:</strong> playoverdawn@gmail.com<br>• <strong>Phone:</strong> +1 (213) 458-1024",
+              "variant": "body",
+              "align": "left",
+              "color": "muted",
+              "transform": "none",
+              "lineHeight": 1.6
+            },
+            "id": "blk_d77b5bab",
+            "layout": {
+              "col": 3,
+              "colSpan": 8,
+              "row": 118,
+              "rowSpan": 5
+            },
+            "mobile": {
+              "layout": {
+                "col": 1,
+                "colSpan": 12,
+                "row": 136
+              }
+            }
+          },
+          {
+            "type": "button",
+            "props": {
+              "label": "Email us",
+              "href": "mailto:playoverdawn@gmail.com",
+              "variant": "ghost",
+              "align": "center",
+              "newTab": false
+            },
+            "id": "blk_d2131f5a",
+            "layout": {
+              "col": 3,
+              "colSpan": 3,
+              "row": 123,
+              "rowSpan": 3
+            },
+            "mobile": {
+              "layout": {
+                "col": 1,
+                "colSpan": 12,
+                "row": 141
+              }
+            }
+          },
+          {
+            "type": "text",
+            "props": {
+              "content": "We handle all data protection inquiries and deletion requests in accordance with applicable privacy laws.",
+              "variant": "body",
+              "align": "left",
+              "color": "muted",
+              "transform": "none",
+              "lineHeight": 1.6
+            },
+            "id": "blk_bf6b8275",
+            "layout": {
+              "col": 3,
+              "colSpan": 8,
+              "row": 127,
+              "rowSpan": 5
+            },
+            "mobile": {
+              "layout": {
+                "col": 1,
+                "colSpan": 12,
+                "row": 145
+              }
+            }
+          },
+          {
+            "type": "line",
+            "props": {
+              "thickness": 1,
+              "color": "border"
+            },
+            "id": "blk_2a8c55b6",
+            "layout": {
+              "col": 3,
+              "colSpan": 8,
+              "row": 134,
+              "rowSpan": 1
+            },
+            "mobile": {
+              "layout": {
+                "col": 1,
+                "colSpan": 12,
+                "row": 152
+              }
+            }
+          },
+          {
+            "type": "button",
+            "props": {
+              "label": "Back to Home",
+              "href": "/",
+              "variant": "ghost",
+              "align": "center",
+              "newTab": false
+            },
+            "id": "blk_26f27905",
+            "layout": {
+              "col": 3,
+              "colSpan": 3,
+              "row": 137,
+              "rowSpan": 3
+            },
+            "mobile": {
+              "layout": {
+                "col": 1,
+                "colSpan": 12,
+                "row": 155
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "createdAt": "2026-09-19T23:21:42.688Z",
+  "updatedAt": "2026-09-19T23:21:42.688Z",
+  "publishedAt": "2026-09-19T23:21:42.688Z"
+}

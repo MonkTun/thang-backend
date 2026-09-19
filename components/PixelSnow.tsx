@@ -192,14 +192,22 @@ export default function PixelSnow({
 
     const scene = new Scene();
     const camera = new OrthographicCamera(-1, 1, 1, -1, 0, 1);
-    const renderer = new WebGLRenderer({
-      antialias: false,
-      alpha: true,
-      premultipliedAlpha: false,
-      powerPreference: "high-performance",
-      stencil: false,
-      depth: false,
-    });
+    let renderer: WebGLRenderer;
+    try {
+      renderer = new WebGLRenderer({
+        antialias: false,
+        alpha: true,
+        premultipliedAlpha: false,
+        powerPreference: "high-performance",
+        stencil: false,
+        depth: false,
+      });
+    } catch (err) {
+      // No WebGL context (GPU-blocklisted or headless browsers, WebGL turned
+      // off): the snow is decorative, so skip it instead of crashing the page.
+      console.warn("[PixelSnow] WebGL unavailable, skipping effect:", err);
+      return;
+    }
 
     renderer.setPixelRatio(Math.min(win.devicePixelRatio || 1, 2));
     renderer.setSize(container.offsetWidth ?? 0, container.offsetHeight ?? 0);

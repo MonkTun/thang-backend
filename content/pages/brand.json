@@ -1,0 +1,341 @@
+{
+  "page": {
+    "meta": {
+      "title": "Brand",
+      "description": "THANG's brand fonts and color palette.",
+      "date": "",
+      "author": "",
+      "cover": "",
+      "coverAlt": "",
+      "tags": [],
+      "published": true,
+      "snow": false
+    },
+    "sections": [
+      {
+        "id": "sec_43899a0a",
+        "background": {
+          "type": "transparent"
+        },
+        "padding": "md",
+        "minHeight": "auto",
+        "align": "top",
+        "blocks": [
+          {
+            "type": "text",
+            "props": {
+              "content": "Brand",
+              "variant": "kicker",
+              "align": "center",
+              "color": "accent",
+              "transform": "none",
+              "fontSize": 12,
+              "letterSpacing": 0.18
+            },
+            "id": "blk_4809fe48",
+            "layout": {
+              "col": 3,
+              "colSpan": 8,
+              "row": 1,
+              "rowSpan": 2
+            },
+            "mobile": {
+              "layout": {
+                "col": 1,
+                "colSpan": 12
+              }
+            }
+          },
+          {
+            "type": "text",
+            "props": {
+              "content": "Fonts &amp; colors",
+              "variant": "h1",
+              "align": "center",
+              "color": "foreground",
+              "transform": "none",
+              "fontSize": 40,
+              "lineHeight": 1.08,
+              "letterSpacing": -0.01
+            },
+            "id": "blk_c8b61d78",
+            "layout": {
+              "col": 2,
+              "colSpan": 10,
+              "row": 3,
+              "rowSpan": 4
+            },
+            "mobile": {
+              "layout": {
+                "col": 1,
+                "colSpan": 12
+              },
+              "props": {
+                "fontSize": 28
+              }
+            }
+          },
+          {
+            "type": "fontSpecimen",
+            "props": {
+              "family": "display",
+              "name": "Grandstander",
+              "role": "Display",
+              "sample": "Stay un-frozen.",
+              "ladderText": "Freeze or be frozen",
+              "weights": [
+                400,
+                600,
+                700,
+                800,
+                900
+              ]
+            },
+            "id": "blk_7aa14cdd",
+            "layout": {
+              "col": 1,
+              "colSpan": 6,
+              "row": 10,
+              "rowSpan": 27
+            },
+            "mobile": {
+              "layout": {
+                "colSpan": 12
+              }
+            }
+          },
+          {
+            "type": "fontSpecimen",
+            "props": {
+              "family": "body",
+              "name": "Nunito",
+              "role": "Body",
+              "sample": "Move to stay warm, carry frozen teammates to the Oven, and never fight alone.",
+              "ladderText": "The quick brown fox",
+              "weights": [
+                400,
+                500,
+                600,
+                700,
+                800
+              ]
+            },
+            "id": "blk_02549db9",
+            "layout": {
+              "col": 7,
+              "colSpan": 6,
+              "row": 10,
+              "rowSpan": 27
+            },
+            "mobile": {
+              "layout": {
+                "col": 1,
+                "colSpan": 12,
+                "row": 39
+              }
+            }
+          },
+          {
+            "type": "swatches",
+            "props": {
+              "title": "Surfaces",
+              "colors": [
+                {
+                  "name": "Midnight",
+                  "varName": "--bg",
+                  "value": "#05070e",
+                  "alpha": false
+                },
+                {
+                  "name": "Elevated",
+                  "varName": "--bg-elev",
+                  "value": "#0a0f1b",
+                  "alpha": false
+                },
+                {
+                  "name": "Glass",
+                  "varName": "--glass",
+                  "value": "rgba(255,255,255,.035)",
+                  "alpha": true
+                },
+                {
+                  "name": "Glass strong",
+                  "varName": "--glass-strong",
+                  "value": "rgba(255,255,255,.06)",
+                  "alpha": true
+                }
+              ]
+            },
+            "id": "blk_7c603754",
+            "layout": {
+              "col": 1,
+              "colSpan": 12,
+              "row": 40,
+              "rowSpan": 15
+            },
+            "mobile": {
+              "layout": {
+                "row": 69
+              }
+            }
+          },
+          {
+            "type": "swatches",
+            "props": {
+              "title": "Ink — Text",
+              "colors": [
+                {
+                  "name": "Frost",
+                  "varName": "--frost",
+                  "value": "#e2f3ff",
+                  "alpha": false
+                },
+                {
+                  "name": "Ink",
+                  "varName": "--ink",
+                  "value": "#eaf1fb",
+                  "alpha": false
+                },
+                {
+                  "name": "Ink dim",
+                  "varName": "--ink-dim",
+                  "value": "#a3b4cc",
+                  "alpha": false
+                },
+                {
+                  "name": "Ink faint",
+                  "varName": "--ink-faint",
+                  "value": "#6c7d95",
+                  "alpha": false
+                }
+              ]
+            },
+            "id": "blk_04409b9d",
+            "layout": {
+              "col": 1,
+              "colSpan": 12,
+              "row": 56,
+              "rowSpan": 15
+            },
+            "mobile": {
+              "layout": {
+                "row": 85
+              }
+            }
+          },
+          {
+            "type": "swatches",
+            "props": {
+              "title": "Ice — Primary",
+              "colors": [
+                {
+                  "name": "Ice",
+                  "varName": "--ice",
+                  "value": "#84dcff",
+                  "alpha": false
+                },
+                {
+                  "name": "Ice strong",
+                  "varName": "--ice-strong",
+                  "value": "#36b4ff",
+                  "alpha": false
+                },
+                {
+                  "name": "Ice deep",
+                  "varName": "--ice-deep",
+                  "value": "#1f7fff",
+                  "alpha": false
+                }
+              ]
+            },
+            "id": "blk_4d44ee57",
+            "layout": {
+              "col": 1,
+              "colSpan": 12,
+              "row": 72,
+              "rowSpan": 15
+            },
+            "mobile": {
+              "layout": {
+                "row": 101
+              }
+            }
+          },
+          {
+            "type": "swatches",
+            "props": {
+              "title": "Ember — Accent",
+              "colors": [
+                {
+                  "name": "Ember soft",
+                  "varName": "--ember-soft",
+                  "value": "#ffb672",
+                  "alpha": false
+                },
+                {
+                  "name": "Ember",
+                  "varName": "--ember",
+                  "value": "#ff9344",
+                  "alpha": false
+                },
+                {
+                  "name": "Ember deep",
+                  "varName": "--ember-deep",
+                  "value": "#ff6a2c",
+                  "alpha": false
+                }
+              ]
+            },
+            "id": "blk_3af8549b",
+            "layout": {
+              "col": 1,
+              "colSpan": 12,
+              "row": 88,
+              "rowSpan": 15
+            },
+            "mobile": {
+              "layout": {
+                "row": 117
+              }
+            }
+          },
+          {
+            "type": "swatches",
+            "props": {
+              "title": "Hairlines",
+              "colors": [
+                {
+                  "name": "Line",
+                  "varName": "--line",
+                  "value": "rgba(126,188,255,.12)",
+                  "alpha": true
+                },
+                {
+                  "name": "Line strong",
+                  "varName": "--line-strong",
+                  "value": "rgba(126,188,255,.26)",
+                  "alpha": true
+                }
+              ]
+            },
+            "id": "blk_536e6563",
+            "layout": {
+              "col": 1,
+              "colSpan": 12,
+              "row": 104,
+              "rowSpan": 15
+            },
+            "mobile": {
+              "layout": {
+                "row": 133
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "createdAt": "2026-09-19T23:21:42.688Z",
+  "updatedAt": "2026-09-19T23:21:42.688Z",
+  "publishedAt": "2026-09-19T23:21:42.688Z"
+}

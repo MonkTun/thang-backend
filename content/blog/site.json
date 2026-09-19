@@ -1,0 +1,34 @@
+{
+  "tags": [],
+  "mirrors": [
+    {
+      "id": "mir_footer",
+      "name": "Site footer",
+      "source": {
+        "type": "footer",
+        "props": {
+          "brand": "Thang",
+          "links": [
+            {
+              "label": "Blog",
+              "href": "/blog"
+            },
+            {
+              "label": "Download",
+              "href": "/download"
+            },
+            {
+              "label": "Privacy",
+              "href": "/privacy-policy"
+            },
+            {
+              "label": "Terms",
+              "href": "/terms"
+            }
+          ],
+          "legal": "© 2026 Thang · Stay un-frozen."
+        }
+      }
+    }
+  ]
+}

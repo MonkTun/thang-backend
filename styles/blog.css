@@ -1,0 +1,417 @@
+/* =====================================================================
+   THANG — blog editor + blog renderer style layer
+
+   This file is the ONLY place Tailwind is wired up. It exists for the
+   Squarespace-style block editor (components/blog/editor) and the block
+   renderer it shares with the public blog (components/blog). Everything
+   else on the site keeps using the plain CSS in globals.css.
+
+   Rules of the road:
+   - Tailwind PREFLIGHT IS NOT IMPORTED. A global reset would restyle the
+     existing marketing pages. Instead, a scoped reset (`.tw-reset`) is
+     applied to the editor root and every blog page wrapper.
+   - Design tokens are THANG's (globals.css). The editor code was written
+     against the portfolio's token names (--background, --foreground,
+     --surface, --border, --accent…), so those names are bound here to the
+     THANG palette. Never hard-code hex values in the editor components.
+   - Shared component classes that set color/background live inside
+     `@layer components` so Tailwind utilities can still override them.
+   ===================================================================== */
+
+@layer theme, base, components, utilities;
+
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+@import "react-grid-layout/css/styles.css";
+@import "react-resizable/css/styles.css";
+
+/* ---------------------------------------------------------------- tokens */
+
+:root {
+  /* Editor/renderer token names → THANG palette (globals.css :root). */
+  --background: var(--bg);
+  --foreground: var(--ink);
+  --muted: var(--bg-elev);
+  --muted-foreground: var(--ink-dim);
+  --surface: var(--bg-elev);
+  --surface-foreground: var(--ink);
+  --border: var(--line);
+  --border-strong: var(--line-strong);
+  --accent: var(--ice-strong);
+  --accent-foreground: #05070e;
+  --ring: var(--ice-strong);
+
+  /* Ember CTA (THANG's warm accent — used by the Button atom's primary
+     variant so blog CTAs match the site's .btn-primary). */
+  --ember-ink: #20110a;
+
+  /* Type scale knobs read by atomStyles.ts. Body ≈ 17px (matches .lead),
+     header is the h1 clamp() max; h2 = ½, h3 = ¼. */
+  --text-body: 1.0625rem;
+  --text-header: 8rem;
+
+  /* Motion tempo (THANG already defines --ease in globals.css). */
+  --duration-fast: 200ms;
+  --duration: 500ms;
+  --duration-slow: 800ms;
+  --stagger: 60ms;
+
+  /* Distance from a section's safe-area content edge to the section/
+     viewport edge — drives per-block "bleed". Mirrors the SectionRenderer
+     container: max-w-7xl (80rem) + px-6 / md:px-10. */
+  --bleed-inset: calc(max(0px, (100vw - 80rem) / 2) + 1.5rem);
+}
+@media (min-width: 768px) {
+  :root {
+    --bleed-inset: calc(max(0px, (100vw - 80rem) / 2) + 2.5rem);
+  }
+}
+
+/* Tailwind v4 theme — exposes the tokens as utilities
+   (bg-background, text-foreground, border-border, font-display, …). */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-surface: var(--surface);
+  --color-surface-foreground: var(--surface-foreground);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-ring: var(--ring);
+
+  /* THANG brand colors, for the few places the editor wants them by name. */
+  --color-ice: var(--ice);
+  --color-ice-strong: var(--ice-strong);
+  --color-ice-deep: var(--ice-deep);
+  --color-frost: var(--frost);
+  --color-ember: var(--ember);
+  --color-ember-soft: var(--ember-soft);
+  --color-ember-deep: var(--ember-deep);
+  --color-ember-ink: var(--ember-ink);
+  --color-ink: var(--ink);
+  --color-ink-dim: var(--ink-dim);
+  --color-ink-faint: var(--ink-faint);
+  --color-glass: var(--glass);
+  --color-glass-strong: var(--glass-strong);
+
+  /* Fonts — Grandstander (display) + Nunito (body). The per-font variables
+     are bound on :root by _app.tsx from next/font. */
+  --font-display: var(--font-grandstander), system-ui, sans-serif;
+  --font-body: var(--font-nunito), system-ui, sans-serif;
+  --font-sans: var(--font-nunito), system-ui, sans-serif;
+
+  /* Radii — THANG is rounded and playful, not editorial-sharp. */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 22px;
+
+  --shadow-ember: var(--glow-ember);
+  --shadow-ice: var(--glow-ice);
+}
+
+/* ---------------------------------------------------------------- reset */
+/* Scoped preflight. Applied to the editor root, the admin pages, and every
+   public blog page wrapper (`tw-reset`). Kept in @layer base so utilities
+   (which sit in the later `utilities` layer) always win over it. */
+@layer base {
+  .tw-reset,
+  .tw-reset *,
+  .tw-reset *::before,
+  .tw-reset *::after {
+    box-sizing: border-box;
+    border: 0 solid var(--border);
+  }
+  .tw-reset :is(h1, h2, h3, h4, h5, h6, p, blockquote, figure, pre, hr, ol, ul, dl, dd, fieldset) {
+    margin: 0;
+  }
+  .tw-reset :is(h1, h2, h3, h4, h5, h6) {
+    font-size: inherit;
+    font-weight: inherit;
+  }
+  .tw-reset :is(ol, ul, menu) {
+    list-style: none;
+    padding: 0;
+  }
+  .tw-reset :is(img, svg, video, canvas, audio, iframe, embed, object) {
+    display: block;
+    vertical-align: middle;
+  }
+  .tw-reset :is(img, video) {
+    max-width: 100%;
+    height: auto;
+  }
+  .tw-reset hr {
+    height: 0;
+    color: inherit;
+    border-top-width: 1px;
+  }
+  .tw-reset :is(button, input, optgroup, select, textarea) {
+    font: inherit;
+    font-feature-settings: inherit;
+    letter-spacing: inherit;
+    color: inherit;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    border-radius: 0;
+    text-transform: none;
+  }
+  .tw-reset :is(button, [role="button"], select) {
+    cursor: pointer;
+  }
+  .tw-reset :is(button, input:where([type="button"], [type="reset"], [type="submit"])) {
+    appearance: button;
+    -webkit-appearance: button;
+  }
+  .tw-reset textarea {
+    resize: vertical;
+  }
+  .tw-reset :is(input, textarea)::placeholder {
+    color: color-mix(in oklab, var(--foreground) 40%, transparent);
+  }
+  .tw-reset a {
+    color: inherit;
+    text-decoration: inherit;
+  }
+  .tw-reset :is(b, strong) {
+    font-weight: bolder;
+  }
+  .tw-reset :is(code, kbd, samp, pre) {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 1em;
+  }
+  .tw-reset small {
+    font-size: 80%;
+  }
+  .tw-reset table {
+    border-collapse: collapse;
+    border-color: inherit;
+    text-indent: 0;
+  }
+  .tw-reset [hidden]:where(:not([hidden="until-found"])) {
+    display: none !important;
+  }
+  .tw-reset summary {
+    display: list-item;
+  }
+  .tw-reset input[type="range"] {
+    accent-color: var(--accent);
+  }
+  .tw-reset input[type="checkbox"],
+  .tw-reset input[type="radio"] {
+    accent-color: var(--accent);
+  }
+  .tw-reset {
+    font-family: var(--font-body);
+    color: var(--foreground);
+    line-height: 1.5;
+  }
+}
+
+/* ---------------------------------------------------------------- components */
+
+@layer components {
+  /* Display face for headings inside the editor/renderer. Utilities such as
+     leading-[0.92] / tracking-[-0.02em] on the Text atom still win. */
+  .font-display,
+  [class*="font-display"] {
+    font-family: var(--font-display);
+    letter-spacing: -0.01em;
+    line-height: 1;
+  }
+
+  /* Small uppercase label — editor chrome + the Text atom's "kicker"
+     variant. (THANG's marketing eyebrow with the leading rule is `.eyebrow`
+     in globals.css; this one is deliberately plain.) */
+  .kicker {
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+    font-feature-settings: "tnum";
+  }
+
+  /* Hairline divider. */
+  .rule {
+    border: 0;
+    border-top: 1px solid var(--border);
+    margin: 0;
+  }
+
+  /* Opt-in section hover focus (Section.dimUnhovered). Hover-capable
+     inputs only so touch viewports never see a permanently grey section. */
+  .section-dim-unhovered {
+    transition:
+      opacity var(--duration) var(--ease),
+      filter var(--duration) var(--ease);
+  }
+  @media (hover: hover) {
+    .section-dim-unhovered:not(:hover):not(:focus-within) {
+      opacity: 0.45;
+      filter: grayscale(1);
+    }
+  }
+
+  /* Editor canvas: vertical layout module guides. `--module-px` /
+     `--major-px` are set inline by SectionFrame from lib/blog/grid.ts. */
+  .grid-row-guides {
+    background-image:
+      repeating-linear-gradient(
+        to bottom,
+        color-mix(in oklab, var(--accent) 28%, transparent) 0 1px,
+        transparent 1px var(--major-px)
+      ),
+      repeating-linear-gradient(
+        to bottom,
+        color-mix(in oklab, var(--accent) 10%, transparent) 0 1px,
+        transparent 1px var(--module-px)
+      );
+    background-position: 0 0;
+    background-repeat: repeat;
+  }
+
+  /* Glassmorphism — frosted chrome for the editor toolbar, panels,
+     popovers and floating block toolbars. Never used on reading content. */
+  .glass-panel {
+    background: color-mix(in oklab, var(--surface) 62%, transparent);
+    backdrop-filter: blur(20px) saturate(140%);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+    border: 1px solid var(--border);
+    box-shadow:
+      0 1px 0 color-mix(in oklab, var(--foreground) 4%, transparent) inset,
+      0 20px 60px -20px rgba(0, 0, 0, 0.6);
+  }
+  .glass-strong {
+    background: color-mix(in oklab, var(--surface) 82%, transparent);
+    backdrop-filter: blur(28px) saturate(160%);
+    -webkit-backdrop-filter: blur(28px) saturate(160%);
+    border: 1px solid var(--border-strong);
+  }
+  .glass-subtle {
+    background: color-mix(in oklab, var(--surface) 40%, transparent);
+    backdrop-filter: blur(14px) saturate(130%);
+    -webkit-backdrop-filter: blur(14px) saturate(130%);
+    border: 1px solid var(--border);
+  }
+
+  /* Public renderer wrapper — the block canvas of a post. */
+  .grid-page {
+    font-family: var(--font-body);
+    color: var(--foreground);
+  }
+}
+
+/* ---------------------------------------------------------------- media */
+
+/* Image grid tiles (atoms/ProjectGrid.tsx): greyed until hovered; touch
+   devices get color outright. Layout-only, so it can sit unlayered. */
+.project-tile-media {
+  filter: grayscale(1) brightness(0.72);
+  transition: filter var(--duration) var(--ease);
+}
+.group:hover > .project-tile-media,
+.group:focus-visible > .project-tile-media {
+  filter: none;
+}
+@media (hover: none), (max-width: 767px) {
+  .project-tile-media {
+    filter: none;
+  }
+}
+
+/* Horizontal edge fade for the carousel — alpha-only mask. */
+.carousel-edge-fade {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 22%,
+    #000 78%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 22%,
+    #000 78%,
+    transparent 100%
+  );
+}
+
+/* ---------------------------------------------------------------- react-grid-layout */
+/* Resize handles as accent grips, visible only on the selected block. */
+
+.react-grid-item.react-grid-placeholder {
+  background: color-mix(in oklab, var(--accent) 22%, transparent) !important;
+  border: 1.5px dashed var(--accent);
+  border-radius: 6px;
+  opacity: 1 !important;
+  transition: none;
+}
+.react-grid-item.react-draggable-dragging {
+  cursor: grabbing !important;
+  z-index: 30 !important;
+  opacity: 0.92;
+  transition: none;
+}
+.react-grid-item.is-selected {
+  z-index: 20;
+}
+.react-grid-item > .react-resizable-handle {
+  background-image: none;
+  width: 12px;
+  height: 12px;
+  pointer-events: auto;
+  padding: 0;
+}
+.react-grid-item > .react-resizable-handle::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--background);
+  border: 1.5px solid var(--accent);
+  border-radius: 3px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+.react-grid-item > .react-resizable-handle-se { bottom: -6px; right: -6px; cursor: nwse-resize; }
+.react-grid-item > .react-resizable-handle-sw { bottom: -6px; left: -6px; cursor: nesw-resize; }
+.react-grid-item > .react-resizable-handle-ne { top: -6px; right: -6px; cursor: nesw-resize; }
+.react-grid-item > .react-resizable-handle-nw { top: -6px; left: -6px; cursor: nwse-resize; }
+.react-grid-item > .react-resizable-handle-e { top: 50%; right: -6px; transform: translateY(-50%); cursor: ew-resize; }
+.react-grid-item > .react-resizable-handle-w { top: 50%; left: -6px; transform: translateY(-50%); cursor: ew-resize; }
+.react-grid-item > .react-resizable-handle-n { top: -6px; left: 50%; transform: translateX(-50%); cursor: ns-resize; }
+.react-grid-item > .react-resizable-handle-s { bottom: -6px; left: 50%; transform: translateX(-50%); cursor: ns-resize; }
+
+/* ---------------------------------------------------------------- reveal */
+
+@keyframes blog-reveal {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+[data-reveal] {
+  opacity: 0;
+  animation: blog-reveal var(--duration) var(--ease) forwards;
+  animation-delay: calc(var(--reveal-delay, 0) * 1ms);
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Focus ring inside editor/renderer trees. globals.css scopes its unlayered
+   :focus-visible rule out of `.tw-reset`, so this layered copy keeps the ring
+   while `focus:outline-none` / `rounded-*` utilities can still override it. */
+@layer base {
+  .tw-reset :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+}

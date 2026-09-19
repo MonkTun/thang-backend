@@ -1,0 +1,174 @@
+{
+  "page": {
+    "meta": {
+      "title": "Download",
+      "description": "Download THANG, the 5v5 freeze-tag shooter, for Windows, macOS and Linux. Builds are coming soon.",
+      "date": "",
+      "author": "",
+      "cover": "",
+      "coverAlt": "",
+      "tags": [],
+      "published": true,
+      "snow": true
+    },
+    "sections": [
+      {
+        "id": "sec_69b838be",
+        "background": {
+          "type": "transparent"
+        },
+        "padding": "md",
+        "minHeight": "auto",
+        "align": "top",
+        "blocks": [
+          {
+            "type": "text",
+            "props": {
+              "content": "Downloads",
+              "variant": "kicker",
+              "align": "center",
+              "color": "accent",
+              "transform": "none",
+              "fontSize": 12,
+              "letterSpacing": 0.18
+            },
+            "id": "blk_eeb8fdf5",
+            "layout": {
+              "col": 3,
+              "colSpan": 8,
+              "row": 1,
+              "rowSpan": 2
+            },
+            "mobile": {
+              "layout": {
+                "col": 1,
+                "colSpan": 12
+              }
+            }
+          },
+          {
+            "type": "text",
+            "props": {
+              "content": "Downloads are coming soon",
+              "variant": "h1",
+              "align": "center",
+              "color": "foreground",
+              "transform": "none",
+              "fontSize": 40,
+              "lineHeight": 1.08,
+              "letterSpacing": -0.01
+            },
+            "id": "blk_a240e3ef",
+            "layout": {
+              "col": 2,
+              "colSpan": 10,
+              "row": 3,
+              "rowSpan": 4
+            },
+            "mobile": {
+              "layout": {
+                "col": 1,
+                "colSpan": 12
+              },
+              "props": {
+                "fontSize": 28
+              }
+            }
+          },
+          {
+            "type": "text",
+            "props": {
+              "content": "Builds aren't available just yet. When THANG is ready to play, you'll grab it right here.",
+              "variant": "body",
+              "align": "center",
+              "color": "muted",
+              "transform": "none",
+              "lineHeight": 1.65
+            },
+            "id": "blk_97b78f34",
+            "layout": {
+              "col": 3,
+              "colSpan": 8,
+              "row": 8,
+              "rowSpan": 3
+            },
+            "mobile": {
+              "layout": {
+                "col": 1,
+                "colSpan": 12,
+                "rowSpan": 4
+              }
+            }
+          },
+          {
+            "type": "cards",
+            "props": {
+              "items": [
+                {
+                  "icon": "❄",
+                  "title": "Windows",
+                  "text": "64-bit installer — TBA",
+                  "status": "Coming soon"
+                },
+                {
+                  "icon": "❄",
+                  "title": "macOS",
+                  "text": "Universal build — TBA",
+                  "status": "Coming soon"
+                },
+                {
+                  "icon": "❄",
+                  "title": "Linux",
+                  "text": "AppImage build — TBA",
+                  "status": "Coming soon"
+                }
+              ],
+              "columns": 3,
+              "newTab": false
+            },
+            "id": "blk_02e114b6",
+            "layout": {
+              "col": 1,
+              "colSpan": 12,
+              "row": 14,
+              "rowSpan": 12
+            },
+            "mobile": {
+              "layout": {
+                "row": 15
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "sec_8f2adb31",
+        "background": {
+          "type": "transparent"
+        },
+        "padding": "none",
+        "minHeight": "auto",
+        "align": "top",
+        "blocks": [
+          {
+            "type": "mirror",
+            "props": {
+              "mirrorId": "mir_footer"
+            },
+            "id": "blk_1f0b60aa",
+            "layout": {
+              "col": 1,
+              "colSpan": 12,
+              "row": 1,
+              "rowSpan": 10,
+              "bleed": "both"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "createdAt": "2026-09-19T23:21:42.688Z",
+  "updatedAt": "2026-09-19T23:21:42.688Z",
+  "publishedAt": "2026-09-19T23:21:42.688Z"
+}

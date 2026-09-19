@@ -1,0 +1,225 @@
+{
+  "page": {
+    "meta": {
+      "title": "THANG — 5v5 freeze-tag shooter",
+      "description": "THANG is a 5v5 freeze-tag shooter. Freeze the entire opposing team to win — and if you stop moving, you freeze too.",
+      "date": "",
+      "author": "",
+      "cover": "",
+      "coverAlt": "",
+      "tags": [],
+      "published": true,
+      "snow": true
+    },
+    "sections": [
+      {
+        "id": "sec_e6fdfdea",
+        "background": {
+          "type": "image",
+          "src": "/ThangScreenshot.png",
+          "fit": "both",
+          "overlay": 50,
+          "filter": "none",
+          "focalX": 50,
+          "focalY": 50,
+          "rotate": 0,
+          "flipX": false,
+          "flipY": false,
+          "blur": 1,
+          "zoom": 1,
+          "tint": "none",
+          "tintOpacity": 0,
+          "fadeBottom": true,
+          "parallax": true
+        },
+        "padding": "lg",
+        "minHeight": "screen",
+        "align": "center",
+        "blocks": [
+          {
+            "type": "heroTitle",
+            "props": {
+              "text": "THANG!",
+              "as": "h1",
+              "align": "center"
+            },
+            "id": "blk_c52ec025",
+            "layout": {
+              "col": 1,
+              "colSpan": 12,
+              "row": 1,
+              "rowSpan": 11
+            },
+            "mobile": {
+              "layout": {
+                "rowSpan": 5
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "sec_c0083eab",
+        "background": {
+          "type": "transparent"
+        },
+        "padding": "md",
+        "minHeight": "auto",
+        "align": "top",
+        "blocks": [
+          {
+            "type": "text",
+            "props": {
+              "content": "From the blog",
+              "variant": "kicker",
+              "align": "center",
+              "color": "accent",
+              "transform": "none",
+              "fontSize": 12,
+              "letterSpacing": 0.18
+            },
+            "id": "blk_9679d637",
+            "layout": {
+              "col": 3,
+              "colSpan": 8,
+              "row": 1,
+              "rowSpan": 2
+            },
+            "mobile": {
+              "layout": {
+                "col": 1,
+                "colSpan": 12
+              }
+            }
+          },
+          {
+            "type": "text",
+            "props": {
+              "content": "Latest from the Oven",
+              "variant": "h2",
+              "align": "center",
+              "color": "foreground",
+              "transform": "none",
+              "fontSize": 40,
+              "lineHeight": 1.08,
+              "letterSpacing": -0.01
+            },
+            "id": "blk_40754cda",
+            "layout": {
+              "col": 2,
+              "colSpan": 10,
+              "row": 3,
+              "rowSpan": 4
+            },
+            "mobile": {
+              "layout": {
+                "col": 1,
+                "colSpan": 12
+              },
+              "props": {
+                "fontSize": 28
+              }
+            }
+          },
+          {
+            "type": "text",
+            "props": {
+              "content": "Dev updates, patch notes and stories from the team building THANG.",
+              "variant": "body",
+              "align": "center",
+              "color": "muted",
+              "transform": "none",
+              "lineHeight": 1.65
+            },
+            "id": "blk_047df478",
+            "layout": {
+              "col": 3,
+              "colSpan": 8,
+              "row": 8,
+              "rowSpan": 3
+            },
+            "mobile": {
+              "layout": {
+                "col": 1,
+                "colSpan": 12,
+                "rowSpan": 4
+              }
+            }
+          },
+          {
+            "type": "postGrid",
+            "props": {
+              "count": 6,
+              "emptyTitle": "First post is on its way.",
+              "emptyText": "We're warming up the Oven. Dev updates and patch notes will land here soon."
+            },
+            "id": "blk_ee3b80f1",
+            "layout": {
+              "col": 1,
+              "colSpan": 12,
+              "row": 14,
+              "rowSpan": 24
+            },
+            "mobile": {
+              "layout": {
+                "row": 15
+              }
+            }
+          },
+          {
+            "type": "button",
+            "props": {
+              "label": "All posts",
+              "href": "/blog",
+              "variant": "ghost",
+              "align": "center",
+              "newTab": false
+            },
+            "id": "blk_65a0f485",
+            "layout": {
+              "col": 6,
+              "colSpan": 2,
+              "row": 41,
+              "rowSpan": 3
+            },
+            "mobile": {
+              "layout": {
+                "col": 1,
+                "colSpan": 12,
+                "row": 42
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "sec_a66d99bf",
+        "background": {
+          "type": "transparent"
+        },
+        "padding": "none",
+        "minHeight": "auto",
+        "align": "top",
+        "blocks": [
+          {
+            "type": "mirror",
+            "props": {
+              "mirrorId": "mir_footer"
+            },
+            "id": "blk_eb721683",
+            "layout": {
+              "col": 1,
+              "colSpan": 12,
+              "row": 1,
+              "rowSpan": 10,
+              "bleed": "both"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "createdAt": "2026-09-19T23:21:42.688Z",
+  "updatedAt": "2026-09-19T23:21:42.688Z",
+  "publishedAt": "2026-09-19T23:21:42.688Z"
+}

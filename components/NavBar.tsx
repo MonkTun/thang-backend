@@ -10,6 +10,7 @@ interface NavLink {
 
 const links: NavLink[] = [
   { label: "Home", href: "/" },
+  { label: "Blog", href: "/blog" },
   { label: "Download", href: "/download" },
 ];
 
@@ -42,7 +43,11 @@ export default function NavBar() {
 
         <nav className={`nav__links${menuOpen ? " is-open" : ""}`}>
           {links.map((link) => {
-            const isActive = router.pathname === link.href;
+            const isActive =
+              link.href === "/"
+                ? router.pathname === "/"
+                : router.pathname === link.href ||
+                  router.pathname.startsWith(link.href + "/");
             return (
               <Link
                 key={link.href}

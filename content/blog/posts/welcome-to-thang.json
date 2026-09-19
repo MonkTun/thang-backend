@@ -1,0 +1,209 @@
+{
+  "page": {
+    "meta": {
+      "title": "Welcome to the THANG blog",
+      "description": "Why we're building a 5v5 freeze-tag shooter, what's in the Oven right now, and what to expect from this blog.",
+      "date": "2026-09-19",
+      "author": "Team THANG",
+      "cover": "",
+      "coverAlt": "",
+      "tags": [
+        "devlog"
+      ],
+      "published": true,
+      "snow": false
+    },
+    "sections": [
+      {
+        "id": "sec_7c1e9a40",
+        "background": {
+          "type": "image",
+          "src": "/uploads/blog/images/allnighter4-mu8x07z0.webp",
+          "fit": "both",
+          "overlay": 68,
+          "filter": "none",
+          "focalX": 50,
+          "focalY": 50,
+          "rotate": 0,
+          "flipX": false,
+          "flipY": false,
+          "blur": 0,
+          "zoom": 1,
+          "tint": "none",
+          "tintOpacity": 0
+        },
+        "padding": "lg",
+        "minHeight": "auto",
+        "align": "top",
+        "blocks": [
+          {
+            "type": "text",
+            "props": {
+              "content": "Devlog — 01",
+              "variant": "kicker",
+              "align": "left",
+              "color": "muted",
+              "transform": "none"
+            },
+            "id": "blk_2f8d3b17",
+            "layout": {
+              "col": 2,
+              "colSpan": 4,
+              "row": 1,
+              "rowSpan": 2
+            }
+          },
+          {
+            "type": "text",
+            "props": {
+              "content": "If you stop moving, you freeze.",
+              "variant": "h2",
+              "align": "left",
+              "color": "foreground",
+              "transform": "none"
+            },
+            "id": "blk_9a04c6e2",
+            "layout": {
+              "col": 2,
+              "colSpan": 10,
+              "row": 3,
+              "rowSpan": 7
+            }
+          },
+          {
+            "type": "text",
+            "props": {
+              "content": "GG FUCKING EZ!!!! Jake polar bear skibidi toilet 67!!!!",
+              "variant": "body",
+              "align": "left",
+              "color": "foreground",
+              "transform": "none"
+            },
+            "id": "blk_5b7e12d9",
+            "layout": {
+              "col": 2,
+              "colSpan": 8,
+              "row": 12,
+              "rowSpan": 8
+            }
+          },
+          {
+            "type": "line",
+            "props": {
+              "thickness": 1,
+              "color": "border"
+            },
+            "id": "blk_e3c8a051",
+            "layout": {
+              "col": 2,
+              "colSpan": 10,
+              "row": 19,
+              "rowSpan": 1
+            }
+          }
+        ]
+      },
+      {
+        "id": "sec_4d92b6f3",
+        "background": {
+          "type": "transparent"
+        },
+        "padding": "md",
+        "minHeight": "auto",
+        "align": "top",
+        "blocks": [
+          {
+            "type": "text",
+            "props": {
+              "content": "What to expect",
+              "variant": "kicker",
+              "align": "left",
+              "color": "muted",
+              "transform": "none"
+            },
+            "id": "blk_c17f5a88",
+            "layout": {
+              "col": 2,
+              "colSpan": 4,
+              "row": 1,
+              "rowSpan": 2
+            }
+          },
+          {
+            "type": "text",
+            "props": {
+              "content": "This is where the team writes in the open: dev updates as systems come online, patch notes once builds start shipping, and the occasional story about five polar-bear best friends and a pair of mind-controlling glasses. Every post is built in our block editor, so expect screenshots, clips and the odd oversized quote.",
+              "variant": "body",
+              "align": "left",
+              "color": "foreground",
+              "transform": "none"
+            },
+            "id": "blk_60de4b2c",
+            "layout": {
+              "col": 2,
+              "colSpan": 8,
+              "row": 3,
+              "rowSpan": 9
+            }
+          }
+        ]
+      },
+      {
+        "id": "sec_a85f0c1e",
+        "background": {
+          "type": "transparent"
+        },
+        "padding": "xl",
+        "minHeight": "auto",
+        "align": "center",
+        "blocks": [
+          {
+            "type": "quote",
+            "props": {
+              "quote": "Play alone and you lose — survival is a team sport.",
+              "attribution": "Team THANG"
+            },
+            "id": "blk_3e6a9d74",
+            "layout": {
+              "col": 3,
+              "colSpan": 8,
+              "row": 1,
+              "rowSpan": 9
+            }
+          }
+        ]
+      },
+      {
+        "id": "sec_887bb2e2",
+        "background": {
+          "type": "transparent"
+        },
+        "padding": "lg",
+        "minHeight": "auto",
+        "align": "top",
+        "blocks": [
+          {
+            "type": "button",
+            "props": {
+              "label": "To Blogs",
+              "href": "/blog",
+              "variant": "ghost",
+              "align": "center",
+              "newTab": false
+            },
+            "id": "blk_24f7ad9a",
+            "layout": {
+              "col": 5,
+              "colSpan": 4,
+              "row": 1,
+              "rowSpan": 3
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "createdAt": "2026-09-19T00:00:00.000Z",
+  "updatedAt": "2026-09-19T23:27:50.043Z",
+  "publishedAt": "2026-09-19T00:00:00.000Z"
+}

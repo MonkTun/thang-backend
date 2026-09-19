@@ -2,6 +2,7 @@ import type { AppProps } from "next/app";
 import Head from "next/head";
 import { Grandstander, Nunito } from "next/font/google";
 import "@/styles/globals.css";
+import "@/styles/blog.css";
 
 // Brand type — used across the site (and the matching static .ttf weights ship
 // with the UE5 client + merch). Both are OFL-licensed, so they're free to embed.
@@ -28,6 +29,16 @@ export default function App({ Component, pageProps }: AppProps) {
         <meta name="theme-color" content="#05070e" />
         <title>Thang</title>
       </Head>
+      {/* next/font binds the per-font variables on <main> via .variable
+          classes below. The blog editor renders popovers into a body
+          portal (outside <main>), so the same variables are also declared
+          on :root here — otherwise portal chrome falls back to system-ui. */}
+      <style jsx global>{`
+        :root {
+          --font-grandstander: ${grandstander.style.fontFamily};
+          --font-nunito: ${nunito.style.fontFamily};
+        }
+      `}</style>
       <main className={`app-main ${grandstander.variable} ${nunito.variable}`}>
         <Component {...pageProps} />
       </main>

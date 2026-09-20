@@ -18,7 +18,7 @@
         "id": "sec_7c1e9a40",
         "background": {
           "type": "image",
-          "src": "/uploads/blog/images/allnighter4-mu8x07z0.webp",
+          "src": "/uploads/blog/images/screenshot-2026-09-16-150638-mu94tbl4.png",
           "fit": "both",
           "overlay": 68,
           "filter": "none",
@@ -56,7 +56,7 @@
           {
             "type": "text",
             "props": {
-              "content": "If you stop moving, you freeze.",
+              "content": "Devlog #1: Meet the Bears Behind THANG!",
               "variant": "h2",
               "align": "left",
               "color": "foreground",
@@ -73,7 +73,7 @@
           {
             "type": "text",
             "props": {
-              "content": "GG FUCKING EZ!!!! Jake polar bear skibidi toilet 67!!!!",
+              "content": "From Overdawn to a chaotic polar bear party shooter. Meet our team, discover what THANG! is all about, and see why we’re building a game made for laughter, chaos, and unforgettable moments.",
               "variant": "body",
               "align": "left",
               "color": "foreground",
@@ -85,20 +85,6 @@
               "colSpan": 8,
               "row": 12,
               "rowSpan": 8
-            }
-          },
-          {
-            "type": "line",
-            "props": {
-              "thickness": 1,
-              "color": "border"
-            },
-            "id": "blk_e3c8a051",
-            "layout": {
-              "col": 2,
-              "colSpan": 10,
-              "row": 19,
-              "rowSpan": 1
             }
           }
         ]
@@ -115,7 +101,7 @@
           {
             "type": "text",
             "props": {
-              "content": "What to expect",
+              "content": "Hello World!",
               "variant": "kicker",
               "align": "left",
               "color": "muted",
@@ -132,7 +118,7 @@
           {
             "type": "text",
             "props": {
-              "content": "This is where the team writes in the open: dev updates as systems come online, patch notes once builds start shipping, and the occasional story about five polar-bear best friends and a pair of mind-controlling glasses. Every post is built in our block editor, so expect screenshots, clips and the odd oversized quote.",
+              "content": "Hello gamers! This is our first game dev blog post. Let me introduce our team! <br>We’re a small team of college students who love making games that are fun and meaningful. Our last project was ‘Overdawn’ - a student game that, to our surprise, picked up a few awards along the way. That made us love game development. <br><br><br>So we did the obvious thing and jumped into a project that’s the total opposite of Overdawn. Overdawn will always be one of the games we’re most proud of. THANG! carries that same love, but where Overdawn was intense, THANG! is about getting your friends in a room and laughing your way through the chaos. <br><br><br>We kicked off THANG! back in Jan 2026. We spent the first stretch prototyping and testing, then scattered for a busy summer break. Now we’re back together and locked in, ready to give this game our full attention. ",
               "variant": "body",
               "align": "left",
               "color": "foreground",
@@ -143,7 +129,75 @@
               "col": 2,
               "colSpan": 8,
               "row": 3,
-              "rowSpan": 9
+              "rowSpan": 26
+            }
+          },
+          {
+            "type": "text",
+            "props": {
+              "content": "So, what is thang?",
+              "variant": "kicker",
+              "align": "left",
+              "color": "muted",
+              "transform": "none"
+            },
+            "id": "blk_78ca1ee1",
+            "layout": {
+              "col": 2,
+              "colSpan": 4,
+              "row": 30,
+              "rowSpan": 2
+            }
+          },
+          {
+            "type": "text",
+            "props": {
+              "content": "THANG! is a chaotic party shooter set in a tiny town of chunky polar bears at the frozen edge of the world. When the pond freezes over, the bears do what they always do to survive the long winter: they play.<br><br><br>Here's the game. You shoot other bears to freeze them, every hit chills them a little more until they lock up into a solid block of ice. Then you scoop up the frozen bear, haul them across the pond to the town's giant oven, and bake them. Out pops a popsicle: a fresh, ridiculous weapon that only cranks the chaos up higher. Freeze, bake, repeat.<br><br><br>Nobody really gets hurt, though. A frozen bear just thaws out, laughs it off, and jumps right back in. It's part snowball fight, part potluck around the town's biggest pot, the bears aren't fighting, they're just settling once and for all who's the best bear this winter.",
+              "variant": "body",
+              "align": "left",
+              "color": "foreground",
+              "transform": "none"
+            },
+            "id": "blk_bae671ce",
+            "layout": {
+              "col": 2,
+              "colSpan": 8,
+              "row": 32,
+              "rowSpan": 24
+            }
+          },
+          {
+            "type": "text",
+            "props": {
+              "content": "Built for chaos, and for everyone",
+              "variant": "kicker",
+              "align": "left",
+              "color": "muted",
+              "transform": "none"
+            },
+            "id": "blk_c4b2c354",
+            "layout": {
+              "col": 2,
+              "colSpan": 4,
+              "row": 56,
+              "rowSpan": 2
+            }
+          },
+          {
+            "type": "text",
+            "props": {
+              "content": "If you already love messy multiplayer party shooters, THANG! is going to feel like home. But we're also building it so anyone can jump in. The visuals are friendly and cute, the controls are simple, and every freeze, dunk, and bake lands with punchy, satisfying feedback. You don't need to be good at shooters to have a blast, you just need friends and a couple of minutes.<br><br><br>We think it's a perfect fit for streamers, too. Matches are short, loud, and unpredictable, which is exactly the kind of thing that plays great on stream.<br><br><br>Every match is a highlight reel. <br><br><br>Play a few rounds of THANG! and you'll notice something: the funny moments just keep happening on their own. Two bears accidentally locking into a parry standoff. Sneaking a frozen buddy toward the oven, getting spotted, and bolting for your life. The chaos writes its own comedy.<br><br><br>And you can relive all of it. THANG! has a replay feature, so those perfect moments are easy to capture and turn into clips. For us, that's a marketing goldmine,  but honestly, it's bigger for the people playing. Streamers get endless content. Non-streamer players get something genuinely fun to share with friends. For some, a THANG! clip might even be their very first YouTube video.",
+              "variant": "body",
+              "align": "left",
+              "color": "foreground",
+              "transform": "none"
+            },
+            "id": "blk_e43fb8f8",
+            "layout": {
+              "col": 2,
+              "colSpan": 8,
+              "row": 58,
+              "rowSpan": 38
             }
           }
         ]
@@ -204,6 +258,6 @@
     ]
   },
   "createdAt": "2026-09-19T00:00:00.000Z",
-  "updatedAt": "2026-09-19T23:27:50.043Z",
+  "updatedAt": "2026-09-20T01:30:48.328Z",
   "publishedAt": "2026-09-19T00:00:00.000Z"
 }
